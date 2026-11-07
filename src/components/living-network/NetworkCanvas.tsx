@@ -12,7 +12,7 @@ function Computers({ theme, endpoint, clock, onSelect }: Pick<NetworkCanvasProps
   const textures = useMemo(() => source.map(image => {const texture = image.clone(); texture.colorSpace = SRGBColorSpace; texture.needsUpdate = true; return texture;}), [source]);
   const geometry = useMemo(() => ({
     case: new RoundedBoxGeometry(3.35, 2.27, .14, 2, .07),
-    screen: new RoundedBoxGeometry(3.17, 2.1, .025, 1, .03),
+    screen: new RoundedBoxGeometry(3.22, 2.14, .025, 1, .03),
     foot: new RoundedBoxGeometry(1.12, .075, .58, 1, .035),
     neck: new RoundedBoxGeometry(.19, .55, .13, 1, .035),
   }), []);
@@ -28,8 +28,8 @@ function Computers({ theme, endpoint, clock, onSelect }: Pick<NetworkCanvasProps
       const group = groups.current[index], indicator = indicators.current[index];
       if(group) {group.position.y = device.position[1]; const size = device.scale * (device.id === "you" ? 1 : .97 + .03 * story.discover); group.scale.setScalar(size);}
       const pulse=device.id===endpoint?arrivalPulse(clock.current.progress):0;
-      if(bezels.current[index]) bezels.current[index]!.emissiveIntensity=pulse*.9;
-      if(indicator) indicator.scale.setScalar(1+pulse*3);
+      if(bezels.current[index]) bezels.current[index]!.emissiveIntensity=pulse*.1;
+      if(indicator) indicator.scale.setScalar(1+pulse*.65);
     });
   });
   return <>{devices.map((device, index) => <group key={device.id} ref={value => {groups.current[index] = value;}} position={device.position} rotation={device.rotation} scale={device.scale}
@@ -46,11 +46,11 @@ function Computers({ theme, endpoint, clock, onSelect }: Pick<NetworkCanvasProps
 }
 function Connection({pair, ...props}: NetworkCanvasProps & {pair: [Endpoint,Endpoint]}) {
   const [a,b]=pair;
-  const geometry=useMemo(()=>new TubeGeometry(new CubicBezierCurve3(...routeBetween(a,b).map(point=>new Vector3(...point)) as [Vector3,Vector3,Vector3,Vector3]),64,.009,5,false),[a,b]);
+  const geometry=useMemo(()=>new TubeGeometry(new CubicBezierCurve3(...routeBetween(a,b).map(point=>new Vector3(...point)) as [Vector3,Vector3,Vector3,Vector3]),64,.005,5,false),[a,b]);
   const material=useRef<MeshBasicMaterial>(null);
   useEffect(()=>()=>geometry.dispose(),[geometry]);
-  useFrame(()=>{if(material.current)material.current.opacity=((props.source===a&&props.endpoint===b)||(props.source===b&&props.endpoint===a)) ? .7 : .12;});
-  return <mesh geometry={geometry}><meshBasicMaterial ref={material} color={sceneMaterials[props.theme].accent} transparent opacity={.12} toneMapped={false} depthWrite={false}/></mesh>;
+  useFrame(()=>{if(material.current)material.current.opacity=((props.source===a&&props.endpoint===b)||(props.source===b&&props.endpoint===a)) ? .46 : .08;});
+  return <mesh geometry={geometry}><meshBasicMaterial ref={material} color={sceneMaterials[props.theme].accent} transparent opacity={.08} toneMapped={false} depthWrite={false}/></mesh>;
 }
 function World(props: NetworkCanvasProps) {
   const { theme, endpoint, source, transfer, clock, pointer, invalidateRef, onReady, onUnavailable } = props;

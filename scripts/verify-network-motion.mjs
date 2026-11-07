@@ -109,6 +109,21 @@ try {
   const go=async top=>{await evaluate('window.scrollTo({top:'+top+',behavior:"instant"})');await pause(1250);};
   const bounds=async selector=>evaluate('(()=>{const r=document.querySelector('+JSON.stringify(selector)+').getBoundingClientRect();return{top:r.top+scrollY,height:r.height}})()');
   const transform=selector=>evaluate('getComputedStyle(document.querySelector('+JSON.stringify(selector)+')).transform');
+  const checkRibbon=async()=>{
+    const ribbon=await bounds('.network-ribbon'),height=await evaluate('innerHeight');
+    await go(ribbon.top-height*.82);
+    const start=await transform('[data-scroll-ribbon]');
+    assert(await evaluate("(()=>{const box=document.querySelector('.network-ribbon').getBoundingClientRect(),first=document.querySelector('[data-scroll-ribbon] > :first-child').getBoundingClientRect();return first.left>=box.left-.75&&first.right<=box.right+.75&&first.top>=0&&first.bottom<=innerHeight})()"),'First ribbon phrase is fully visible during its reading hold');
+    await go(ribbon.top-height*.4);
+    assert(await evaluate("(()=>{const box=document.querySelector('.network-ribbon').getBoundingClientRect(),last=document.querySelector('[data-scroll-ribbon] > :last-child').getBoundingClientRect();return last.left>=box.left-.75&&last.right<=box.right+.75&&last.top>=0&&last.bottom<=innerHeight})()"),'Last ribbon phrase is fully visible before leaving the viewport');
+    if(await evaluate("document.querySelector('[data-scroll-ribbon]').scrollWidth>document.querySelector('.network-ribbon').clientWidth+2"))assert.notEqual(await transform('[data-scroll-ribbon]'),start,'Ribbon moves only when content overflows');
+    const finish=await transform('[data-scroll-ribbon]');await go(ribbon.top-height*.3);assert.equal(await transform('[data-scroll-ribbon]'),finish,'Last phrase holds instead of drifting out');
+  };
+  const checkHeader=async()=>{
+    assert(await evaluate("!!document.querySelector('.desktop-nav > a[href=\"/\"]') && !!document.querySelector('#mobile-navigation > a[href=\"/\"]')"),'Desktop and mobile have Home navigation');
+    if(await evaluate('innerWidth>900'))assert(await evaluate("(()=>{const h=document.querySelector('.header-inner').getBoundingClientRect(),n=document.querySelector('.desktop-nav').getBoundingClientRect(),b=document.querySelector('.brand-lockup').getBoundingClientRect(),a=document.querySelector('.header-actions').getBoundingClientRect();return Math.abs((n.left+n.right-h.left-h.right)/2)<1&&b.right+6<=n.left&&n.right+6<=a.left})()"),'Header menu is centered and does not collide with branding or actions');
+  };
+
   await viewport(1440,1000);await media('dark',true);await load();
   await waitFor("document.querySelectorAll('.reveal-word').length>0 && document.querySelector('.living-network').dataset.mode==='3d'",'Motion starts without opt-in even with system reduction');
   assert.equal(await evaluate("document.documentElement.dataset.motion"),'full','Owner-requested motion defaults on');
@@ -124,7 +139,13 @@ try {
   await cdp('Input.dispatchMouseEvent',{type:'mouseMoved',...hoverTarget});await pause(350);
   assert.notEqual(await evaluate("getComputedStyle(document.querySelector('.hero-actions .button')).translate"),'none','Primary action has visible hover motion');
   await cdp('Input.dispatchMouseEvent',{type:'mouseMoved',x:2,y:120});
-  checks.push('real pointer hover feedback');
+  await checkHeader();
+  const homeBefore=await evaluate("getComputedStyle(document.querySelector('.desktop-nav > a[href=\"/\"]')).backgroundColor");
+  const navPoint=await evaluate("(()=>{const r=document.querySelector('.desktop-nav > a[href=\"/\"]').getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2}})()");
+  await cdp('Input.dispatchMouseEvent',{type:'mouseMoved',...navPoint});await pause(280);
+  assert.equal(await evaluate("getComputedStyle(document.querySelector('.desktop-nav > a[href=\"/\"]')).backgroundColor"),homeBefore,'Navigation hover adds no background');
+  await cdp('Input.dispatchMouseEvent',{type:'mouseMoved',x:2,y:120});
+  checks.push('real pointer hover feedback','Home navigation, centered header and text-only menu hover');
 
   await waitFor("[...document.querySelectorAll('.ambient-computers > g')].some(pc=>Number(pc.style.getPropertyValue('--arrival'))>.1)",'Packet reaches and lights a computer');
   assert(await evaluate("[...document.querySelectorAll('.ambient-computers > g')].some(pc=>Number(pc.style.getPropertyValue('--arrival'))>.05)"),'Receiving computer glows');
@@ -146,12 +167,13 @@ try {
   await go(eco.top-280);
   assert.equal(await evaluate("getComputedStyle(document.querySelector('.ecosystem-copy .reveal-word')).opacity"),'1','Heading reveal replays when revisiting');
 
-  const banner=await bounds('.network-ribbon');await go(banner.top-900);const ribbonStart=await transform('[data-scroll-ribbon]');await go(banner.top-50);assert.notEqual(await transform('[data-scroll-ribbon]'),ribbonStart,'Horizontal ribbon responds to scroll');
+  await checkRibbon();
   assert(await evaluate("document.querySelectorAll('.reveal-word').length>10"),'Headings have word reveal animation');
-  checks.push('horizontal content reveal responds to scroll','horizontal ribbon follows vertical scroll','word-by-word scroll reveals');
+  assert(await evaluate("(()=>{const h=document.querySelector('#ecosystem-title'),first=h.querySelector(':scope > .reveal-word'),second=h.querySelector(':scope > span:not(.reveal-word)');return getComputedStyle(first).color===getComputedStyle(h).color&&getComputedStyle(first).color!==getComputedStyle(second).color})()"),'Word animation preserves the primary and secondary heading colors');
+  checks.push('horizontal content reveal responds to scroll','horizontal ribbon follows vertical scroll','word-by-word scroll reveals','heading contrast survives word splitting');
   for(const theme of ['dark','light']){
     await media(theme);await load();await waitFor("document.querySelector('.living-network').dataset.mode==='3d'",'Desktop 3D ready');
-    await waitFor("document.querySelector('.living-network').dataset.phase==='3'",'Capture arrival state');
+    await waitFor("document.querySelector('.living-network').dataset.phase==='4'",'Capture arrival state');
     await evaluate("document.querySelector('[aria-label=\"Pause network preview\"]').click()");
     const height=await evaluate('document.documentElement.scrollHeight');
     for(let top=0;top<height;top+=750){await evaluate('window.scrollTo({top:'+top+',behavior:"instant"})');await pause(160);}
@@ -166,12 +188,12 @@ try {
     for(const [name,selector]of [['showcase','#experience'],['connection','#how-it-works'],['spaces','.usecase-section'],['footer','.glass-footer']]){const rect=await bounds(selector);await go(rect.top-120);const shot=await cdp('Page.captureScreenshot',{format:'png'});await fs.writeFile(path.join(output,'motion-'+theme+'-'+name+'.png'),Buffer.from(shot.data,'base64'));}
     await go(0);
   }
-  for(const width of [320,375,768,1024,1920,3840]){await viewport(width,900);await load();assert.equal(await evaluate('document.documentElement.scrollWidth<=innerWidth'),true,'No overflow at '+width);if(width<=900)assert.equal(await evaluate("!!document.querySelector('canvas')"),false,'Mobile is lightweight');}
-  checks.push('320 through 3840px layouts without horizontal overflow','mobile skips WebGL');
+  for(const width of [320,375,768,901,1024,1920,3840]){await viewport(width,900);await load();assert.equal(await evaluate('document.documentElement.scrollWidth<=innerWidth'),true,'No overflow at '+width);if(width<=900)assert.equal(await evaluate("!!document.querySelector('canvas')"),false,'Mobile is lightweight');await checkHeader();await checkRibbon();}
+  checks.push('320 through 3840px layouts without horizontal overflow','mobile skips WebGL','first and last ribbon phrases remain visible at every tested width');
   for(const theme of ['dark','light']){
     await viewport(3840,2160);await media(theme,true);await load();
     await waitFor("document.querySelector('.living-network').dataset.mode==='3d'",'4K scene ready');
-    await waitFor("document.querySelector('.living-network').dataset.phase==='3'",'4K arrival capture');
+    await waitFor("document.querySelector('.living-network').dataset.phase==='4'",'4K arrival capture');
     await evaluate("document.querySelector('[aria-label=\"Pause network preview\"]').click()");
     const image=await cdp('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
     const file='Lymora-Homepage-'+theme+'-4K.png';await fs.writeFile(path.join(exportDir,file),Buffer.from(image.data,'base64'));

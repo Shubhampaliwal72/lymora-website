@@ -24,7 +24,13 @@ export function HomeScrollMotion({children}:{children:ReactNode}){
       gsap.fromTo(element,{y:desktop?55:18,rotationX:desktop?7:0,rotationY:desktop?-5:0,scale:desktop ? .96 : 1},{y:0,rotationX:0,rotationY:0,scale:1,ease:"none",scrollTrigger:{trigger:section,start:"top 85%",end:"top 22%",scrub:.85,invalidateOnRefresh:true}});
     });
     select("[data-scroll-depth]").forEach((element:Element)=>gsap.fromTo(element,{y:desktop?55:12},{y:desktop?-45:-12,ease:"none",scrollTrigger:{trigger:element.closest("section"),start:"top bottom",end:"bottom top",scrub:1,invalidateOnRefresh:true}}));
-    select("[data-scroll-ribbon]").forEach((element:Element)=>gsap.fromTo(element,{x:desktop?32:0},{x:()=>-Math.max(0,element.scrollWidth-(element.parentElement?.clientWidth??0)),ease:"none",scrollTrigger:{trigger:element.parentElement,start:"top 85%",end:"bottom 25%",scrub:1,invalidateOnRefresh:true}}));
+    select("[data-scroll-ribbon]").forEach((element:Element)=>{
+      const finish=()=>-Math.max(0,element.scrollWidth-(element.parentElement?.clientWidth??0));
+      gsap.timeline({scrollTrigger:{trigger:element.parentElement,start:"top 85%",end:"top 35%",scrub:.4,invalidateOnRefresh:true}})
+        .fromTo(element,{x:0},{x:0,duration:.18,ease:"none"})
+        .to(element,{x:finish,duration:.6,ease:"none"})
+        .to(element,{x:finish,duration:.22,ease:"none"});
+    });
     select("[data-scroll-wire]").forEach((element:Element)=>gsap.fromTo(element,{"--wire-progress":0},{"--wire-progress":1,ease:"none",scrollTrigger:{trigger:element,start:"top 85%",end:"top 38%",scrub:.7}}));
     if(desktop){
       const scene=select(".brand-hero .living-network")[0];

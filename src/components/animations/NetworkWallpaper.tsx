@@ -43,11 +43,11 @@ export function NetworkWallpaper(){
       const path=paths.current[selected];
       if(!root.current||!path)return;
       const p=progress.value, travel=Math.max(0,Math.min(1,(p-.12)/.6)), t=reverse?1-travel:travel;
-      const pulse=Math.sin(Math.PI*Math.max(0,Math.min(1,(p-.72)/.26)));
+      const pulse=Math.sin(Math.PI*Math.max(0,Math.min(1,(p-.72)/.26)))**2;
       const route=routes[selected], point=path.getPointAtLength(lengths[selected]*t);
       const visible=p>=.12&&p<.72, target=reverse?route.a:route.b;
       path.style.opacity=String(.7+Math.sin(Math.PI*travel)*.25);
-      for(const streak of [trails.current[selected],halos.current[selected]]){streak?.setAttribute("stroke-dashoffset",String((reverse?0:65)-1000*t));if(streak)streak.style.opacity=visible?"1":"0";}
+      for(const streak of [trails.current[selected],halos.current[selected]]){streak?.setAttribute("stroke-dashoffset",String((reverse?0:42)-1000*t));if(streak)streak.style.opacity=visible?"1":"0";}
       for(const head of [signal.current,glow.current]){head?.setAttribute("cx",String(point.x));head?.setAttribute("cy",String(point.y));if(head)head.style.opacity=visible?"1":"0";}
       computers.current.forEach((computer,index)=>computer?.style.setProperty("--arrival",String(index===target?pulse:0)));
       root.current?.setAttribute("data-phase",visible?"travel":pulse>0?"arrival":"idle");
@@ -66,10 +66,10 @@ export function NetworkWallpaper(){
   return <>
     <div ref={root} className="network-wallpaper" data-animated={preferences.capable} data-paused={paused} aria-hidden="true"><div ref={depth} className="wallpaper-scroll-plane"><div ref={pointer} className="wallpaper-pointer-plane"><svg viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid meet" fill="none">
       <g className="ambient-routes">{routes.map((route,index)=><path key={route.d} ref={element=>{paths.current[index]=element;}} d={route.d} data-static={route.ring}/>)}</g>
-      <g className="ambient-streak-glows">{routes.map((route,index)=><path key={route.d} ref={element=>{halos.current[index]=element;}} d={route.d} pathLength="1000" strokeDasharray="65 935"/>)}</g>
-      <g className="ambient-streaks">{routes.map((route,index)=><path key={route.d} ref={element=>{trails.current[index]=element;}} d={route.d} pathLength="1000" strokeDasharray="65 935"/>)}</g>
+      <g className="ambient-streak-glows">{routes.map((route,index)=><path key={route.d} ref={element=>{halos.current[index]=element;}} d={route.d} pathLength="1000" strokeDasharray="42 1000"/>)}</g>
+      <g className="ambient-streaks">{routes.map((route,index)=><path key={route.d} ref={element=>{trails.current[index]=element;}} d={route.d} pathLength="1000" strokeDasharray="42 1000"/>)}</g>
       <g className="ambient-computers">{nodes.map(([x,y],index)=><g key={index} ref={element=>{computers.current[index]=element;}} transform={"translate("+x+" "+y+")"}><rect className="ambient-arrival-glow" x="-48" y="-35" width="96" height="66" rx="10"/><rect className="ambient-case" x="-42" y="-29" width="84" height="54" rx="6"/><rect className="ambient-screen" x="-36" y="-23" width="72" height="42" rx="3"/><path d="M-13 40H13M0 25V40"/><circle className="ambient-node" r="3.2"/></g>)}</g>
-      <g className="ambient-head-glows"><circle ref={glow} r="9"/></g><g className="ambient-signals"><circle ref={signal} r="3.5"/></g>
+      <g className="ambient-head-glows"><circle ref={glow} r="5.5"/></g><g className="ambient-signals"><circle ref={signal} r="2.2"/></g>
     </svg></div></div><div className="wallpaper-scrim"/></div>
     {preferences.capable&&<button type="button" className="ambience-control glass-panel" aria-pressed={paused} onClick={()=>setPaused(value=>!value)} aria-label={paused?"Resume network background animation":"Pause network background animation"}><Icon name={paused?"play":"pause"}/><span>{paused?"Resume ambience":"Pause ambience"}</span></button>}
   </>;

@@ -69,9 +69,9 @@ Web Vitals measurement or a substitute for the owner's visual acceptance.
 
 Local actual browser captures, not generated/retouched product mockups:
 
-- design/glass-network/captures/Lymora-Homepage-dark-Full.png (1440 x 6572)
-- design/glass-network/captures/Lymora-Homepage-light-Full.png (1440 x 6572)
-- design/glass-network/captures/Lymora-Homepage-mobile-Full.png (375 x 6716)
+- design/glass-network/captures/Lymora-Homepage-dark-Full.png (1440 x 6569)
+- design/glass-network/captures/Lymora-Homepage-light-Full.png (1440 x 6569)
+- design/glass-network/captures/Lymora-Homepage-mobile-Full.png (375 x 6732)
 
 Hero-only images and sectional review captures are also saved. The PNG folder
 and .verification outputs are ignored by Git and never added to public/.
@@ -173,3 +173,41 @@ Text, controls, the real product screenshots and the foreground 3D PCs remain
 sharp. Mobile and reduced-transparency viewers skip the filter/reflection and
 use a subdued static-opacity background instead. No extra animation loop,
 backdrop-filter layer or dependency is introduced.
+
+## Final UI refinement
+
+Home is available in desktop/mobile navigation. The header uses equal outer grid
+columns to center its menu independently of the logo and download controls.
+Menu hover uses text color and a fine underline, with transparent hover backgrounds
+in dropdown/mobile links. Dropdowns are centered beneath their triggers.
+
+The horizontal ribbon has smaller, more readable type, normal secondary-text
+contrast and trailing padding. Its sequence holds the first phrase, moves only
+by the measured overflow, then holds the final phrase while still near mid-screen.
+The scrub delay is shortened to 0.4 seconds. Resize/font readiness still refresh
+the measurements. Tests check full first/last phrase bounds rather than merely
+checking that a transform changed. All text remains within native vertical scroll.
+
+Supporting typography receives a modest heading-size/line-height adjustment and
+more legible detail text. The hero headline and original artwork are preserved.
+A source bug was found: h2 > span also matched SplitText word wrappers, muting
+primary headline text. Excluding .reveal-word preserves the intended two-tone
+heading colors while words animate.
+
+Packet cores narrow from 3.2 to 1.4 SVG units, halos from 10 to 4, with lower
+halo/head opacity and shorter tails. Dash gaps exceed the route length to avoid
+a duplicate glint wrapping to the opposite end. The ambient monitor outline
+peaks at 1.65 rather than 3px, with softer fill and a squared-sine arrival envelope.
+The 3D receiver emission is reduced from 0.9 to 0.1 and the indicator no longer
+quadruples in size. The lightweight receiver gets a thin, restrained inset glow.
+Foreground connection tubes are also thinner and less opaque.
+
+No desktop application files, dependencies, release data or deployment configuration
+change. This refinement is left uncommitted for the requested approval.
+
+Final refinement checks passed: first/last phrases remain fully visible at widths
+320, 375, 768, 901, 1024, 1440, 1920 and 3840; centered navigation has no collisions,
+Home exists on desktop/mobile, hover adds no menu background, heading colors
+survive splitting, and the static build has no missing assets or runtime errors.
+A peak-arrival visual review prompted one final reduction of receiver emission
+to 0.1 and a slimmer bezel; original screenshot pixels remain unchanged.
