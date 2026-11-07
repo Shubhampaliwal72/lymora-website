@@ -92,6 +92,8 @@ try {
     }
     assert(loaded,'Living Network page loaded successfully');
     await evaluate('document.fonts.ready'); await pause(1200);
+    // Isolate the finite product preview from independently controllable ambience.
+    await evaluate("document.querySelector('.ambience-control[aria-pressed=false]')?.click()");
   };
   const media=async (theme, reduce=false)=>cdp('Emulation.setEmulatedMedia',{features:[{name:'prefers-color-scheme',value:theme},{name:'prefers-reduced-motion',value:reduce?'reduce':'no-preference'}]});
   const viewport=async (width,height=1000)=>cdp('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:false});
@@ -115,7 +117,7 @@ try {
     for(const width of [320,375,390,768,1024,1440]){
       await viewport(width,width<600?844:1000);await load();
       if(width>900)await waitFor("document.querySelector('.living-network').dataset.mode==='3d'",'Desktop 3D scene must finish rendering');
-      const state=await evaluate("(()=>({theme:document.documentElement.dataset.theme,width:innerWidth,scroll:document.documentElement.scrollWidth,images:[...document.images].every(i=>i.complete&&i.naturalWidth>0),mode:document.querySelector('.living-network').dataset.mode,canvas:!!document.querySelector('canvas'),headline:getComputedStyle(document.querySelector('h1')).fontFamily,bodyFont:getComputedStyle(document.body).fontFamily,links:[...document.querySelectorAll('a[href^=\"#\"]')].every(a=>!!document.querySelector(a.getAttribute('href'))),vitals:window.__webVitals}))()");
+      const state=await evaluate("(()=>({theme:document.documentElement.dataset.theme,width:innerWidth,scroll:document.documentElement.scrollWidth,images:[...document.images].filter(i=>getComputedStyle(i).display!=='none'&&(i.loading!=='lazy'||i.getBoundingClientRect().top<innerHeight&&i.getBoundingClientRect().bottom>0)).every(i=>i.complete&&i.naturalWidth>0),mode:document.querySelector('.living-network').dataset.mode,canvas:!!document.querySelector('canvas'),headline:getComputedStyle(document.querySelector('h1')).fontFamily,bodyFont:getComputedStyle(document.body).fontFamily,links:[...document.querySelectorAll('a[href^=\"#\"]')].every(a=>!!document.querySelector(a.getAttribute('href'))),vitals:window.__webVitals}))()");
       assert.equal(state.theme,theme);assert(state.scroll<=state.width,'No horizontal overflow at '+width);assert(state.images);assert(state.links);
       if(width<=900)assert.equal(state.canvas,false,'No canvas loaded for mobile/tablet');
       report.push(state);

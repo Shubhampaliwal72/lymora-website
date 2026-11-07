@@ -1,0 +1,2 @@
+import Image from "next/image";
+export function ThemeScreenshot({view,alt,sizes="(max-width: 900px) 92vw, 1100px"}:{view:"chats"|"groups"|"files"|"network";alt:string;sizes?:string}) {return <div className="theme-screenshot"><Image className="theme-image-dark" src={"/media/product/"+view+"-dark.png"} width={1800} height={1020} alt={alt} sizes={sizes}/><Image className="theme-image-light" src={"/media/product/"+view+"-light.png"} width={1800} height={1020} alt={alt} sizes={sizes}/></div>;}

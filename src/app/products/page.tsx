@@ -1,0 +1,8 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { PageIntro } from "@/components/site/PageIntro";
+import { ThemeScreenshot } from "@/components/site/ThemeScreenshot";
+import { Icon } from "@/components/site/Icons";
+import { products } from "@/lib/products";
+export const metadata: Metadata={title:"Products",description:"Explore real Lymora products, starting with LAN Messenger for nearby Windows PCs."};
+export default function Products(){return <main id="main" tabIndex={-1} className="container editorial-page"><PageIntro eyebrow="Products" title={<>Useful by design.<br/><em>Connected by Lymora.</em></>} description="One home for thoughtful software. Meet our first product, built for the people and computers around you."/>{products.map((product,index)=><article key={product.path} className="catalog-product glass-panel"><div><p className="eyebrow">0{index+1} / {product.platform}</p><h2>{product.brandName}</h2><p>{product.summary}</p><div className="inline-actions"><Link className="button button-primary" href={product.path}>Explore the product<Icon name="arrow"/></Link><Link className="text-link" href={product.docs}>Read the guide</Link></div></div><Link href={product.path} aria-label={"Explore "+product.brandName}><ThemeScreenshot view="chats" alt="Actual Lymora chat with fictional demo messages" sizes="(max-width: 900px) 90vw, 720px"/></Link></article>)}<div className="editorial-note"><span className="eyebrow">Room for what comes next</span><p>Lymora is designed to grow. New products will appear here when there is something real to share.</p></div></main>;}

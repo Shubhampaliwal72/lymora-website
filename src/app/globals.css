@@ -1,8 +1,9 @@
 @import "tailwindcss";
 @import "../styles/tokens.css";
+@import "../styles/glass.css";
 @theme inline { --color-background: var(--canvas); --color-foreground: var(--text-primary); --font-sans: var(--font-body); --font-heading: var(--font-display); }
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; scroll-padding-top: 32px; }
+html { scroll-behavior: smooth; scroll-padding-top: 120px; }
 body { margin: 0; background: var(--canvas); color: var(--text-primary); font-family: var(--font-body), Arial, sans-serif; -webkit-font-smoothing: antialiased; }
 button, a, summary { -webkit-tap-highlight-color: transparent; }
 button, summary { font: inherit; cursor: pointer; }

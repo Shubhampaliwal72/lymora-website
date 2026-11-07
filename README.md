@@ -3,7 +3,16 @@
 Independent workspace: `D:\my-projects\lymora`.
 The desktop application at `D:\my-projects\my-new-app` is a different project
 and Git repository. Do not add website dependencies or code there.
-Living Network Stages 1 and 2 are implemented: a lazy React Three Fiber hero, selectable direct connections, finite message/file sequences, and matching 2.5D fallbacks. See docs/LIVING_NETWORK_STAGE2.md for the current implementation and docs/LIVING_NETWORK_ASSET_AUDIT.md for original asset provenance. Stage 1 is preserved in commit 72a93bf. HERO_IMPLEMENTATION.md records the previous design.
+The current UI is the Glass Network foundation: a multi-product brand homepage,
+floating glass navigation, shared continuous network wallpaper, real screenshot
+exploration, and dedicated product/documentation/download/about/privacy pages.
+It reuses the committed Living Network Stage 1/2 scene and sanitized original
+assets. See design/glass-network/FOUNDATION.md for the architecture, source
+accuracy and motion ownership. Open design/glass-network/review.html for a local
+manual desktop/tablet/mobile review while npm run dev is running.
+
+The owner requested code checks only for this pass; new browser/visual acceptance
+is intentionally left to them. Earlier checkpoint reports remain historical.
 
 ## Local development
 
@@ -22,6 +31,7 @@ port from the desktop frontend. Stop it with Ctrl+C.
 npm run lint
 npm run typecheck
 npm run build
+node scripts/verify-static-links.mjs
 npm ls --depth=0
 npm audit --omit=dev
 ```
@@ -53,7 +63,10 @@ Installed exact dependencies:
 - `@gsap/react@2.1.2`: scoped React setup and cleanup.
 - `motion@14.10.1`: component interactions, imported from `motion/react`.
 
-GSAP owns hero text and a finite six-second progress clock. R3F derives camera, device and signal geometry from that clock. Motion owns only independent DOM controls and the mobile navigation panel. Three.js is lazy-loaded on capable fine-pointer desktops; mobile/reduced-motion/low-power modes use the 2.5D fallback. Never let them control the same
+GSAP owns hero text, a finite six-second product-preview clock, and the separate
+continuous SVG wallpaper clock. ScrollTrigger controls a different wallpaper
+wrapper during scroll. A visible Pause ambience control pauses the background;
+mobile/reduced-motion/low-power views use static wallpaper. R3F derives camera, device and signal geometry from that clock. Motion owns only independent DOM controls and the mobile navigation panel. Three.js is lazy-loaded on capable fine-pointer desktops; mobile/reduced-motion/low-power modes use the 2.5D fallback. Never let them control the same
 property on one element. Use small client components, visible static content,
 reduced-motion support, and scoped cleanup.
 
@@ -107,3 +120,16 @@ The test URL must use 127.0.0.1. Final production and development checks passed;
 ## Living Network Stage 1
 
 The current local preview is http://127.0.0.1:3100. It is a stage checkpoint: full interactive connection controls, scroll storytelling and the final product gallery remain later stages. The hero uses original renderer-demo captures labelled as test data. Clean release screenshots and a verified public installer URL are required before publication. See [Stage 1 verification](docs/LIVING_NETWORK_STAGE1.md).
+
+## Glass Network pages
+
+The product registry is in src/lib/products.ts. Add only real products; each
+application can have its own overview, documentation, screenshots, release notes
+and download destination. Current routes are listed in design/glass-network/FOUNDATION.md.
+Original screenshot pixels and provenance are preserved. Public downloads remain
+pending verified release metadata. The website is still noindex and local-only.
+
+After a static build, node scripts/verify-static-links.mjs checks local navigation,
+anchors and asset references without a browser or network requests. The older
+verify:browser command remains available for later visual regression work; it
+is not run automatically during this code-only foundation pass.

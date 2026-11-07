@@ -1,0 +1,2 @@
+import Link from "next/link";
+export default function NotFound(){return <main id="main" tabIndex={-1} className="container editorial-page"><div className="page-intro"><p className="eyebrow">404 / Connection not found</p><h1>A little<br/><em>off the path.</em></h1><p className="page-lead">This page does not exist. Find your way back to Lymora or explore the product directory.</p><div className="inline-actions"><Link href="/" className="button button-primary">Back to Lymora</Link><Link href="/products/" className="text-link">Explore products &rarr;</Link></div></div></main>;}
