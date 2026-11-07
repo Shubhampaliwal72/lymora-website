@@ -71,10 +71,49 @@ Local actual browser captures, not generated/retouched product mockups:
 
 - design/glass-network/captures/Lymora-Homepage-dark-Full.png (1440 x 6572)
 - design/glass-network/captures/Lymora-Homepage-light-Full.png (1440 x 6572)
-- design/glass-network/captures/Lymora-Homepage-mobile-Full.png (375 x 6694)
+- design/glass-network/captures/Lymora-Homepage-mobile-Full.png (375 x 6716)
 
 Hero-only images and sectional review captures are also saved. The PNG folder
 and .verification outputs are ignored by Git and never added to public/.
 Full-page PNGs freeze one instant of an animated page. Fixed wallpaper/header
 appear in their browser-captured position, not repeated down the image. Open the
 local site to assess moving light and scroll timing. No third-party upload occurs.
+
+## PC-to-PC refinement
+
+The follow-up request replaces the simultaneous decorative trails with one
+randomly selected direct connection at a time. All six background computers can
+send to each other. Each 4.8-second cycle traces a short bright packet between
+monitor bezels; only the receiving computer glows on arrival. The 30 Hz cap,
+visibility pause, user pause and static capability fallbacks remain.
+
+The hero now supports all six directions among its three PCs. Auto routing picks
+a different sender/receiver pair after each completed six-second demonstration.
+Manual selection switches to a chosen route; Pause and Replay remain available.
+Automatic status changes are not repeatedly announced to screen readers. The
+receiving 3D monitor bezel and lightweight fallback pulse on actual arrival,
+without extra postprocessing dependencies.
+
+The camera is pulled back and the scene is paint-contained above a separately
+stacked control panel. The header uses fully rounded ends at every viewport.
+PageRevealMotion adds GSAP SplitText word entrances, paragraph reveals and
+screenshot-content reveals across routes. It uses the already installed GSAP
+plugin, preserves accessible heading labels, reverts original markup on reduced
+motion/unmount and never competes with the homepage outer-wrapper transforms.
+No dependency was added.
+
+Extended browser coverage checks arrival glow, randomized hero route changes,
+scene/control separation, rounded header geometry, word reveals, non-homepage
+navigation and reduced-motion cleanup. The first production browser run caught
+a null path access while GSAP reverted during navigation; callbacks now check
+mounted DOM references before drawing. The corrected build is verified again.
+
+A detached website Next dev process was identified by its command line and
+stopped together with its website-only workers. TCP probing confirms port 3100
+is closed. Browser tests use an ephemeral loopback port and stop their own
+server. Run npm run dev from D:/my-projects/lymora for a fresh development session.
+
+Final refinement verification: lint, production TypeScript/static build, all 595
+local references and the extended Edge browser checks pass. No console/runtime
+errors, missing assets or external requests were observed. Desktop Git status
+remains clean. Captures were refreshed from the corrected build.

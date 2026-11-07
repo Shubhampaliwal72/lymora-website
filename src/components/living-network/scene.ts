@@ -1,7 +1,7 @@
 import type { MutableRefObject } from "react";
 
 // No Three.js imports here: the lightweight view shares the same finite story.
-export type Endpoint = "studio" | "team";
+export type Endpoint = "you" | "studio" | "team";
 export type Transfer = "message" | "file";
 export type Point = [number, number, number];
 export type SceneClock = { progress: number };
@@ -9,6 +9,7 @@ export type ScenePointer = { x: number; y: number };
 export type NetworkCanvasProps = {
   theme: "dark" | "light";
   endpoint: Endpoint;
+  source: Endpoint;
   transfer: Transfer;
   clock: MutableRefObject<SceneClock>;
   pointer: MutableRefObject<ScenePointer>;
@@ -18,21 +19,40 @@ export type NetworkCanvasProps = {
   onUnavailable: () => void;
 };
 export const INTRO_DURATION = 6;
-export const endpoints = [{id: "studio", name: "Studio PC"}, {id: "team", name: "Team PC"}] as const;
+export const endpoints = [{id: "you", name: "Your PC"}, {id: "studio", name: "Studio PC"}, {id: "team", name: "Team PC"}] as const;
 export const devices: {id: Endpoint | "you"; position: Point; rotation: Point; scale: number; app: boolean}[] = [
   {id: "studio", position: [.58, 1.27, -.9], rotation: [-.035, -.22, -.1], scale: .83, app: false},
   {id: "team", position: [2.4, -.58, -.35], rotation: [.015, -.35, .1], scale: .64, app: false},
   {id: "you", position: [-1.05, -.75, 1.05], rotation: [.015, .12, -.035], scale: 1.03, app: true},
 ];
-// Routes attach beside the cases, keeping signals clear of the real app image.
-export const routes: Record<Endpoint, [Point, Point, Point, Point]> = {
-  studio: [[-2.64, -.9, .9], [-3.2, 2.5, -1.7], [-1.1, 2.7, -1.5], [-.72, 1.35, -.85]],
-  team: [[.56, -1.45, 1], [1.8, -2.65, .5], [3.65, -2.1, -.7], [3.43, -.6, -.3]],
-};
-export const fallbackRoutes: Record<Endpoint, [Point, Point, Point, Point]> = {
-  studio: [[365, 465, 0], [140, 175, 0], [340, 70, 0], [490, 210, 0]],
-  team: [[570, 560, 0], [730, 780, 0], [1030, 660, 0], [960, 465, 0]],
-};
+// Edge ports sit on each monitor bezel; reversing a path preserves its endpoints.
+export const connections: [Endpoint, Endpoint][] = [["you","studio"],["you","team"],["studio","team"]];
+function port(id: Endpoint, other: Endpoint): Point {
+  const device=devices.find(item=>item.id===id)!;
+  const target=devices.find(item=>item.id===other)!;
+  const side=target.position[0]>device.position[0]?1:-1;
+  let x=side*1.68*device.scale, y=-.52*device.scale, z=.08*device.scale;
+  const [rx,ry,rz]=device.rotation;
+  [x,y]=[x*Math.cos(rz)-y*Math.sin(rz),x*Math.sin(rz)+y*Math.cos(rz)];
+  [x,z]=[x*Math.cos(ry)+z*Math.sin(ry),-x*Math.sin(ry)+z*Math.cos(ry)];
+  [y,z]=[y*Math.cos(rx)-z*Math.sin(rx),y*Math.sin(rx)+z*Math.cos(rx)];
+  return [x+device.position[0],y+device.position[1],z+device.position[2]];
+}
+export function routeBetween(source: Endpoint, target: Endpoint, fallback=false): [Point,Point,Point,Point] {
+  if(fallback){
+    const ports:Record<Endpoint,Point>={you:[570,465,0],studio:[490,210,0],team:[790,465,0]};
+    const a=ports[source],b=ports[target];
+    return [a,[a[0],a[1]-130,0],[b[0],b[1]-130,0],b];
+  }
+  const a=port(source,target),b=port(target,source);
+  const lift=source==="you"||target==="you"?-.6:.55;
+  return [a,[a[0]+(b[0]-a[0])*.28,a[1]+lift,a[2]-.3],[a[0]+(b[0]-a[0])*.72,b[1]+lift,b[2]-.3],b];
+}
+export function nextPair(previous: [Endpoint,Endpoint]): [Endpoint,Endpoint] {
+  const choices=connections.flatMap(([a,b]):[Endpoint,Endpoint][]=>[[a,b],[b,a]]).filter(([a,b])=>a!==previous[0]||b!==previous[1]);
+  return choices[Math.floor(Math.random()*choices.length)];
+}
+export function arrivalPulse(progress:number){return Math.sin(Math.PI*clamp((progress-.75)/.23));}
 export const clamp = (value: number) => Math.max(0, Math.min(1, value));
 export const smooth = (value: number) => { const t = clamp(value); return t * t * (3 - 2 * t); };
 export function storyAt(progress: number) {

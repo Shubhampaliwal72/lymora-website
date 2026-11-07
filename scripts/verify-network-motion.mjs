@@ -110,16 +110,27 @@ try {
   const bounds=async selector=>evaluate('(()=>{const r=document.querySelector('+JSON.stringify(selector)+').getBoundingClientRect();return{top:r.top+scrollY,height:r.height}})()');
   const transform=selector=>evaluate('getComputedStyle(document.querySelector('+JSON.stringify(selector)+')).transform');
   await viewport(1440,1000);await media('dark');await load();await waitFor("document.querySelector('.living-network').dataset.mode==='3d'",'Desktop scene loads');
-  const offset=()=>evaluate("document.querySelector('.ambient-streaks path').getAttribute('stroke-dashoffset')");
+  const offset=()=>evaluate("JSON.stringify([...document.querySelectorAll('.ambient-streaks path')].map(path=>path.getAttribute('stroke-dashoffset')))");
   const before=await offset();await pause(450);assert.notEqual(await offset(),before,'Orange light moves without scrolling');
   const colour=await evaluate("getComputedStyle(document.querySelector('.ambient-routes path')).stroke");assert.match(colour,/rgb/);const rgb=colour.match(/\d+/g).map(Number);assert(rgb[0]>rgb[1]&&rgb[1]>rgb[2],'Wire colour is orange');
   await evaluate("document.querySelector('.ambience-control').click()");await pause(250);const held=await offset();await pause(450);assert.equal(await offset(),held,'Pause ambience freezes the light');await evaluate("document.querySelector('.ambience-control').click()");
   checks.push('orange wires and independently moving light trails','pause/resume ambience');
+  await waitFor("[...document.querySelectorAll('.ambient-computers > g')].some(pc=>Number(pc.style.getPropertyValue('--arrival'))>.1)",'Packet reaches and lights a computer');
+  assert(await evaluate("[...document.querySelectorAll('.ambient-computers > g')].some(pc=>Number(pc.style.getPropertyValue('--arrival'))>.05)"),'Receiving computer glows');
+  const initialPair=await evaluate("document.querySelector('.living-network').dataset.source+'-'+document.querySelector('.living-network').dataset.endpoint");
+  await waitFor("document.querySelector('.living-network').dataset.source+'-'+document.querySelector('.living-network').dataset.endpoint!=="+JSON.stringify(initialPair),'Automatic route changes after delivery');
+  assert(await evaluate("(()=>{const world=document.querySelector('.network-world'),controls=document.querySelector('.network-interaction'),a=world.getBoundingClientRect(),b=controls.getBoundingClientRect();return getComputedStyle(world).overflow==='hidden'&&a.bottom<=b.top})()"),'3D scene is contained above controls');
+  assert(await evaluate("parseFloat(getComputedStyle(document.querySelector('.header-inner')).borderTopLeftRadius)>100"),'Header has fully rounded ends');
+  checks.push('arrival glow and automatic PC-to-PC route changes','contained scene and fully rounded header');
+
   const firstHorizontal=await transform('.ecosystem-copy'),eco=await bounds('.ecosystem-copy');await go(eco.top-280);assert.notEqual(await transform('.ecosystem-copy'),firstHorizontal,'Horizontal reveal responds to scroll');
   const banner=await bounds('.network-ribbon');await go(banner.top-900);const ribbonStart=await transform('[data-scroll-ribbon]');await go(banner.top-50);assert.notEqual(await transform('[data-scroll-ribbon]'),ribbonStart,'Horizontal ribbon responds to scroll');
-  checks.push('horizontal content reveal responds to scroll','horizontal ribbon follows vertical scroll');
+  assert(await evaluate("document.querySelectorAll('.reveal-word').length>10"),'Headings have word reveal animation');
+  checks.push('horizontal content reveal responds to scroll','horizontal ribbon follows vertical scroll','word-by-word scroll reveals');
   for(const theme of ['dark','light']){
     await media(theme);await load();await waitFor("document.querySelector('.living-network').dataset.mode==='3d'",'Desktop 3D ready');
+    await waitFor("document.querySelector('.living-network').dataset.phase==='3'",'Capture arrival state');
+    await evaluate("document.querySelector('[aria-label=\"Pause network preview\"]').click()");
     const height=await evaluate('document.documentElement.scrollHeight');
     for(let top=0;top<height;top+=750){await evaluate('window.scrollTo({top:'+top+',behavior:"instant"})');await pause(160);}
     await pause(1200);await go(0);
@@ -139,9 +150,13 @@ try {
   const mobileMetrics=await cdp('Page.getLayoutMetrics'),mobileClip={x:0,y:0,width:mobileMetrics.cssContentSize.width,height:mobileMetrics.cssContentSize.height,scale:1};const mobileShot=await cdp('Page.captureScreenshot',{format:'png',captureBeyondViewport:true,clip:mobileClip});await fs.writeFile(path.join(exportDir,'Lymora-Homepage-mobile-Full.png'),Buffer.from(mobileShot.data,'base64'));report.push({theme:'dark/mobile',width:mobileClip.width,height:mobileClip.height,file:'design/glass-network/captures/Lymora-Homepage-mobile-Full.png'});
   await viewport(1440,1000);await media('dark',true);await load();assert.equal(await evaluate("!!document.querySelector('canvas')"),false,'Reduced motion has no WebGL');assert.equal(await evaluate("getComputedStyle(document.querySelector('.ambient-streaks')).display"),'none');assert.equal(await transform('.ecosystem-copy'),'none');
   checks.push('reduced motion removes ambient trails and scroll transforms');
+  await media("dark",false);
   await evaluate(`document.querySelector('a[href="/about/"]').click()`);
   await waitFor('location.pathname==="/about/" && document.querySelector("h1")?.textContent.includes("Good technology")','Static-export client navigation works');
-  checks.push('client navigation resolves static-export segment data');
+  assert(await evaluate("document.querySelectorAll('.reveal-word').length>0"),'Other pages receive text reveals');
+  await media('dark',true);await pause(300);
+  assert.equal(await evaluate("document.querySelectorAll('.reveal-word').length"),0,'Reduced-motion change restores original heading markup');
+  checks.push('client navigation resolves static-export segment data','other-page and reduced-motion reveal cleanup');
   assert.deepEqual(errors,[],'No console/runtime/hydration errors');assert.deepEqual(missing,[],'No missing assets');assert.deepEqual(external,[],'No external requests');
   const result={passed:true,browser:version.Browser,checks,exports:report,scope:'Actual static-export browser capture; software WebGL, not a hardware FPS benchmark.'};await fs.writeFile(path.join(output,'network-motion-results.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result,null,2));await send('Target.closeTarget',{targetId:target.targetId});await send('Browser.close');
 } finally {

@@ -2,9 +2,9 @@
 
 import { Suspense, useEffect, useMemo, useRef } from "react";
 import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
-import { BufferGeometry, CubicBezierCurve3, Float32BufferAttribute, Group, Mesh, MeshBasicMaterial, SRGBColorSpace, TextureLoader, TubeGeometry, Vector3 } from "three";
+import { BufferGeometry, CubicBezierCurve3, Float32BufferAttribute, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, SRGBColorSpace, TextureLoader, TubeGeometry, Vector3 } from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
-import { devices, endpoints, routes, sceneMaterials, smooth, storyAt, type Endpoint, type NetworkCanvasProps } from "./scene";
+import { devices, connections, routeBetween, arrivalPulse, sceneMaterials, smooth, storyAt, type Endpoint, type NetworkCanvasProps } from "./scene";
 
 function Computers({ theme, endpoint, clock, onSelect }: Pick<NetworkCanvasProps, "theme" | "endpoint" | "clock" | "onSelect">) {
   const {gl} = useThree();
@@ -18,6 +18,7 @@ function Computers({ theme, endpoint, clock, onSelect }: Pick<NetworkCanvasProps
   }), []);
   const groups = useRef<(Group | null)[]>([]);
   const indicators = useRef<(Mesh | null)[]>([]);
+  const bezels = useRef<(MeshStandardMaterial | null)[]>([]);
   useEffect(() => () => { textures.forEach(texture => texture.dispose()); }, [textures]);
   useEffect(() => () => { Object.values(geometry).forEach(shape => shape.dispose()); gl.domElement.style.cursor = ""; }, [geometry, gl]);
   const dark = theme === "dark", materials = sceneMaterials[theme];
@@ -25,15 +26,17 @@ function Computers({ theme, endpoint, clock, onSelect }: Pick<NetworkCanvasProps
     const story = storyAt(clock.current.progress);
     devices.forEach((device, index) => {
       const group = groups.current[index], indicator = indicators.current[index];
-      if(group) {group.position.y = device.position[1] + (device.id === endpoint ? .07 * smooth(story.connect) : 0); const size = device.scale * (device.id === "you" ? 1 : .97 + .03 * story.discover); group.scale.setScalar(size);}
-      if(indicator) indicator.scale.setScalar(device.id === "you" ? 1 : .3 + .7 * story.discover);
+      if(group) {group.position.y = device.position[1]; const size = device.scale * (device.id === "you" ? 1 : .97 + .03 * story.discover); group.scale.setScalar(size);}
+      const pulse=device.id===endpoint?arrivalPulse(clock.current.progress):0;
+      if(bezels.current[index]) bezels.current[index]!.emissiveIntensity=pulse*.9;
+      if(indicator) indicator.scale.setScalar(1+pulse*3);
     });
   });
   return <>{devices.map((device, index) => <group key={device.id} ref={value => {groups.current[index] = value;}} position={device.position} rotation={device.rotation} scale={device.scale}
     onClick={event => {if(device.id !== "you") {event.stopPropagation(); onSelect(device.id);}}}
     onPointerOver={event => {if(device.id !== "you") {event.stopPropagation(); gl.domElement.style.cursor = "pointer";}}}
     onPointerOut={() => {gl.domElement.style.cursor = "";}}>
-    <mesh geometry={geometry.case}><meshStandardMaterial color={materials.bezel} metalness={dark ? .55 : .2} roughness={.38} /></mesh>
+    <mesh geometry={geometry.case}><meshStandardMaterial ref={value=>{bezels.current[index]=value;}} emissive={materials.accent} emissiveIntensity={0} color={materials.bezel} metalness={dark ? .55 : .2} roughness={.38} /></mesh>
     <mesh geometry={geometry.screen} position={[0, 0, .086]}><meshBasicMaterial color={materials.screen} toneMapped={false} /></mesh>
     {device.app ? <mesh position={[0, 0, .105]}><planeGeometry args={[3.14, 3.14 * 1020 / 1800]} /><meshBasicMaterial map={textures[0]} toneMapped={false} /></mesh> : <mesh position={[0, 0, .105]}><planeGeometry args={[1.02, 1.02]} /><meshBasicMaterial map={textures[1]} transparent toneMapped={false} /></mesh>}
     <mesh geometry={geometry.neck} position={[0, -1.35, -.03]} rotation={[-.12, 0, 0]}><meshStandardMaterial color={materials.neck} metalness={.5} roughness={.5} /></mesh>
@@ -41,25 +44,21 @@ function Computers({ theme, endpoint, clock, onSelect }: Pick<NetworkCanvasProps
     <mesh ref={value => {indicators.current[index] = value;}} position={[1.47, -.99, .108]}><sphereGeometry args={[.015, 8, 8]} /><meshBasicMaterial color={materials.status} toneMapped={false} /></mesh>
   </group>)}</>;
 }
-function Connection({id, ...props}: NetworkCanvasProps & {id: Endpoint}) {
-  const geometry = useMemo(() => new TubeGeometry(new CubicBezierCurve3(...routes[id].map(point => new Vector3(...point)) as [Vector3, Vector3, Vector3, Vector3]), 64, .009, 5, false), [id]);
-  const material = useRef<MeshBasicMaterial>(null);
-  useEffect(() => () => geometry.dispose(), [geometry]);
-  useFrame(() => {
-    const active = props.endpoint === id, connect = storyAt(props.clock.current.progress).connect;
-    // Complete rings only, so partial tube segments never form broken triangles.
-    geometry.setDrawRange(0, active ? Math.floor(connect * 64) * 5 * 6 : geometry.index!.count);
-    if(material.current) material.current.opacity = active ? .72 : .09;
-  });
-  return <mesh geometry={geometry}><meshBasicMaterial ref={material} color={sceneMaterials[props.theme].accent} transparent opacity={0} toneMapped={false} depthWrite={false}/></mesh>;
+function Connection({pair, ...props}: NetworkCanvasProps & {pair: [Endpoint,Endpoint]}) {
+  const [a,b]=pair;
+  const geometry=useMemo(()=>new TubeGeometry(new CubicBezierCurve3(...routeBetween(a,b).map(point=>new Vector3(...point)) as [Vector3,Vector3,Vector3,Vector3]),64,.009,5,false),[a,b]);
+  const material=useRef<MeshBasicMaterial>(null);
+  useEffect(()=>()=>geometry.dispose(),[geometry]);
+  useFrame(()=>{if(material.current)material.current.opacity=((props.source===a&&props.endpoint===b)||(props.source===b&&props.endpoint===a)) ? .7 : .12;});
+  return <mesh geometry={geometry}><meshBasicMaterial ref={material} color={sceneMaterials[props.theme].accent} transparent opacity={.12} toneMapped={false} depthWrite={false}/></mesh>;
 }
 function World(props: NetworkCanvasProps) {
-  const { theme, endpoint, transfer, clock, pointer, invalidateRef, onReady, onUnavailable } = props;
+  const { theme, endpoint, source, transfer, clock, pointer, invalidateRef, onReady, onUnavailable } = props;
   const { invalidate, gl } = useThree();
   const materials = sceneMaterials[theme];
   const rig = useRef<Group>(null), packet = useRef<Group>(null), receipt = useRef<Mesh>(null), sweep = useRef<Mesh>(null), sweepMaterial = useRef<MeshBasicMaterial>(null);
   const started = useRef<string | null>(null);
-  const route = useMemo(() => new CubicBezierCurve3(...routes[endpoint].map(point => new Vector3(...point)) as [Vector3, Vector3, Vector3, Vector3]), [endpoint]);
+  const route = useMemo(() => new CubicBezierCurve3(...routeBetween(source,endpoint).map(point => new Vector3(...point)) as [Vector3, Vector3, Vector3, Vector3]), [source,endpoint]);
   const position = useMemo(() => new Vector3(), []);
   const packetGeometry = useMemo(() => new RoundedBoxGeometry(transfer === "message" ? .19 : .14, transfer === "message" ? .13 : .21, .025, 1, .018), [transfer]);
   const markings = useMemo(() => {
@@ -83,8 +82,9 @@ function World(props: NetworkCanvasProps) {
       rig.current.rotation.y += (y - rig.current.rotation.y) * .12;
       if (Math.abs(rig.current.rotation.x - x) + Math.abs(rig.current.rotation.y - y) > .0002) invalidate();
     }
-    camera.position.z = 9.8 - .28 * smooth(story.connect);
-    camera.position.x = .25 + (endpoint === "studio" ? -.08 : .12) * smooth(story.connect);
+    camera.position.z = 11.6 - .16 * smooth(story.connect);
+    camera.position.y = .35;
+    camera.position.x = .35;
     if (packet.current) {route.getPoint(story.travel, position); packet.current.position.copy(position); packet.current.quaternion.copy(camera.quaternion); packet.current.visible = story.packet;}
     if (receipt.current) {route.getPoint(1 - story.receipt, position); receipt.current.position.copy(position); receipt.current.visible = story.returning;}
     if (sweep.current && sweepMaterial.current) {sweep.current.visible = progress < .18; sweep.current.scale.setScalar(.2 + 2.8 * story.discover); sweepMaterial.current.opacity = .18 * Math.sin(Math.PI * story.discover);}
@@ -95,14 +95,14 @@ function World(props: NetworkCanvasProps) {
     <group ref={rig}>
       <mesh ref={sweep} position={[-1.05, -.75, -.8]}><ringGeometry args={[.98, 1, 64]}/><meshBasicMaterial ref={sweepMaterial} color={materials.accent} transparent opacity={0} depthWrite={false} toneMapped={false}/></mesh>
       <Computers theme={theme} endpoint={endpoint} clock={clock} onSelect={props.onSelect}/>
-      {endpoints.map(peer => <Connection key={peer.id} id={peer.id} {...props}/>)}
+      {connections.map(pair => <Connection key={pair.join("-")} pair={pair} {...props}/>)}
       <group ref={packet} visible={false}><mesh geometry={packetGeometry}><meshBasicMaterial color={materials.signal} toneMapped={false}/></mesh><lineSegments geometry={markings}><lineBasicMaterial color={materials.screen} toneMapped={false}/></lineSegments></group>
       <mesh ref={receipt} visible={false}><sphereGeometry args={[.026, 8, 8]} /><meshBasicMaterial color={materials.status} toneMapped={false} /></mesh>
     </group>
   </>;
 }
 export default function NetworkCanvas(props: NetworkCanvasProps) {
-  return <Canvas className="network-canvas" frameloop="demand" dpr={[1, 1.5]} camera={{position: [.25, .05, 9.8], fov: 35.5}} gl={{alpha: true, antialias: true, powerPreference: "low-power"}} fallback={null} aria-hidden="true">
+  return <Canvas className="network-canvas" frameloop="demand" dpr={[1, 1.5]} camera={{position: [.35, .35, 11.6], fov: 35.5}} gl={{alpha: true, antialias: true, powerPreference: "low-power"}} fallback={null} aria-hidden="true">
     <Suspense fallback={null}><World {...props} /></Suspense>
   </Canvas>;
 }
