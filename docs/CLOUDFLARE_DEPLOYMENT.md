@@ -14,6 +14,35 @@ Run from D:\my-projects\lymora:
 
 Upload the CONTENTS of out/ to your static hosting provider. For Cloudflare Pages, choose a static upload or configure npm run build with output directory out. Keep the existing postbuild step; it normalizes Windows-exported navigation filenames. No next start, backend, runtime token or database is required. Run npm ci only when dependencies need installation.
 
+## Cloudflare Pages Git settings
+
+Use **Workers & Pages > Create application > Pages > Import an existing Git repository**. Choose `Shubhampaliwal72/lymora-website`. The Pages option may appear under a separate "Get started" link in the application creation screen.
+
+| Setting | Value |
+| --- | --- |
+| Product | Cloudflare Pages |
+| Framework preset | Next.js (Static HTML Export) |
+| Production branch | `main` |
+| Root directory | Repository root (leave blank) |
+| Build command | `npm run build` |
+| Build output directory | `out` |
+| Node.js | 22, selected by `.node-version` |
+| Additional environment variables | None required for the static build |
+
+Pages publishes the build output itself; there is no separate `wrangler deploy` command. Keep `LYMORA_PUBLIC_LAUNCH` unset until public indexing is approved. Review the deployment before starting it; this guide does not authorize a deployment or domain change.
+
+## Troubleshooting: build succeeds, Workers deployment fails
+
+The 7 November 2026 log shows a successful Next.js build and static page export, followed by `npx wrangler deploy`. Wrangler detected Next.js and ran an OpenNext migration inside the Cloudflare build environment. That server adapter then failed looking for `.next/standalone/.next/server/pages-manifest.json`.
+
+This project intentionally uses `output: "export"`. Its deployable website is `out/`, so a standalone server manifest is not expected. The failure is a **Workers deployment configuration mismatch**, not a TypeScript, animation, or static export error. The adapter's generated files in that CI checkout are not changes in this repository.
+
+To use the intended Pages hosting, create/select a **Pages** project with the settings above. If the screen asks for a **Deploy command** such as `npx wrangler deploy`, it is the Workers workflow. Leave the existing Worker and its DNS records unchanged while preparing the Pages project; do not start another deployment or attach the production domain until approved. A push to a connected production branch can trigger a deployment automatically.
+
+Do not change this project to `output: "standalone"`, add OpenNext, or create a fake manifest to satisfy that erroneous deployment step. Do not use `.next` as the Pages output directory. ESLint deprecation and missing build-cache warnings are separate from this failure.
+
+Official reference: [Deploy a static Next.js site on Cloudflare Pages](https://developers.cloudflare.com/pages/framework-guides/nextjs/deploy-a-static-nextjs-site/).
+
 ## Public search visibility
 
 Development builds remain noindex. When YOU are ready for a public launch, build in PowerShell with:

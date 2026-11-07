@@ -38,13 +38,19 @@ npm audit --omit=dev
 
 `build` generates `out/`. There is no `next start` command: production consists
 of static files, without a Node server. Generated output and dependencies are
-ignored by Git. No deployment or domain connection is configured.
+ignored by Git. Hosting and domain connections are configured separately in
+the hosting dashboard; this build does not deploy.
 
-## Future Cloudflare Pages configuration
+## Cloudflare Pages configuration
+
+Choose **Pages**, not the Workers deployment workflow. This static export does
+not use `npx wrangler deploy` or OpenNext. If Next.js builds successfully but a
+deploy step requests a missing standalone server manifest, follow the
+[Pages settings and troubleshooting guide](docs/CLOUDFLARE_DEPLOYMENT.md#cloudflare-pages-git-settings).
 
 - Build command: `npm run build`
 - Output directory: `out`
-- Production branch: `main`, after setup is approved and pushed
+- Production branch: `main` (deployment requires owner approval)
 - Build environment: a Node version matching package.json engines
 
 `next.config.ts` uses `output: "export"` and `trailingSlash: true`. Images use
@@ -86,10 +92,10 @@ and individual Canva asset licences before introducing promotional content.
 
 Remote: https://github.com/Shubhampaliwal72/lymora-website
 
-The separate remote was created private and empty. Website implementation is on
-local `dev`; Stage 1 is committed as 72a93bf. No website files have been pushed or
-deployed. Review subsequent stages with the owner before committing them; do not
-push, deploy or connect `lymora.in` without approval.
+The website source has been pushed to the separate repository. Stage 1 is
+committed as 72a93bf; later work is preserved in Git history. Work on `dev` and
+review changes before updating `main`. A connected Cloudflare build can deploy
+on push; do not push, deploy or connect `lymora.in` without owner approval.
 
 ## Dependency compatibility
 
