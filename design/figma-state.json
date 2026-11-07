@@ -1,0 +1,104 @@
+{
+  "fileKey": "0nOAeu9ClPbL5Zrc4iIkeX",
+  "fileUrl": "https://www.figma.com/design/0nOAeu9ClPbL5Zrc4iIkeX",
+  "sessionId": "43ca9eb0-3349-4a05-a626-4c8caca68591",
+  "phase": "Concept approved; header/hero implemented locally; later sections pending review",
+  "pageId": "0:1",
+  "foundation": {
+    "createdNodeIds": [
+      "6:46",
+      "6:47",
+      "6:48",
+      "6:49",
+      "6:50"
+    ],
+    "pageId": "0:1",
+    "assets": {
+      "logo-dark": "6:47",
+      "logo-light": "6:48",
+      "desktop-demo-dark": "6:49",
+      "desktop-demo-light": "6:50"
+    },
+    "collections": {
+      "palette": "VariableCollectionId:6:2",
+      "dark": "VariableCollectionId:6:3",
+      "light": "VariableCollectionId:6:4"
+    },
+    "variables": {
+      "dark": {
+        "canvas": "VariableID:6:6",
+        "surface": "VariableID:6:10",
+        "raised": "VariableID:6:14",
+        "text": "VariableID:6:18",
+        "muted": "VariableID:6:22",
+        "border": "VariableID:6:26",
+        "accent": "VariableID:6:30",
+        "subtle": "VariableID:6:34",
+        "button": "VariableID:6:38",
+        "button-text": "VariableID:6:40",
+        "success": "VariableID:6:43"
+      },
+      "light": {
+        "canvas": "VariableID:6:8",
+        "surface": "VariableID:6:12",
+        "raised": "VariableID:6:16",
+        "text": "VariableID:6:20",
+        "muted": "VariableID:6:24",
+        "border": "VariableID:6:28",
+        "accent": "VariableID:6:32",
+        "subtle": "VariableID:6:36",
+        "button": "VariableID:6:39",
+        "button-text": "VariableID:6:41",
+        "success": "VariableID:6:45"
+      }
+    },
+    "semanticCount": 22,
+    "primitiveCount": 19
+  },
+  "roots": {
+    "desktopDark": "8:129",
+    "mobileDark": "8:257",
+    "desktopLight": "8:368",
+    "mobileLight": "8:486"
+  },
+  "motionBoard": {
+    "id": "10:38",
+    "width": 1280,
+    "height": 709.2000122070312
+  },
+  "signals": [
+    {
+      "id": "10:67",
+      "name": "Signal · direct delivery",
+      "tracks": [
+        "OPACITY",
+        "TRANSLATION_XY"
+      ]
+    },
+    {
+      "id": "10:69",
+      "name": "Signal · receipt",
+      "tracks": [
+        "OPACITY",
+        "TRANSLATION_XY"
+      ]
+    }
+  ],
+  "scope": [
+    "Desktop dark/light, 1440px",
+    "Mobile dark/light, 390px",
+    "Native 3.2-second signal/receipt motion study",
+    "Four theme navigation links"
+  ],
+  "validation": {
+    "editableTextLayers": 246,
+    "horizontalOverflow": 0,
+    "verticalOverlaps": 0,
+    "buttonClipping": 0,
+    "fontFamilies": [
+      "Manrope",
+      "DM Sans"
+    ],
+    "motionVerification": "Tracks and timeline read back; no video rendering or browser performance audit claimed."
+  }
+}
