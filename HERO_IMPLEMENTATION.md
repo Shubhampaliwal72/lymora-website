@@ -1,5 +1,7 @@
 # Ember Signal: header and hero
 
+Historical checkpoint, superseded by the approved Living Network redesign. See [current Stage 1 implementation](docs/LIVING_NETWORK_STAGE1.md). The file list and measurements below describe the earlier version.
+
 Implemented in the independent website workspace, D:\my-projects\lymora.
 The desktop application, its dependencies, and its repository were not changed.
 No commit, push, deployment, domain connection or public release was made.

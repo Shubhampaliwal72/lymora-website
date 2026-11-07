@@ -5,7 +5,7 @@ import "./globals.css";
 const manrope = localFont({src: "../assets/fonts/manrope-latin.woff2", variable: "--font-display", display: "swap", weight: "400 600", fallback: ["Arial"]});
 const dmSans = localFont({src: "../assets/fonts/dm-sans-latin.woff2", variable: "--font-body", display: "swap", weight: "400 600", fallback: ["Arial"]});
 export const metadata: Metadata = {
-  title: "Lymora — Close by. Connected.",
+  title: "Lymora — Nearby. Connected.",
   description: "Messages, groups and files for the people on your local network. Lymora is a Windows LAN messenger that works without internet.",
   robots: {index: false, follow: false},
 };

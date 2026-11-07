@@ -1,0 +1,14 @@
+[
+  {
+    "file": "public/media/living-network/chat-demo-dark.png",
+    "source": "D:/my-projects/my-new-app/.codex-backup/frontend-smoke/compact-messages-dark.png",
+    "sha256": "878f32af8abeb1fa9f60ffa195037b119bda3cde7510ee08a88509199f0b591d",
+    "status": "Actual unmodified renderer test capture. Local stage preview only. Clean current release capture required before publication."
+  },
+  {
+    "file": "public/media/living-network/chat-demo-light.png",
+    "source": "D:/my-projects/my-new-app/.codex-backup/frontend-smoke/compact-messages-light.png",
+    "sha256": "f83477f9b9442c1d6439909d824edefd8c4f93162a92c334c56aea5f184f9e93",
+    "status": "Actual unmodified renderer test capture. Local stage preview only. Clean current release capture required before publication."
+  }
+]

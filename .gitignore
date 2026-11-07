@@ -42,3 +42,8 @@ next-env.d.ts
 
 # Local browser verification output
 /.verification/
+
+# Reproducible local concept renders (keep generator and approved plan)
+/design/living-network/*.svg
+/design/living-network/previews/
+/design/living-network/REVIEW_CHECKS.json

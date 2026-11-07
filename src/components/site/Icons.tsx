@@ -1,6 +1,8 @@
 import type { SVGProps } from "react";
-type IconName = "sun" | "moon" | "menu" | "close" | "arrow" | "down" | "replay" | "windows";
+type IconName = "sun" | "moon" | "menu" | "close" | "arrow" | "down" | "replay" | "windows" | "pause" | "play";
 const paths: Record<IconName, React.ReactNode> = {
+  pause: <path d="M9 5v14M15 5v14"/>,
+  play: <path d="m8 5 11 7-11 7Z"/>,
   sun: <><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></>,
   moon: <path d="M20.5 13A8.5 8.5 0 0 1 11 3.5 8.5 8.5 0 1 0 20.5 13Z"/>,
   menu: <path d="M4 7h16M4 12h16M4 17h16"/>,

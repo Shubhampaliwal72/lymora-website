@@ -3,7 +3,7 @@
 Independent workspace: `D:\my-projects\lymora`.
 The desktop application at `D:\my-projects\my-new-app` is a different project
 and Git repository. Do not add website dependencies or code there.
-The approved Ember Signal header and hero are implemented. See HERO_IMPLEMENTATION.md for code ownership, checks, and the next design phase.
+Living Network Stage 1 is implemented: a lazy React Three Fiber hero, cinematic Ember layout, and matching 2.5D fallbacks. See docs/LIVING_NETWORK_STAGE1.md for the current files and verification. HERO_IMPLEMENTATION.md records the previous design.
 
 ## Local development
 
@@ -53,13 +53,11 @@ Installed exact dependencies:
 - `@gsap/react@2.1.2`: scoped React setup and cleanup.
 - `motion@14.10.1`: component interactions, imported from `motion/react`.
 
-GSAP owns the short hero entrance and finite LAN signal/receipt timeline.
-Motion owns the mobile navigation panel on separate nodes. Never let them control the same
+GSAP owns hero text and a finite 4.5-second progress clock. R3F derives camera, device and signal geometry from that clock. Motion owns only independent DOM controls and the mobile navigation panel. Three.js is lazy-loaded on capable fine-pointer desktops; mobile/reduced-motion/low-power modes use the 2.5D fallback. Never let them control the same
 property on one element. Use small client components, visible static content,
 reduced-motion support, and scoped cleanup.
 
-Spline, Three.js, Rive and Lottie are not installed. Add 3D only after explicit
-design approval and a performance review.
+The approved scene uses @react-three/fiber@9.8.2 and three@0.187.0, with matching @types/three@0.187.0. Spline, Drei, physics, Rive and Lottie are not installed. No other animation engine is needed.
 
 Read both original, unmodified guides before design work:
 
@@ -104,3 +102,7 @@ Remove-Item Env:LYMORA_TEST_URL
 ```
 
 The test URL must use 127.0.0.1. Final production and development checks passed; see [HERO_IMPLEMENTATION.md](HERO_IMPLEMENTATION.md). The current design is the header/hero phase, with later showcase and documentation routes still to come.
+
+## Living Network Stage 1
+
+The current local preview is http://127.0.0.1:3100. It is a stage checkpoint: full interactive connection controls, scroll storytelling and the final product gallery remain later stages. The hero uses original renderer-demo captures labelled as test data. Clean release screenshots and a verified public installer URL are required before publication. See [Stage 1 verification](docs/LIVING_NETWORK_STAGE1.md).

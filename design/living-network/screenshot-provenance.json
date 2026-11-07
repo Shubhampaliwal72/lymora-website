@@ -1,0 +1,58 @@
+[
+  {
+    "key": "chatDark",
+    "source": "D:\\my-projects\\my-new-app\\.codex-backup\\frontend-smoke\\compact-messages-dark.png",
+    "sha256": "878f32af8abeb1fa9f60ffa195037b119bda3cde7510ee08a88509199f0b591d",
+    "bytes": 113379,
+    "purpose": "Unmodified owner-supplied logo or actual renderer test capture; not customer chat history."
+  },
+  {
+    "key": "chatLight",
+    "source": "D:\\my-projects\\my-new-app\\.codex-backup\\frontend-smoke\\compact-messages-light.png",
+    "sha256": "f83477f9b9442c1d6439909d824edefd8c4f93162a92c334c56aea5f184f9e93",
+    "bytes": 112008,
+    "purpose": "Unmodified owner-supplied logo or actual renderer test capture; not customer chat history."
+  },
+  {
+    "key": "group",
+    "source": "D:\\my-projects\\my-new-app\\.codex-backup\\frontend-smoke\\group-dark.png",
+    "sha256": "fad959054f328a8599466e33c7a302031985c1b63a0e425c4226fa88d84df828",
+    "bytes": 69336,
+    "purpose": "Actual renderer test screenshot, including blue user-selected accent; do not recolour."
+  },
+  {
+    "key": "network",
+    "source": "D:\\my-projects\\my-new-app\\.codex-backup\\frontend-smoke\\network-bento-dark.png",
+    "sha256": "41be14a354328580d2993a144f60ae6706555e71bc9921e640ca0e514c772024",
+    "bytes": 75958,
+    "purpose": "Inspection and storyboard reference only: visible error toast; recapture before publication."
+  },
+  {
+    "key": "markDark",
+    "source": "D:\\my-projects\\my-new-app\\frontend\\src\\assets\\brand\\mark-dark.png",
+    "sha256": "26d154a0c505485fbde3639854277c85925d266fa506081f91af51d2cabcc321",
+    "bytes": 33619,
+    "purpose": "Unmodified owner-supplied logo or actual renderer test capture; not customer chat history."
+  },
+  {
+    "key": "markLight",
+    "source": "D:\\my-projects\\my-new-app\\frontend\\src\\assets\\brand\\mark-light.png",
+    "sha256": "26d154a0c505485fbde3639854277c85925d266fa506081f91af51d2cabcc321",
+    "bytes": 33619,
+    "purpose": "Unmodified owner-supplied logo or actual renderer test capture; not customer chat history."
+  },
+  {
+    "key": "logoDark",
+    "source": "D:\\my-projects\\lymora\\public\\brand\\logo-dark.png",
+    "sha256": "90dfbda904ecdad5163882f65070cbc94a86de978cb78e92cb5a36dcc58b9050",
+    "bytes": 34362,
+    "purpose": "Unmodified owner-supplied logo or actual renderer test capture; not customer chat history."
+  },
+  {
+    "key": "logoLight",
+    "source": "D:\\my-projects\\lymora\\public\\brand\\logo-light.png",
+    "sha256": "2c9c278ff3d7d4d97f713d88da88fceaf80c7f48eab609b879e8ed441f06f79a",
+    "bytes": 34624,
+    "purpose": "Unmodified owner-supplied logo or actual renderer test capture; not customer chat history."
+  }
+]

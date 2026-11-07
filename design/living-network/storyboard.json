@@ -1,0 +1,108 @@
+{
+  "status": "Local editable storyboard prepared; Figma canvas creation blocked by Starter MCP quota.",
+  "figmaFile": "https://www.figma.com/design/0nOAeu9ClPbL5Zrc4iIkeX",
+  "figmaSessionId": "511f8ec3-78c2-4d71-ac0b-90e8ef540cda",
+  "concepts": [
+    {
+      "id": "A",
+      "name": "Ember Constellation",
+      "file": "01-ember-constellation"
+    },
+    {
+      "id": "B",
+      "name": "Follow the Message",
+      "file": "02-follow-the-message"
+    },
+    {
+      "id": "C",
+      "name": "The Connected Table",
+      "file": "03-connected-table"
+    }
+  ],
+  "scenes": [
+    {
+      "title": "01 / DISCOVER",
+      "headline": [
+        "Your local network",
+        "comes into view."
+      ],
+      "note": [
+        "Three independent PCs appear.",
+        "A single discovery sweep identifies nearby devices."
+      ],
+      "phase": "0.00 - 0.14",
+      "camera": "Wide establishing view. Device labels remain DOM text.",
+      "kind": "discover"
+    },
+    {
+      "title": "02 / CONNECT",
+      "headline": [
+        "A direct line.",
+        "From PC to PC."
+      ],
+      "note": [
+        "One point-to-point path resolves.",
+        "No server or cloud appears between the computers."
+      ],
+      "phase": "0.14 - 0.29",
+      "camera": "A modest dolly toward the two selected peers.",
+      "kind": "connect"
+    },
+    {
+      "title": "03 / CONVERSE",
+      "headline": [
+        "The message moves.",
+        "The conversation follows."
+      ],
+      "note": [
+        "Track the signal into the actual chat screen.",
+        "Use a real capture sequence for sending, delivered and read."
+      ],
+      "phase": "0.29 - 0.48",
+      "camera": "Match the 3D monitor to a sharp, flat screenshot.",
+      "kind": "chat"
+    },
+    {
+      "title": "04 / BRING PEOPLE IN",
+      "headline": [
+        "More people.",
+        "The same local network."
+      ],
+      "note": [
+        "The third peer joins the composition.",
+        "Real group UI: individual delivery counts, not group read claims."
+      ],
+      "phase": "0.48 - 0.65",
+      "camera": "Pull back slightly; widen the peer-to-peer fan-out.",
+      "kind": "group"
+    },
+    {
+      "title": "05 / SHARE",
+      "headline": [
+        "Your files.",
+        "A direct route."
+      ],
+      "note": [
+        "A file marker follows the connection, then resolves to the real attachment.",
+        "Selection, sending and receiving are separate stages."
+      ],
+      "phase": "0.65 - 0.83",
+      "camera": "Keep real attachment UI legible; no invented speed meter.",
+      "kind": "file"
+    },
+    {
+      "title": "06 / THE REAL APP",
+      "headline": [
+        "Built for Windows.",
+        "Ready for your network."
+      ],
+      "note": [
+        "The scene rests on full-size authentic desktop screenshots.",
+        "Connect a verified release link only after owner release review."
+      ],
+      "phase": "0.83 - 1.00",
+      "camera": "No perspective: readable application screenshot and release details.",
+      "kind": "final"
+    }
+  ]
+}
