@@ -19,6 +19,7 @@ export function PageRevealMotion({children}:{children:ReactNode}) {
     const select=gsap.utils.selector(root);
     const splits:SplitText[]=[];
     select("main h2, main .page-intro h1").forEach((heading:Element)=>{
+      if(heading.closest("dialog"))return;
       const split=SplitText.create(heading,{type:"words",tag:"span",wordsClass:"reveal-word",aria:"auto"});splits.push(split);
       gsap.from(split.words,{yPercent:70,opacity:.08,rotationX:capable?-18:0,duration:.85,stagger:.045,ease:"power3.out",scrollTrigger:{trigger:heading,start:"top 88%",toggleActions:"restart none restart reset"}});
     });

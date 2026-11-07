@@ -11,8 +11,8 @@ assets. See design/glass-network/FOUNDATION.md for the architecture, source
 accuracy and motion ownership. Open design/glass-network/review.html for a local
 manual desktop/tablet/mobile review while npm run dev is running.
 
-The owner requested code checks only for this pass; new browser/visual acceptance
-is intentionally left to them. Earlier checkpoint reports remain historical.
+Current manual build/upload instructions and future download/support activation:
+[Cloudflare deployment guide](docs/CLOUDFLARE_DEPLOYMENT.md). Earlier checkpoint reports remain historical.
 
 ## Local development
 
@@ -66,9 +66,9 @@ Installed exact dependencies:
 GSAP owns hero text, a finite six-second product-preview clock, and the separate
 continuous SVG wallpaper clock. ScrollTrigger controls a different wallpaper
 wrapper during scroll. A visible Pause ambience control pauses the background;
-mobile/reduced-motion/low-power views use static wallpaper. R3F derives camera, device and signal geometry from that clock. Motion owns only independent DOM controls and the mobile navigation panel. Three.js is lazy-loaded on capable fine-pointer desktops; mobile/reduced-motion/low-power modes use the 2.5D fallback. Never let them control the same
+The latest owner policy keeps motion on independently of the OS preference; hidden/offscreen work pauses and a public pause control remains. R3F derives camera, device and signal geometry from that clock. Motion owns only independent DOM controls and the mobile navigation panel. Three.js is lazy-loaded on capable fine-pointer desktops; mobile/low-capability modes use the 2.5D fallback. Never let them control the same
 property on one element. Use small client components, visible static content,
-reduced-motion support, and scoped cleanup.
+scoped cleanup and the explicit motion policy in AGENTS.md.
 
 The approved scene uses @react-three/fiber@9.8.2 and three@0.187.0, with matching @types/three@0.187.0. Spline, Drei, physics, Rive and Lottie are not installed. No other animation engine is needed.
 
@@ -102,6 +102,10 @@ before release. Do not force an incompatible update or downgrade Next.js to hide
 findings. Production dependency audit is checked separately.
 
 See [SETUP_VERIFICATION.md](SETUP_VERIFICATION.md) for commands, results and remaining tooling risks. The .node-version file selects Node 22 for compatible build services.
+
+## Earlier stage checkpoints (historical)
+
+The following reports describe their own stage, not the current launch status. Use docs/CLOUDFLARE_DEPLOYMENT.md and the current verify:launch / verify:export checks for launch preparation.
 
 ## Browser verification
 

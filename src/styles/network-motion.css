@@ -31,20 +31,13 @@
 /* A contained scene leaves real layout space for its controls. */
 .site-header.glass-header .header-inner { border-radius:999px; }
 .brand-hero .network-world { isolation:isolate;overflow:hidden;contain:paint; }
-.brand-hero .network-interaction { position:relative;z-index:2;margin-top:14px;background-color:var(--surface); }
 .brand-hero .network-caption { position:relative;z-index:2;flex-wrap:wrap; }
-.brand-hero .network-choices { gap:8px; }
-.brand-hero .endpoint-choices { flex-wrap:wrap; }
-.brand-hero .network-controls { flex-wrap:wrap; }
-.network-controls button[aria-pressed='true'] { color:var(--accent);background:var(--accent-subtle); }
 .network-wallpaper .ambient-computers { opacity:1; }
 .ambient-case { stroke:color-mix(in srgb,var(--network-wire) calc(var(--arrival,0) * 100%),var(--network-device));stroke-width:calc(1px + var(--arrival,0) * .65px);fill:color-mix(in srgb,var(--accent) calc(var(--arrival,0) * 6%),transparent); }
 .ambient-arrival-glow { stroke:var(--accent);stroke-width:3;fill:var(--accent);opacity:calc(var(--arrival,0) * .1); }
 .network-wallpaper:not([data-animated='true']) .ambient-routes path[data-static='true'] { opacity:.3; }
-.fallback-screen::after { content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 0 1px var(--accent),inset 0 0 18px var(--scene-glow);opacity:calc(var(--arrival,0) * .35); }
-.fallback-path-muted { stroke:var(--accent);stroke-dasharray:none;opacity:.15; }
 .reveal-word { display:inline-block;perspective:500px;transform-origin:center bottom; }
-@media(max-width:600px){.brand-hero .network-interaction{margin-top:18px;}.brand-hero .network-choices button{padding-inline:8px;font-size:10px;}.brand-hero .network-caption{padding-inline:0;}.network-controls{gap:1px;}}
+@media(max-width:600px){.brand-hero .network-caption{padding-inline:0;}}
 
 /* Visible, local animation preference and restrained interaction feedback. */
 html[data-motion='full'] :is(.product-link,.resource-links a,.button,.nav-featured,.footer-orbit) { transition:translate 260ms ease,background 200ms ease,border-color 200ms ease,box-shadow 260ms ease; }

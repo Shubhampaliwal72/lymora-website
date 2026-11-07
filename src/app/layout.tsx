@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import type { ReactNode } from "react";
 import "./globals.css";
+import { publicLaunch, site } from "@/lib/site";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { PageRevealMotion } from "@/components/animations/PageRevealMotion";
@@ -11,7 +12,9 @@ const dmSans = localFont({src: "../assets/fonts/dm-sans-latin.woff2", variable: 
 export const metadata: Metadata = {
   title: {default: "Lymora | Technology, closer.", template: "%s | Lymora"},
   description: "Useful technology for the spaces we share. Discover Lymora LAN Messenger: direct messages, groups and files between nearby Windows PCs.",
-  robots: {index: false, follow: false},
+  metadataBase: new URL(site.origin),
+  robots: {index: publicLaunch, follow: publicLaunch},
+  icons: {icon: [{url: "/brand/mark-dark.png", type: "image/png", sizes: "512x512"}], apple: "/brand/mark-light.png"},
 };
 // Runs before paint; only this root attribute differs during hydration. No external requests.
 const themeScript = "(()=>{const r=document.documentElement;r.dataset.enhanced='';r.dataset.motion='full';let t;try{t=localStorage.getItem('lymora-website-theme')}catch{}r.dataset.theme=t==='dark'||t==='light'?t:matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'})()";

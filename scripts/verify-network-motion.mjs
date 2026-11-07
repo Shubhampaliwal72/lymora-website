@@ -1,5 +1,6 @@
 /** Homepage motion checks and full-page review PNGs. Loopback only; no uploads. */
 import assert from 'node:assert/strict';
+import { verifyLaunchUi } from './verify-launch-ui.mjs';
 import fs from 'node:fs/promises';
 import http from 'node:http';
 import path from 'node:path';
@@ -14,6 +15,9 @@ await fs.access(browserPath);
 await fs.access(path.join(root, 'out/index.html'));
 const mime = {'.html':'text/html', '.js':'text/javascript', '.css':'text/css', '.png':'image/png', '.ico':'image/x-icon', '.woff2':'font/woff2', '.svg':'image/svg+xml', '.txt':'text/plain'};
 const missing = [];
+// Apply only the global header block locally to catch CSP regressions before Pages exists.
+const headerText=await fs.readFile(path.join(root,'public/_headers'),'utf8');
+const localHeaders=headerText.split(/\r?\n\r?\n/)[0].split(/\r?\n/).slice(1).map(line=>{const index=line.indexOf(':');return [line.slice(0,index).trim(),line.slice(index+1).trim()];});
 const server = http.createServer(async (request, response) => {
   try {
     const url = new URL(request.url, 'http://127.0.0.1');
@@ -21,6 +25,7 @@ const server = http.createServer(async (request, response) => {
     let file = path.resolve(staticRoot, '.' + decodeURIComponent(url.pathname));
     if (file !== staticRoot && !file.startsWith(staticRoot + path.sep)) throw Error('Invalid path');
     if ((await fs.stat(file)).isDirectory()) file = path.join(file, 'index.html');
+    for(const [name,value] of localHeaders)if(name)response.setHeader(name,value);
     response.setHeader('Content-Type', mime[path.extname(file)] ?? 'application/octet-stream');
     response.end(await fs.readFile(file));
   } catch {
@@ -124,6 +129,8 @@ try {
     if(await evaluate('innerWidth>900'))assert(await evaluate("(()=>{const h=document.querySelector('.header-inner').getBoundingClientRect(),n=document.querySelector('.desktop-nav').getBoundingClientRect(),b=document.querySelector('.brand-lockup').getBoundingClientRect(),a=document.querySelector('.header-actions').getBoundingClientRect();return Math.abs((n.left+n.right-h.left-h.right)/2)<1&&b.right+6<=n.left&&n.right+6<=a.left})()"),'Header menu is centered and does not collide with branding or actions');
   };
 
+  const launchOnly=process.argv.includes('--launch-only')||process.env.LYMORA_VERIFY_LAUNCH_ONLY==='1';
+  if(!launchOnly){
   await viewport(1440,1000);await media('dark',true);await load();
   await waitFor("document.querySelectorAll('.reveal-word').length>0 && document.querySelector('.living-network').dataset.mode==='3d'",'Motion starts without opt-in even with system reduction');
   assert.equal(await evaluate("document.documentElement.dataset.motion"),'full','Owner-requested motion defaults on');
@@ -151,7 +158,7 @@ try {
   assert(await evaluate("[...document.querySelectorAll('.ambient-computers > g')].some(pc=>Number(pc.style.getPropertyValue('--arrival'))>.05)"),'Receiving computer glows');
   const initialPair=await evaluate("document.querySelector('.living-network').dataset.source+'-'+document.querySelector('.living-network').dataset.endpoint");
   await waitFor("document.querySelector('.living-network').dataset.source+'-'+document.querySelector('.living-network').dataset.endpoint!=="+JSON.stringify(initialPair),'Automatic route changes after delivery');
-  assert(await evaluate("(()=>{const world=document.querySelector('.network-world'),controls=document.querySelector('.network-interaction'),a=world.getBoundingClientRect(),b=controls.getBoundingClientRect();return getComputedStyle(world).overflow==='hidden'&&a.bottom<=b.top})()"),'3D scene is contained above controls');
+  assert(await evaluate("(()=>{const world=document.querySelector('.network-world'),controls=document.querySelector('.network-demo-strip'),a=world.getBoundingClientRect(),b=controls.getBoundingClientRect();return getComputedStyle(world).overflow==='hidden'&&a.bottom<=b.top})()"),'3D scene is contained above controls');
   assert(await evaluate("parseFloat(getComputedStyle(document.querySelector('.header-inner')).borderTopLeftRadius)>100"),'Header has fully rounded ends');
   checks.push('arrival glow and automatic PC-to-PC route changes','contained scene and fully rounded header');
   assert.equal(await evaluate("document.querySelectorAll('.ambient-routes path[data-static=\"true\"]').length"),9,'Mesh has a stable ring and cross-links');
@@ -212,8 +219,10 @@ try {
   await media('dark',true);await pause(300);
   assert(await evaluate("document.querySelectorAll('.reveal-word').length>0"),'Owner-requested reveals remain active');
   checks.push('client navigation resolves static-export segment data','other-page reveals remain active without a motion switch');
+  }
+  await verifyLaunchUi({cdp,evaluate,load,viewport,media,waitFor,pause,url,checks});
   assert.deepEqual(errors,[],'No console/runtime/hydration errors');assert.deepEqual(missing,[],'No missing assets');assert.deepEqual(external,[],'No external requests');
-  const result={passed:true,browser:version.Browser,checks,exports:report,scope:'Actual static-export browser capture; software WebGL, not a hardware FPS benchmark.'};await fs.writeFile(path.join(output,'network-motion-results.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result,null,2));await send('Target.closeTarget',{targetId:target.targetId});await send('Browser.close');
+  const result={passed:true,browser:version.Browser,checks,exports:report,scope:'Actual static-export browser capture; software WebGL, not a hardware FPS benchmark.'};await fs.writeFile(path.join(output,launchOnly?'launch-ui-results.json':'network-motion-results.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result,null,2));await send('Target.closeTarget',{targetId:target.targetId});await send('Browser.close');
 } finally {
   if(socket)socket.close();for(const promise of pending.values()){clearTimeout(promise.timeout);promise.reject(Error('Browser closed'));}pending.clear();server.close();if(browser.exitCode===null)browser.kill();
 }

@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { pageMetadata } from "@/lib/site";
+export const metadata = pageMetadata("/", "Technology, closer.");
 import { HomeScrollMotion } from "@/components/animations/HomeScrollMotion";
 import { LivingHero } from "@/components/living-network/LivingHero";
 import { ProductExplorer } from "@/components/sections/ProductExplorer";

@@ -20,18 +20,30 @@ export type NetworkCanvasProps = {
 };
 export const INTRO_DURATION = 6;
 export const endpoints = [{id: "you", name: "Your PC"}, {id: "studio", name: "Studio PC"}, {id: "team", name: "Team PC"}] as const;
-export const devices: {id: Endpoint | "you"; position: Point; rotation: Point; scale: number; app: boolean}[] = [
-  {id: "studio", position: [.58, 1.27, -.9], rotation: [-.035, -.22, -.1], scale: .83, app: false},
-  {id: "team", position: [2.4, -.58, -.35], rotation: [.015, -.35, .1], scale: .64, app: false},
-  {id: "you", position: [-1.05, -.75, 1.05], rotation: [.015, .12, -.035], scale: 1.03, app: true},
+// A direct three-peer mesh: screens have distinct space, not overlapping layers.
+export const devices: {id: Endpoint; position: Point; rotation: Point; scale: number; app: boolean}[] = [
+  {id: "you", position: [-1.6, .05, .6], rotation: [0, .035, 0], scale: 1, app: true},
+  {id: "studio", position: [2.25, 1.9, -.45], rotation: [0, -.05, -.015], scale: .65, app: false},
+  {id: "team", position: [2.45, -1.4, -.35], rotation: [0, -.05, .015], scale: .65, app: false},
 ];
-// Edge ports sit on each monitor bezel; reversing a path preserves its endpoints.
 export const connections: [Endpoint, Endpoint][] = [["you","studio"],["you","team"],["studio","team"]];
+// The same perspective projection positions the SVG computers, routes and DOM labels.
+export function projectPoint(point: Point): Point {
+  const height=2*Math.tan(35.5*Math.PI/360)*(10.8-point[2]);
+  return [500+(point[0]-.35)/height*780,390-(point[1]-.35)/height*780,0];
+}
+export const illustratedDevices=devices.map(device=>{
+  const [x,y]=projectPoint(device.position),height=2*Math.tan(35.5*Math.PI/360)*(10.8-device.position[2]);
+  const width=3.35*device.scale/height*780;
+  const label=projectPoint([device.position[0],device.position[1]-1.94*device.scale,device.position[2]]);
+  return {...device,x,y,width,height:width*2.27/3.35,label};
+});
 function port(id: Endpoint, other: Endpoint): Point {
-  const device=devices.find(item=>item.id===id)!;
-  const target=devices.find(item=>item.id===other)!;
-  const side=target.position[0]>device.position[0]?1:-1;
-  let x=side*1.68*device.scale, y=-.52*device.scale, z=.08*device.scale;
+  const device=devices.find(item=>item.id===id)!,target=devices.find(item=>item.id===other)!;
+  const vertical=Math.abs(target.position[1]-device.position[1])>Math.abs(target.position[0]-device.position[0])*1.5;
+  let x=(vertical?.65:Math.sign(target.position[0]-device.position[0])*1.675)*device.scale;
+  let y=(vertical?Math.sign(target.position[1]-device.position[1])*1.135:Math.sign(target.position[1]-device.position[1])*.48)*device.scale;
+  let z=.08*device.scale;
   const [rx,ry,rz]=device.rotation;
   [x,y]=[x*Math.cos(rz)-y*Math.sin(rz),x*Math.sin(rz)+y*Math.cos(rz)];
   [x,z]=[x*Math.cos(ry)+z*Math.sin(ry),-x*Math.sin(ry)+z*Math.cos(ry)];
@@ -39,14 +51,15 @@ function port(id: Endpoint, other: Endpoint): Point {
   return [x+device.position[0],y+device.position[1],z+device.position[2]];
 }
 export function routeBetween(source: Endpoint, target: Endpoint, fallback=false): [Point,Point,Point,Point] {
-  if(fallback){
-    const ports:Record<Endpoint,Point>={you:[570,465,0],studio:[490,210,0],team:[790,465,0]};
-    const a=ports[source],b=ports[target];
-    return [a,[a[0],a[1]-130,0],[b[0],b[1]-130,0],b];
-  }
-  const a=port(source,target),b=port(target,source);
-  const lift=source==="you"||target==="you"?-.6:.55;
-  return [a,[a[0]+(b[0]-a[0])*.28,a[1]+lift,a[2]-.3],[a[0]+(b[0]-a[0])*.72,b[1]+lift,b[2]-.3],b];
+  const pair=connections.find(([a,b])=>(a===source&&b===target)||(b===source&&a===target));
+  if(!pair)throw new Error("A route must join two different computers");
+  const a=port(pair[0],pair[1]),b=port(pair[1],pair[0]);
+  const vertical=pair[0]==="studio"&&pair[1]==="team";
+  const points:[Point,Point,Point,Point]=vertical
+    ? [a,[3.65,a[1]-.3,.15],[3.65,b[1]+.3,.15],b]
+    : [a,[a[0]+(b[0]-a[0])*.38,a[1],a[2]],[a[0]+(b[0]-a[0])*.62,b[1],b[2]],b];
+  const directed=source===pair[0]?points:[...points].reverse() as [Point,Point,Point,Point];
+  return fallback?directed.map(projectPoint) as [Point,Point,Point,Point]:directed;
 }
 export function nextPair(previous: [Endpoint,Endpoint]): [Endpoint,Endpoint] {
   const choices=connections.flatMap(([a,b]):[Endpoint,Endpoint][]=>[[a,b],[b,a]]).filter(([a,b])=>a!==previous[0]||b!==previous[1]);

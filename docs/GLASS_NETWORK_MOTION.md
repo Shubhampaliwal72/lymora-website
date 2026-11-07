@@ -211,3 +211,16 @@ Home exists on desktop/mobile, hover adds no menu background, heading colors
 survive splitting, and the static build has no missing assets or runtime errors.
 A peak-arrival visual review prompted one final reduction of receiver emission
 to 0.1 and a slimmer bezel; original screenshot pixels remain unchanged.
+
+
+## Hero topology and manual-hosting finish (2026-11-07)
+
+The foreground now uses a spaced three-peer mesh. Your PC holds the original app capture; Studio PC and Team PC have their own clear positions. All three direct routes are visible between monitor bezel ports. The third connection runs around the outside rather than through the computers. Thin orange paths, directed packets and restrained arrival emphasis remain.
+
+scene.ts is the shared source for the 3D coordinates, perspective projection, SVG monitor positions, label positions and reversible paths. The mobile/low-capability view is one lightweight SVG using the original image assets, rather than separately positioned HTML monitors with drifting SVG paths. No server or cloud hub is depicted.
+
+The large destination/step dashboard, Auto routing, Replay and Lighter view buttons are removed. Clicking a named PC selects its next incoming path. A compact inline status shows the two computers and delivery stage; Message/File and Pause/Play remain. Automatic PC-to-PC routes continue while visible on desktop and mobile. Existing hidden-tab/offscreen pauses and desktop-only lazy WebGL remain.
+
+Removed obsolete card/monitor CSS and the unused production redirect example. The concise manual hosting guide keeps build/upload and optional indexing instructions. Useful Coming Soon/support/release configuration, screenshot viewer, metadata and security headers are retained. There is no deployment, DNS change or desktop-application edit.
+
+Verification: ESLint, TypeScript/static build, 657 local references and scene geometry checks passed. Focused browser checks cover desktop dark/light, mobile dark/light and 901px, all preview actions, compact layout, aligned labels, screenshot dialog controls and unavailable download/support states. Original screenshots and logos are unchanged. Captures are stored locally in ignored .verification/peer-mesh-*.png. These are software-WebGL browser checks, not a hardware performance benchmark.

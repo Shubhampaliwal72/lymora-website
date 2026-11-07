@@ -1,7 +1,7 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/site";
 import Link from "next/link";
 import { PageIntro } from "@/components/site/PageIntro";
-export const metadata:Metadata={title:"LAN Messenger documentation",description:"Install Lymora, discover nearby PCs, share messages and files, and troubleshoot your LAN connection."};
+export const metadata = pageMetadata("/products/lan-messenger/docs/", "LAN Messenger documentation", "Install Lymora, discover nearby PCs, share messages and files, and troubleshoot your LAN connection.");
 const questions=[
  {q:"Do I need the internet?",a:"Not for messaging between reachable PCs on your local network. Downloading the installer may require internet access; the installed app does not need a cloud account."},
  {q:"Can I use different Wi-Fi networks?",a:"Devices need a network route to each other. Being in the same room or using the same Wi-Fi name does not guarantee reachability. Guest isolation, separate subnets and VPN routing can interfere."},

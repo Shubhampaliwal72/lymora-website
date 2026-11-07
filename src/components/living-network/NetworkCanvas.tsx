@@ -46,11 +46,11 @@ function Computers({ theme, endpoint, clock, onSelect }: Pick<NetworkCanvasProps
 }
 function Connection({pair, ...props}: NetworkCanvasProps & {pair: [Endpoint,Endpoint]}) {
   const [a,b]=pair;
-  const geometry=useMemo(()=>new TubeGeometry(new CubicBezierCurve3(...routeBetween(a,b).map(point=>new Vector3(...point)) as [Vector3,Vector3,Vector3,Vector3]),64,.005,5,false),[a,b]);
+  const geometry=useMemo(()=>new TubeGeometry(new CubicBezierCurve3(...routeBetween(a,b).map(point=>new Vector3(...point)) as [Vector3,Vector3,Vector3,Vector3]),64,.007,5,false),[a,b]);
   const material=useRef<MeshBasicMaterial>(null);
   useEffect(()=>()=>geometry.dispose(),[geometry]);
-  useFrame(()=>{if(material.current)material.current.opacity=((props.source===a&&props.endpoint===b)||(props.source===b&&props.endpoint===a)) ? .46 : .08;});
-  return <mesh geometry={geometry}><meshBasicMaterial ref={material} color={sceneMaterials[props.theme].accent} transparent opacity={.08} toneMapped={false} depthWrite={false}/></mesh>;
+  useFrame(()=>{if(material.current)material.current.opacity=((props.source===a&&props.endpoint===b)||(props.source===b&&props.endpoint===a)) ? .72 : .23;});
+  return <mesh geometry={geometry}><meshBasicMaterial ref={material} color={sceneMaterials[props.theme].accent} transparent opacity={.23} toneMapped={false} depthWrite={false}/></mesh>;
 }
 function World(props: NetworkCanvasProps) {
   const { theme, endpoint, source, transfer, clock, pointer, invalidateRef, onReady, onUnavailable } = props;

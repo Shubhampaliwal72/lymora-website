@@ -1,7 +1,7 @@
 "use client";
 import { useScenePreferences } from "@/components/living-network/useScenePreferences";
 import { useEffect, useRef } from "react";
-import Link from "next/link";
+import { ActiveLink as Link } from "./ActiveLink";
 import { usePathname } from "next/navigation";
 import { messenger } from "@/lib/products";
 import { useAnimate } from "motion/react";

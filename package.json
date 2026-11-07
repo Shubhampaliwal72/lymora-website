@@ -9,7 +9,9 @@
     "typecheck": "next typegen && tsc --noEmit",
     "verify:browser": "node scripts/verify-browser.mjs",
     "postbuild": "node scripts/normalize-static-segments.mjs",
-    "verify:motion": "node scripts/verify-network-motion.mjs"
+    "verify:motion": "node scripts/verify-network-motion.mjs",
+    "verify:export": "node scripts/verify-static-links.mjs && node scripts/verify-cloudflare-export.mjs",
+    "verify:launch": "node scripts/verify-network-motion.mjs --launch-only"
   },
   "dependencies": {
     "@gsap/react": "2.1.2",

@@ -2,6 +2,7 @@
 @import "../styles/tokens.css";
 @import "../styles/glass.css";
 @import "../styles/network-motion.css";
+@import "../styles/hero-topology.css";
 @theme inline { --color-background: var(--canvas); --color-foreground: var(--text-primary); --font-sans: var(--font-body); --font-heading: var(--font-display); }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 120px; }
@@ -73,32 +74,9 @@ h1 span { display: block; }
 .living-network[data-mode='3d'] .network-canvas { opacity: 1; }
 .network-fallback { position: absolute; inset: 0; perspective: 1100px; transition: opacity 250ms ease; }
 .living-network[data-mode='3d'] .network-fallback { opacity: 0; pointer-events: none; }
-.fallback-computer { position: absolute; }
-.fallback-screen { position: relative; aspect-ratio: 3 / 2; overflow: hidden; border: 7px solid var(--pc-bezel); border-radius: 11px; background: var(--canvas); box-shadow: 0 0 0 1px var(--pc-edge), 0 20px 48px var(--pc-shadow); }
-.fallback-screen .screen-app { position: absolute; inset: 0; background-image: var(--chat-preview-image); background-size: contain; background-position: center; background-repeat: no-repeat; }
-.fallback-screen .screen-mark { position: absolute; inset: 0; background-image: var(--brand-mark-image); background-size: 34% auto; background-position: center; background-repeat: no-repeat; }
-.fallback-computer::before { content: ''; position: absolute; top: calc(100% - 1px); left: 46%; width: 8%; height: 13%; background: linear-gradient(90deg, var(--pc-edge), var(--pc-bezel)); }
-.fallback-computer::after { content: ''; position: absolute; top: 112%; left: 32%; width: 36%; height: 3%; background: var(--pc-edge); border-radius: 50% 50% 2px 2px; }
-.fallback-front { left: 3%; top: 43%; width: 56%; z-index: 3; transform: rotateY(6deg) rotateX(2deg) rotateZ(3deg); }
-.fallback-back { left: 43%; top: 6%; width: 42%; transform: rotateY(-13deg) rotateZ(9deg); }
-.fallback-right { left: 70%; top: 49%; width: 29%; transform: rotateY(-18deg) rotateZ(-10deg); }
-.computer-label { position: absolute; top: 125%; width: 100%; text-align: center; color: var(--text-muted); font-size: 10px; }
-.fallback-paths { position: absolute; inset: 0; width: 100%; height: 100%; }
-.fallback-path { stroke: var(--accent); stroke-width: 1.6; opacity: .65; }
-.fallback-path-muted { stroke: var(--diagram-line); stroke-width: 1; stroke-dasharray: 3 9; opacity: .5; }
-.network-device-label { display: none; position: absolute; color: var(--text-muted); font-size: 10px; pointer-events: none; }
-.living-network[data-mode='3d'] .network-device-label { display: block; }
-.device-label-studio { left: 55%; top: 12%; }
-.device-label-team { left: 80%; top: 79%; }
-.device-label-you { left: 31%; top: 96%; }
 .network-caption { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 4px 35px 4px 18px; min-height: 52px; color: var(--text-muted); font-size: 10px; }
 .network-caption > span { display: flex; align-items: center; gap: 8px; }
 .caption-dot { width: 4px; height: 4px; opacity: .75; }
-.network-controls { display: flex; align-items: center; gap: 6px; }
-.scene-control { min-height: 44px; padding: 10px 8px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 0; border-radius: 8px; background: transparent; font-size: 11px; color: var(--text-secondary); white-space: nowrap; }
-.scene-control:hover { background: var(--surface-hover); color: var(--text-primary); }
-.scene-control svg { width: 13px; height: 13px; }
-.lighter-control { color: var(--text-muted); font-size: 10px; }
 .hero-bottom { border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; min-height: 76px; font-size: 11px; color: var(--text-muted); }
 .hero-bottom p { display: flex; align-items: center; gap: 10px; margin-bottom: 0; }
 .hero-bottom a { display: inline-flex; align-items: center; gap: 16px; min-height: 44px; }
@@ -152,10 +130,7 @@ html[data-enhanced] .enhanced-control { display: inline-flex; }
   .hero-actions { gap: 18px; } .hero-actions .button { padding-inline: 20px; gap: 15px; } .hero-text-link { font-size: 11px; gap: 5px; }
   .hero-note { margin-top: 18px; font-size: 10px; }
   .living-network { margin-top: 22px; } .network-world { aspect-ratio: 1.05; }
-  .fallback-screen { border-width: 4px; border-radius: 6px; } .fallback-front { top: 47%; left: 0; width: 60%; } .fallback-back { top: 9%; left: 32%; width: 49%; } .fallback-right { top: 53%; left: 70%; width: 30%; }
-  .computer-label { font-size: 8px; } .fallback-path { stroke-width: 2; }
   .network-caption { flex-direction: column; align-items: start; font-size: 8px; gap: 0; padding-top: 18px; }
-  .network-controls { margin-left: -8px; } .scene-control { font-size: 10px; }
   .living-hero::before { width: 650px; height: 600px; right: -250px; top: 310px; }
   .hero-bottom { min-height: 70px; font-size: 9px; gap: 12px; } .hero-bottom p { gap: 7px; } .hero-bottom a { font-size: 0; gap: 0; padding-left: 12px; }
   .connection-story { grid-template-columns: 1fr; gap: 28px; padding-block: 56px; }
@@ -177,23 +152,7 @@ html[data-enhanced] .enhanced-control { display: inline-flex; }
 /* Stage 2: one direct route, explicit accessible choices, finite shared clock. */
 .fallback-packet { fill: var(--accent); stroke: var(--canvas); stroke-width: 1.5; }
 .fallback-receipt { fill: var(--success, var(--accent)); }
-.fallback-computer[data-selected=true] .computer-label, .network-device-label[data-selected=true] { color: var(--accent); }
-.network-interaction { display: none; flex-direction: column; width: calc(100% - 53px); margin: 0 35px 0 18px; }
-.network-choices { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 16px; }
-.endpoint-choices, .transfer-choices { display: flex; align-items: center; gap: 3px; min-width: 0; }
-.endpoint-choices > span { margin-right: 9px; font-size: 10px; color: var(--text-muted); white-space: nowrap; }
-.network-choices button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 9px 12px; border: 1px solid transparent; border-radius: 100px; background: transparent; color: var(--text-secondary); font-size: 11px; white-space: nowrap; transition: background 160ms ease, border-color 160ms ease; }
-.network-choices button:hover { background: var(--surface-hover); }
-.network-choices button[aria-pressed=true] { color: var(--text-primary); background: var(--surface); border-color: var(--border); }
-.network-choices button svg { width: 14px; height: 14px; color: var(--accent); }
-.network-story-status { margin-top: 12px; padding-top: 16px; border-top: 1px solid var(--border); }
-.story-steps { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--text-muted); font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
-.story-steps span { display: inline-flex; align-items: center; gap: 7px; }
-.story-steps span::before { content: ""; width: 4px; height: 4px; flex-shrink: 0; border: 1px solid var(--text-muted); border-radius: 50%; }
-.story-steps span[data-current=true] { color: var(--accent); }
-.story-steps span[data-current=true]::before, .story-steps span[data-complete=true]::before { border-color: var(--accent); background: var(--accent); }
-.network-story-status p { min-height: 34px; margin: 10px 0 0; color: var(--text-secondary); font-size: 12px; line-height: 1.6; }
 @media (min-width: 901px) and (max-width: 1599px) { .network-world { height: 570px; } }
-@media (max-width: 1150px) and (min-width: 901px) { .network-world { height: 510px; } .network-interaction { margin-left: 35px; width: calc(100% - 70px); } }
-@media (max-width: 900px) { .network-interaction { margin-inline: 0; width: 100%; } }
-@media (max-width: 600px) { .network-choices { gap: 4px; } .network-choices button { padding-inline: 10px; } .network-caption { padding-top: 4px; } .story-steps { gap: 5px; font-size: 8px; letter-spacing: .025em; } .story-steps span { gap: 5px; } }
+@media (max-width: 1150px) and (min-width: 901px) { .network-world { height: 510px; } }
+
+@media (max-width: 600px) { .network-caption { padding-top: 4px; } }
