@@ -2,86 +2,102 @@
 
 import { Suspense, useEffect, useMemo, useRef } from "react";
 import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
-import { CubicBezierCurve3, Group, Mesh, SRGBColorSpace, TextureLoader, TubeGeometry, Vector3 } from "three";
+import { BufferGeometry, CubicBezierCurve3, Float32BufferAttribute, Group, Mesh, MeshBasicMaterial, SRGBColorSpace, TextureLoader, TubeGeometry, Vector3 } from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
-import { sceneMaterials, type NetworkCanvasProps } from "./scene";
+import { devices, endpoints, routes, sceneMaterials, smooth, storyAt, type Endpoint, type NetworkCanvasProps } from "./scene";
 
-function Computers({ theme }: Pick<NetworkCanvasProps, "theme">) {
-  const source = useLoader(TextureLoader, ["/media/living-network/chat-demo-" + theme + ".png", "/brand/mark-" + theme + ".png"]);
-  const textures = useMemo(() => source.map(image => {
-    const texture = image.clone();
-    texture.colorSpace = SRGBColorSpace;
-    texture.needsUpdate = true;
-    return texture;
-  }), [source]);
+function Computers({ theme, endpoint, clock, onSelect }: Pick<NetworkCanvasProps, "theme" | "endpoint" | "clock" | "onSelect">) {
+  const {gl} = useThree();
+  const source = useLoader(TextureLoader, ["/media/product/chats-" + theme + ".png", "/brand/mark-" + theme + ".png"]);
+  const textures = useMemo(() => source.map(image => {const texture = image.clone(); texture.colorSpace = SRGBColorSpace; texture.needsUpdate = true; return texture;}), [source]);
   const geometry = useMemo(() => ({
     case: new RoundedBoxGeometry(3.35, 2.27, .14, 2, .07),
     screen: new RoundedBoxGeometry(3.17, 2.1, .025, 1, .03),
     foot: new RoundedBoxGeometry(1.12, .075, .58, 1, .035),
     neck: new RoundedBoxGeometry(.19, .55, .13, 1, .035),
   }), []);
+  const groups = useRef<(Group | null)[]>([]);
+  const indicators = useRef<(Mesh | null)[]>([]);
   useEffect(() => () => { textures.forEach(texture => texture.dispose()); }, [textures]);
-  useEffect(() => () => { Object.values(geometry).forEach(shape => shape.dispose()); }, [geometry]);
-  const dark = theme === "dark";
-  const materials = sceneMaterials[theme];
-  const devices: {position: [number, number, number]; rotation: [number, number, number]; scale: number; app: boolean}[] = [
-    {position: [.58, 1.27, -.9], rotation: [-.035, -.22, -.1], scale: .83, app: false},
-    {position: [2.4, -.58, -.35], rotation: [.015, -.35, .1], scale: .64, app: false},
-    {position: [-1.05, -.75, 1.05], rotation: [.015, .12, -.035], scale: 1.03, app: true},
-  ];
-  return <>{devices.map((device, index) => <group key={index} position={device.position} rotation={device.rotation} scale={device.scale}>
+  useEffect(() => () => { Object.values(geometry).forEach(shape => shape.dispose()); gl.domElement.style.cursor = ""; }, [geometry, gl]);
+  const dark = theme === "dark", materials = sceneMaterials[theme];
+  useFrame(() => {
+    const story = storyAt(clock.current.progress);
+    devices.forEach((device, index) => {
+      const group = groups.current[index], indicator = indicators.current[index];
+      if(group) {group.position.y = device.position[1] + (device.id === endpoint ? .07 * smooth(story.connect) : 0); const size = device.scale * (device.id === "you" ? 1 : .97 + .03 * story.discover); group.scale.setScalar(size);}
+      if(indicator) indicator.scale.setScalar(device.id === "you" ? 1 : .3 + .7 * story.discover);
+    });
+  });
+  return <>{devices.map((device, index) => <group key={device.id} ref={value => {groups.current[index] = value;}} position={device.position} rotation={device.rotation} scale={device.scale}
+    onClick={event => {if(device.id !== "you") {event.stopPropagation(); onSelect(device.id);}}}
+    onPointerOver={event => {if(device.id !== "you") {event.stopPropagation(); gl.domElement.style.cursor = "pointer";}}}
+    onPointerOut={() => {gl.domElement.style.cursor = "";}}>
     <mesh geometry={geometry.case}><meshStandardMaterial color={materials.bezel} metalness={dark ? .55 : .2} roughness={.38} /></mesh>
     <mesh geometry={geometry.screen} position={[0, 0, .086]}><meshBasicMaterial color={materials.screen} toneMapped={false} /></mesh>
-    {device.app ? <mesh position={[0, 0, .105]}><planeGeometry args={[3.14, 2.0933]} /><meshBasicMaterial map={textures[0]} toneMapped={false} /></mesh> : <mesh position={[0, 0, .105]}><planeGeometry args={[1.02, 1.02]} /><meshBasicMaterial map={textures[1]} transparent toneMapped={false} /></mesh>}
+    {device.app ? <mesh position={[0, 0, .105]}><planeGeometry args={[3.14, 3.14 * 1020 / 1800]} /><meshBasicMaterial map={textures[0]} toneMapped={false} /></mesh> : <mesh position={[0, 0, .105]}><planeGeometry args={[1.02, 1.02]} /><meshBasicMaterial map={textures[1]} transparent toneMapped={false} /></mesh>}
     <mesh geometry={geometry.neck} position={[0, -1.35, -.03]} rotation={[-.12, 0, 0]}><meshStandardMaterial color={materials.neck} metalness={.5} roughness={.5} /></mesh>
     <mesh geometry={geometry.foot} position={[0, -1.61, .12]}><meshStandardMaterial color={materials.foot} metalness={.5} roughness={.5} /></mesh>
-    <mesh position={[1.47, -.99, .108]}><sphereGeometry args={[.015, 8, 8]} /><meshBasicMaterial color={materials.status} toneMapped={false} /></mesh>
+    <mesh ref={value => {indicators.current[index] = value;}} position={[1.47, -.99, .108]}><sphereGeometry args={[.015, 8, 8]} /><meshBasicMaterial color={materials.status} toneMapped={false} /></mesh>
   </group>)}</>;
 }
+function Connection({id, ...props}: NetworkCanvasProps & {id: Endpoint}) {
+  const geometry = useMemo(() => new TubeGeometry(new CubicBezierCurve3(...routes[id].map(point => new Vector3(...point)) as [Vector3, Vector3, Vector3, Vector3]), 64, .009, 5, false), [id]);
+  const material = useRef<MeshBasicMaterial>(null);
+  useEffect(() => () => geometry.dispose(), [geometry]);
+  useFrame(() => {
+    const active = props.endpoint === id, connect = storyAt(props.clock.current.progress).connect;
+    // Complete rings only, so partial tube segments never form broken triangles.
+    geometry.setDrawRange(0, active ? Math.floor(connect * 64) * 5 * 6 : geometry.index!.count);
+    if(material.current) material.current.opacity = active ? .72 : .09;
+  });
+  return <mesh geometry={geometry}><meshBasicMaterial ref={material} color={sceneMaterials[props.theme].accent} transparent opacity={0} toneMapped={false} depthWrite={false}/></mesh>;
+}
 function World(props: NetworkCanvasProps) {
-  const { theme, clock, pointer, invalidateRef, onReady, onUnavailable } = props;
+  const { theme, endpoint, transfer, clock, pointer, invalidateRef, onReady, onUnavailable } = props;
   const { invalidate, gl } = useThree();
   const materials = sceneMaterials[theme];
-  const rig = useRef<Group>(null);
-  const signal = useRef<Mesh>(null);
+  const rig = useRef<Group>(null), packet = useRef<Group>(null), receipt = useRef<Mesh>(null), sweep = useRef<Mesh>(null), sweepMaterial = useRef<MeshBasicMaterial>(null);
   const started = useRef<string | null>(null);
-  const route = useMemo(() => new CubicBezierCurve3(new Vector3(-.9, -.24, .9), new Vector3(-2.15, 2.5, -1.8), new Vector3(2.5, 2.2, -1.8), new Vector3(2.4, -.5, -.3)), []);
-  const geometry = useMemo(() => new TubeGeometry(route, 64, .012, 5, false), [route]);
+  const route = useMemo(() => new CubicBezierCurve3(...routes[endpoint].map(point => new Vector3(...point)) as [Vector3, Vector3, Vector3, Vector3]), [endpoint]);
   const position = useMemo(() => new Vector3(), []);
-  useEffect(() => () => geometry.dispose(), [geometry]);
+  const packetGeometry = useMemo(() => new RoundedBoxGeometry(transfer === "message" ? .19 : .14, transfer === "message" ? .13 : .21, .025, 1, .018), [transfer]);
+  const markings = useMemo(() => {
+    const vertices = transfer === "message" ? [-.075,.04,.016, 0,-.01,.016, 0,-.01,.016, .075,.04,.016] : [-.035,.015,.016, .035,.015,.016, -.035,-.03,.016, .035,-.03,.016, .018,.085,.016, .05,.05,.016];
+    const geometry = new BufferGeometry(); geometry.setAttribute("position", new Float32BufferAttribute(vertices,3)); return geometry;
+  }, [transfer]);
+  useEffect(() => () => {packetGeometry.dispose(); markings.dispose();}, [packetGeometry, markings]);
   useEffect(() => {
     invalidateRef.current = invalidate;
     const canvas = gl.domElement;
     const lost = (event: Event) => { event.preventDefault(); onUnavailable(); };
-    canvas.addEventListener("webglcontextlost", lost);
-    invalidate();
+    canvas.addEventListener("webglcontextlost", lost); invalidate();
     return () => { invalidateRef.current = null; canvas.removeEventListener("webglcontextlost", lost); };
   }, [gl, invalidate, invalidateRef, onUnavailable]);
   useFrame(({ camera }) => {
     if (started.current !== theme) { started.current = theme; onReady(); }
-    const progress = clock.current.progress;
+    const progress = clock.current.progress, story = storyAt(progress);
     if (rig.current) {
-      const x = pointer.current.y * .026;
-      const y = pointer.current.x * .035;
+      const x = pointer.current.y * .026, y = pointer.current.x * .035;
       rig.current.rotation.x += (x - rig.current.rotation.x) * .12;
       rig.current.rotation.y += (y - rig.current.rotation.y) * .12;
       if (Math.abs(rig.current.rotation.x - x) + Math.abs(rig.current.rotation.y - y) > .0002) invalidate();
     }
-    camera.position.z = 9.8 - Math.sin(progress * Math.PI) * .32;
-    if (signal.current) {
-      const travel = Math.min(1, Math.max(0, (progress - .16) / .6));
-      route.getPoint(travel, position);
-      signal.current.position.copy(position);
-      signal.current.visible = progress > .16 && progress < .8;
-    }
+    camera.position.z = 9.8 - .28 * smooth(story.connect);
+    camera.position.x = .25 + (endpoint === "studio" ? -.08 : .12) * smooth(story.connect);
+    if (packet.current) {route.getPoint(story.travel, position); packet.current.position.copy(position); packet.current.quaternion.copy(camera.quaternion); packet.current.visible = story.packet;}
+    if (receipt.current) {route.getPoint(1 - story.receipt, position); receipt.current.position.copy(position); receipt.current.visible = story.returning;}
+    if (sweep.current && sweepMaterial.current) {sweep.current.visible = progress < .18; sweep.current.scale.setScalar(.2 + 2.8 * story.discover); sweepMaterial.current.opacity = .18 * Math.sin(Math.PI * story.discover);}
   });
   return <>
     <ambientLight intensity={theme === "dark" ? 1.8 : 2.1} />
     <directionalLight position={[-3, 6, 6]} intensity={theme === "dark" ? 3 : 2.4} color={materials.keyLight} />
     <group ref={rig}>
-      <Computers theme={theme} />
-      <mesh geometry={geometry}><meshBasicMaterial color={materials.accent} transparent opacity={.8} toneMapped={false} /></mesh>
-      <mesh ref={signal} visible={false}><sphereGeometry args={[.045, 12, 8]} /><meshBasicMaterial color={materials.signal} toneMapped={false} /></mesh>
+      <mesh ref={sweep} position={[-1.05, -.75, -.8]}><ringGeometry args={[.98, 1, 64]}/><meshBasicMaterial ref={sweepMaterial} color={materials.accent} transparent opacity={0} depthWrite={false} toneMapped={false}/></mesh>
+      <Computers theme={theme} endpoint={endpoint} clock={clock} onSelect={props.onSelect}/>
+      {endpoints.map(peer => <Connection key={peer.id} id={peer.id} {...props}/>)}
+      <group ref={packet} visible={false}><mesh geometry={packetGeometry}><meshBasicMaterial color={materials.signal} toneMapped={false}/></mesh><lineSegments geometry={markings}><lineBasicMaterial color={materials.screen} toneMapped={false}/></lineSegments></group>
+      <mesh ref={receipt} visible={false}><sphereGeometry args={[.026, 8, 8]} /><meshBasicMaterial color={materials.status} toneMapped={false} /></mesh>
     </group>
   </>;
 }

@@ -1,5 +1,9 @@
 # Living Network: Stage 1 checkpoint
 
+Historical checkpoint, committed as 72a93bf. Stage 2 replaces the old test captures
+with sanitized actual-renderer demo captures; see LIVING_NETWORK_STAGE2.md and
+LIVING_NETWORK_ASSET_AUDIT.md for current status and remaining capture needs.
+
 Date: 2026-11-07, Asia/Calcutta. Approved A+B direction with C's restrained
 Porcelain materials. Stage 1 covers the design system/layout and initial cinematic
 hero. It does not claim the six-scene scroll story or completed product gallery.

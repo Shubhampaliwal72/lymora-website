@@ -1,6 +1,6 @@
 # Lymora Living Network: concept approval package
 
-Prepared 2026-11-07, Asia/Calcutta. A+B is now approved, with C materials for the light theme. This document is the approved design contract. Stage 1 is implemented; see ../../docs/LIVING_NETWORK_STAGE1.md. At the original concept checkpoint application code was unchanged; implementation verification is tracked separately. Nothing has been deployed.
+Prepared 2026-11-07, Asia/Calcutta. A+B is now approved, with C materials for the light theme. This document is the approved design contract. Stage 1 is committed as 72a93bf; Stage 2 interactive connections are implemented. See ../../docs/LIVING_NETWORK_STAGE2.md and ../../docs/LIVING_NETWORK_ASSET_AUDIT.md. At the original concept checkpoint application code was unchanged; implementation verification is tracked separately. Nothing has been deployed.
 
 Open review.html for the visual concepts and six-scene board. Every concept has
 Ember Night and Warm Porcelain versions. The SVGs contain editable vector geometry
@@ -24,7 +24,7 @@ review images, not implementation assets or a finished 3D scene.
   prepared with that exact visual reference and a supporting landscape brand
   composition brief. No new Canva asset has been generated/exported yet: the
   widget requires the owner's selection/start action. No original design edited.
-- Homepage implementation: A+B approved. Stage 1 hero/layout implemented and locally verified; Stages 2-5 remain.
+- Homepage implementation: A+B approved. Stages 1-2 hero/layout and interactive connections are implemented; Stages 3-5 remain.
 
 ## Creative premise
 

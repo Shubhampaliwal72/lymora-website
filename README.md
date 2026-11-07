@@ -3,7 +3,7 @@
 Independent workspace: `D:\my-projects\lymora`.
 The desktop application at `D:\my-projects\my-new-app` is a different project
 and Git repository. Do not add website dependencies or code there.
-Living Network Stage 1 is implemented: a lazy React Three Fiber hero, cinematic Ember layout, and matching 2.5D fallbacks. See docs/LIVING_NETWORK_STAGE1.md for the current files and verification. HERO_IMPLEMENTATION.md records the previous design.
+Living Network Stages 1 and 2 are implemented: a lazy React Three Fiber hero, selectable direct connections, finite message/file sequences, and matching 2.5D fallbacks. See docs/LIVING_NETWORK_STAGE2.md for the current implementation and docs/LIVING_NETWORK_ASSET_AUDIT.md for original asset provenance. Stage 1 is preserved in commit 72a93bf. HERO_IMPLEMENTATION.md records the previous design.
 
 ## Local development
 
@@ -53,7 +53,7 @@ Installed exact dependencies:
 - `@gsap/react@2.1.2`: scoped React setup and cleanup.
 - `motion@14.10.1`: component interactions, imported from `motion/react`.
 
-GSAP owns hero text and a finite 4.5-second progress clock. R3F derives camera, device and signal geometry from that clock. Motion owns only independent DOM controls and the mobile navigation panel. Three.js is lazy-loaded on capable fine-pointer desktops; mobile/reduced-motion/low-power modes use the 2.5D fallback. Never let them control the same
+GSAP owns hero text and a finite six-second progress clock. R3F derives camera, device and signal geometry from that clock. Motion owns only independent DOM controls and the mobile navigation panel. Three.js is lazy-loaded on capable fine-pointer desktops; mobile/reduced-motion/low-power modes use the 2.5D fallback. Never let them control the same
 property on one element. Use small client components, visible static content,
 reduced-motion support, and scoped cleanup.
 
@@ -73,9 +73,10 @@ and individual Canva asset licences before introducing promotional content.
 
 Remote: https://github.com/Shubhampaliwal72/lymora-website
 
-Created private and empty. Local Git uses `main`; no files were committed or
-pushed during setup. Review the files and verification results with the owner
-before the first commit/push. Do not deploy or connect `lymora.in` yet.
+The separate remote was created private and empty. Website implementation is on
+local `dev`; Stage 1 is committed as 72a93bf. No website files have been pushed or
+deployed. Review subsequent stages with the owner before committing them; do not
+push, deploy or connect `lymora.in` without approval.
 
 ## Dependency compatibility
 
@@ -91,7 +92,7 @@ See [SETUP_VERIFICATION.md](SETUP_VERIFICATION.md) for commands, results and rem
 
 ## Browser verification
 
-After `npm run build`, run `npm run verify:browser`. This uses an installed Edge browser in headless mode and a temporary loopback static server. Set `LYMORA_BROWSER_PATH` to another installed Chromium browser executable if needed. Screenshots and JSON results are saved locally in ignored `.verification/`. No screenshots or source are uploaded. See HERO_IMPLEMENTATION.md for coverage and limitations.
+After `npm run build`, run `npm run verify:browser`. This uses an installed Edge browser in headless mode and a temporary loopback static server. Set `LYMORA_BROWSER_PATH` to another installed Chromium browser executable if needed. Screenshots and JSON results are saved locally in ignored `.verification/`. No screenshots or source are uploaded. See docs/LIVING_NETWORK_STAGE2.md for coverage and limitations. Run `node scripts/verify-scene.mjs` for the shared animation boundary checks.
 
 To exercise an already-running local development server instead of the static export:
 

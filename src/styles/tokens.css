@@ -1,6 +1,6 @@
 :root {
   color-scheme: light;
-  --chat-preview-image: url("/media/living-network/chat-demo-light.png");
+  --chat-preview-image: url("/media/product/chats-light.png");
   --brand-mark-image: url("/brand/mark-light.png");
   --canvas: #faf9f7; --rail: #f5f3f0; --sidebar: #fff; --header: #fff;
   --surface: #fff; --surface-raised: #f2f0ed; --surface-hover: #ebe8e4;
@@ -16,7 +16,7 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
     color-scheme: dark;
-  --chat-preview-image: url("/media/living-network/chat-demo-dark.png");
+  --chat-preview-image: url("/media/product/chats-dark.png");
   --brand-mark-image: url("/brand/mark-dark.png");
     --canvas: #101114; --rail: #17191d; --sidebar: #1b1d22; --header: #1a1c20;
     --surface: #202228; --surface-raised: #272a30; --surface-hover: #2b2e35;
@@ -30,7 +30,7 @@
 }
 [data-theme='dark'] {
   color-scheme: dark;
-  --chat-preview-image: url("/media/living-network/chat-demo-dark.png");
+  --chat-preview-image: url("/media/product/chats-dark.png");
   --brand-mark-image: url("/brand/mark-dark.png");
   --canvas: #101114; --rail: #17191d; --sidebar: #1b1d22; --header: #1a1c20;
   --surface: #202228; --surface-raised: #272a30; --surface-hover: #2b2e35;

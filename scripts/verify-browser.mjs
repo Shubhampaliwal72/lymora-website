@@ -90,7 +90,7 @@ try {
       if(await evaluate("document.readyState==='complete' && !document.documentElement.dataset.qaDeparting && !!document.querySelector('.living-network')")){loaded=true;break;}
       await pause(100);
     }
-    assert(loaded,'Stage 1 page loaded successfully');
+    assert(loaded,'Living Network page loaded successfully');
     await evaluate('document.fonts.ready'); await pause(1200);
   };
   const media=async (theme, reduce=false)=>cdp('Emulation.setEmulatedMedia',{features:[{name:'prefers-color-scheme',value:theme},{name:'prefers-reduced-motion',value:reduce?'reduce':'no-preference'}]});
@@ -119,7 +119,7 @@ try {
       assert.equal(state.theme,theme);assert(state.scroll<=state.width,'No horizontal overflow at '+width);assert(state.images);assert(state.links);
       if(width<=900)assert.equal(state.canvas,false,'No canvas loaded for mobile/tablet');
       report.push(state);
-      if(width===1440||width===390){await pause(3500);const name=(width===1440?'desktop':'mobile')+'-'+theme;const shot=await cdp('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});await fs.writeFile(path.join(output,name+'.png'),Buffer.from(shot.data,'base64'));const metrics=await cdp('Page.getLayoutMetrics');const full=await cdp('Page.captureScreenshot',{format:'png',captureBeyondViewport:true,clip:{x:0,y:0,width:metrics.cssContentSize.width,height:metrics.cssContentSize.height,scale:1}});await fs.writeFile(path.join(output,name+'-full.png'),Buffer.from(full.data,'base64'));}
+      if(width===1440||width===390){await pause(6300);const name=(width===1440?'desktop':'mobile')+'-'+theme;const shot=await cdp('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});await fs.writeFile(path.join(output,name+'.png'),Buffer.from(shot.data,'base64'));const metrics=await cdp('Page.getLayoutMetrics');const full=await cdp('Page.captureScreenshot',{format:'png',captureBeyondViewport:true,clip:{x:0,y:0,width:metrics.cssContentSize.width,height:metrics.cssContentSize.height,scale:1}});await fs.writeFile(path.join(output,name+'-full.png'),Buffer.from(full.data,'base64'));}
     }
   }
   await evaluate("document.querySelector('button[aria-label=\"Switch color theme\"]').click()");assert.equal(await evaluate('document.documentElement.dataset.theme'),'dark');await load();assert.equal(await evaluate('document.documentElement.dataset.theme'),'dark');
@@ -141,6 +141,50 @@ try {
   await evaluate("document.querySelector('.lighter-control').click()");assert.equal(await evaluate("!!document.querySelector('canvas')"),false,'Lighter view releases WebGL');assert.equal(await evaluate("document.querySelector('.living-network').dataset.mode"),'illustrated');
 
   await evaluate("document.querySelector('.lighter-control').click()");await waitFor("document.querySelector('.living-network').dataset.mode==='3d'",'Can restore the full scene');
+
+
+  // Click the Studio monitor itself, using the scene camera's perspective projection.
+  const screenPoint=await evaluate("(()=>{const r=document.querySelector('.network-world').getBoundingClientRect(),f=r.height/(2*Math.tan(35.5*Math.PI/360));return {x:r.left+r.width/2+(.58-.17)/(9.52+.9)*f,y:r.top+r.height/2-(1.34-.05)/(9.52+.9)*f}})()");
+  await cdp('Input.dispatchMouseEvent',{type:'mouseMoved',...screenPoint});
+  await cdp('Input.dispatchMouseEvent',{type:'mousePressed',button:'left',clickCount:1,...screenPoint});
+  await cdp('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,...screenPoint});
+  await waitFor("document.querySelector('.living-network').dataset.endpoint==='studio' && document.querySelector('.living-network').dataset.phase==='0'",'Clicking a 3D monitor restarts its direct route');
+
+  // Stage 2: keyboard-select the receiving PC, then follow a complete finite route.
+  await evaluate("document.querySelector('.endpoint-choices button:nth-of-type(2)').focus()");
+  await cdp('Input.dispatchKeyEvent',{type:'keyDown',key:'Enter',code:'Enter',windowsVirtualKeyCode:13,text:'\r'});await cdp('Input.dispatchKeyEvent',{type:'keyUp',key:'Enter',code:'Enter',windowsVirtualKeyCode:13});
+  await waitFor("document.querySelector('.living-network').dataset.endpoint==='team'",'Keyboard selects the receiving PC');
+  assert.equal(await evaluate("document.querySelectorAll('.endpoint-choices [aria-pressed=true]').length"),1,'Exactly one recipient is selected');
+  const phases=new Set();
+  for(let i=0;i<75;i++){phases.add(await evaluate("Number(document.querySelector('.living-network').dataset.phase)"));if(phases.has(4))break;await pause(100);}
+  assert.deepEqual([...phases],[0,1,2,3,4],'Discovery, connect, transit, arrival, receipt occur in order');
+  assert.match(await evaluate("document.querySelector('.network-story-status [role=status]').textContent"),/Message received by Team PC/);
+  await evaluate("document.querySelector('.transfer-choices button:nth-of-type(2)').click()");
+  assert.equal(await evaluate("document.querySelector('.living-network').dataset.transfer"),'file');
+  await waitFor("document.querySelector('.living-network').dataset.phase==='2'",'A file follows the selected direct connection');
+  await evaluate("document.querySelector('button[aria-label=\"Pause network preview\"]').click()");await pause(250);
+  const frozen=await evaluate("document.querySelector('.fallback-packet').getAttribute('transform')");await pause(500);
+  assert.equal(await evaluate("document.querySelector('.fallback-packet').getAttribute('transform')"),frozen,'Both renderers pause on the shared clock');
+  await evaluate("document.querySelector('button[aria-label=\"Play network preview\"]').click()");
+  await waitFor("document.querySelector('.living-network').dataset.phase==='4'",'File sequence completes');
+  assert.match(await evaluate("document.querySelector('.network-story-status [role=status]').textContent"),/File received by Team PC/);
+  // Touch uses the same choices without requiring WebGL.
+  await viewport(375,844);await load();
+  await cdp('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:1});
+  await evaluate("document.querySelector('.endpoint-choices').scrollIntoView({block:'center',behavior:'instant'})");
+  await tap('.endpoint-choices button:nth-of-type(2)');await tap('.transfer-choices button:nth-of-type(2)');
+  assert.equal(await evaluate("document.querySelector('.living-network').dataset.endpoint"),'team');
+  assert.equal(await evaluate("document.querySelector('.living-network').dataset.transfer"),'file');
+  assert.equal(await evaluate("!!document.querySelector('canvas')"),false);
+  await waitFor("document.querySelector('.living-network').dataset.phase==='2'",'Lightweight file route animates');
+  assert.equal(await evaluate("document.querySelector('.fallback-packet').getAttribute('opacity')"),'1');
+  await cdp('Emulation.setTouchEmulationEnabled',{enabled:false,maxTouchPoints:1});
+  await media('dark',true);await pause(250);
+  assert.equal(await evaluate("document.querySelector('.living-network').dataset.phase"),'4','Reduced motion shows the result immediately');
+  await evaluate("document.querySelector('.endpoint-choices button').click()");
+  assert.match(await evaluate("document.querySelector('.network-story-status [role=status]').textContent"),/File received by Studio PC/);
+  await viewport(1440);await media('dark',false);await load();await waitFor("document.querySelector('.living-network').dataset.mode==='3d'",'Desktop renderer returns after touch and reduced motion');
+
   await evaluate("document.querySelector('canvas').getContext('webgl2').getExtension('WEBGL_lose_context').loseContext()");
   await waitFor("!document.querySelector('canvas') && document.querySelector('.living-network').dataset.mode==='illustrated'",'Lost WebGL context returns to the illustrated fallback');
   const hint=await cdp('Page.addScriptToEvaluateOnNewDocument',{source:"Object.defineProperty(navigator,'hardwareConcurrency',{get:()=>2,configurable:true});Object.defineProperty(navigator,'deviceMemory',{get:()=>2,configurable:true});"});
@@ -148,7 +192,7 @@ try {
   await cdp('Emulation.setScriptExecutionDisabled',{value:true});await media('light');await viewport(375,844);await load();await evaluate("document.querySelector('.mobile-menu').open=true");assert.equal(await evaluate("getComputedStyle(document.querySelector('.mobile-panel')).opacity"),'1');assert.equal(await evaluate("getComputedStyle(document.querySelector('h1')).opacity"),'1');assert.equal(await evaluate("getComputedStyle(document.querySelector('.brand-light')).display!=='none'"),true);assert.equal(await evaluate("!!document.querySelector('canvas')"),false);
   await cdp('Emulation.setScriptExecutionDisabled',{value:false});
   assert.deepEqual(missing,[],'No missing local assets');assert.deepEqual(external,[],'No external page requests');assert.deepEqual(errors,[],'No browser/hydration errors');
-  const result={stage:1,browser:version.Browser,mode:process.env.LYMORA_TEST_URL?'development':'static export',checks:report,lazyRendererFiles:rendererFiles,passed:['12 responsive/theme layouts','real WebGL rendering on desktop','mobile/tablet without WebGL',(process.env.LYMORA_TEST_URL?'mobile/reduced-motion suppress the renderer':'mobile/reduced-motion do not fetch lazy renderer'),'low-power fallback','WebGL context-loss recovery','local original logos and screenshots','anchor destinations','theme persistence','keyboard and Escape focus','touch navigation','animation visibly changes','Pause holds the frame','finite replay','live reduced-motion fallback','lighter view releases WebGL','no-JS content/menu/fallback','no missing assets','no external page requests','no runtime/hydration/console errors'],limitations:['Headless 3D uses software rendering; not a hardware performance benchmark.','Field Core Web Vitals, other engines and physical devices remain Stage 5 checks.']};
+  const result={stage:2,browser:version.Browser,mode:process.env.LYMORA_TEST_URL?'development':'static export',checks:report,lazyRendererFiles:rendererFiles,passed:['direct 3D monitor click','keyboard endpoint selection','ordered discovery/connection/transit/arrival/receipt','message and file replay to selected PC','shared-clock pause in both renderers','touch endpoint and file controls without WebGL','reduced-motion immediate outcome','12 responsive/theme layouts','real WebGL rendering on desktop','mobile/tablet without WebGL',(process.env.LYMORA_TEST_URL?'mobile/reduced-motion suppress the renderer':'mobile/reduced-motion do not fetch lazy renderer'),'low-power fallback','WebGL context-loss recovery','local original logos and screenshots','anchor destinations','theme persistence','keyboard and Escape focus','touch navigation','animation visibly changes','Pause holds the frame','finite replay','live reduced-motion fallback','lighter view releases WebGL','no-JS content/menu/fallback','no missing assets','no external page requests','no runtime/hydration/console errors'],limitations:['Headless 3D uses software rendering; not a hardware performance benchmark.','Field Core Web Vitals, other engines and physical devices remain Stage 5 checks.']};
   await fs.writeFile(path.join(output,process.env.LYMORA_TEST_URL?'development-results.json':'browser-results.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result,null,2));await send('Target.closeTarget',{targetId:target.targetId});await send('Browser.close');
 } finally {
   if(socket)socket.close();for(const promise of pending.values()){clearTimeout(promise.timeout);promise.reject(Error('Browser closed'));}pending.clear();server.close();if(browser.exitCode===null)browser.kill();

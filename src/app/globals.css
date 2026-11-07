@@ -84,10 +84,6 @@ h1 span { display: block; }
 .fallback-paths { position: absolute; inset: 0; width: 100%; height: 100%; }
 .fallback-path { stroke: var(--accent); stroke-width: 1.6; opacity: .65; }
 .fallback-path-muted { stroke: var(--diagram-line); stroke-width: 1; stroke-dasharray: 3 9; opacity: .5; }
-.fallback-signal { stroke: var(--accent); stroke-width: 4; stroke-dasharray: 35 1200; stroke-dashoffset: 1100; opacity: 0; }
-.network-fallback[data-animated] .fallback-signal { animation: network-signal 4.5s linear both; animation-play-state: paused; }
-.network-fallback[data-animated][data-playing] .fallback-signal { animation-play-state: running; }
-@keyframes network-signal { 0%, 13% { stroke-dashoffset: 1100; opacity: 0; } 18% { opacity: 1; } 75% { opacity: 1; } 88%, 100% { stroke-dashoffset: 0; opacity: 0; } }
 .network-device-label { display: none; position: absolute; color: var(--text-muted); font-size: 10px; pointer-events: none; }
 .living-network[data-mode='3d'] .network-device-label { display: block; }
 .device-label-studio { left: 55%; top: 12%; }
@@ -173,5 +169,29 @@ html[data-enhanced] .enhanced-control { display: inline-flex; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { transition-duration: 0s !important; animation-duration: 0s !important; animation-iteration-count: 1 !important; }
-  .fallback-signal { display: none; }
+  .fallback-packet, .fallback-receipt { display: none; }
 }
+
+/* Stage 2: one direct route, explicit accessible choices, finite shared clock. */
+.fallback-packet { fill: var(--accent); stroke: var(--canvas); stroke-width: 1.5; }
+.fallback-receipt { fill: var(--success, var(--accent)); }
+.fallback-computer[data-selected=true] .computer-label, .network-device-label[data-selected=true] { color: var(--accent); }
+.network-interaction { display: none; flex-direction: column; width: calc(100% - 53px); margin: 0 35px 0 18px; }
+.network-choices { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 16px; }
+.endpoint-choices, .transfer-choices { display: flex; align-items: center; gap: 3px; min-width: 0; }
+.endpoint-choices > span { margin-right: 9px; font-size: 10px; color: var(--text-muted); white-space: nowrap; }
+.network-choices button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 9px 12px; border: 1px solid transparent; border-radius: 100px; background: transparent; color: var(--text-secondary); font-size: 11px; white-space: nowrap; transition: background 160ms ease, border-color 160ms ease; }
+.network-choices button:hover { background: var(--surface-hover); }
+.network-choices button[aria-pressed=true] { color: var(--text-primary); background: var(--surface); border-color: var(--border); }
+.network-choices button svg { width: 14px; height: 14px; color: var(--accent); }
+.network-story-status { margin-top: 12px; padding-top: 16px; border-top: 1px solid var(--border); }
+.story-steps { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--text-muted); font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
+.story-steps span { display: inline-flex; align-items: center; gap: 7px; }
+.story-steps span::before { content: ""; width: 4px; height: 4px; flex-shrink: 0; border: 1px solid var(--text-muted); border-radius: 50%; }
+.story-steps span[data-current=true] { color: var(--accent); }
+.story-steps span[data-current=true]::before, .story-steps span[data-complete=true]::before { border-color: var(--accent); background: var(--accent); }
+.network-story-status p { min-height: 34px; margin: 10px 0 0; color: var(--text-secondary); font-size: 12px; line-height: 1.6; }
+@media (min-width: 901px) and (max-width: 1599px) { .network-world { height: 570px; } }
+@media (max-width: 1150px) and (min-width: 901px) { .network-world { height: 510px; } .network-interaction { margin-left: 35px; width: calc(100% - 70px); } }
+@media (max-width: 900px) { .network-interaction { margin-inline: 0; width: 100%; } }
+@media (max-width: 600px) { .network-choices { gap: 4px; } .network-choices button { padding-inline: 10px; } .network-caption { padding-top: 4px; } .story-steps { gap: 5px; font-size: 8px; letter-spacing: .025em; } .story-steps span { gap: 5px; } }

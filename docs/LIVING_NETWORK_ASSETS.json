@@ -1,14 +1,82 @@
 [
   {
-    "file": "public/media/living-network/chat-demo-dark.png",
-    "source": "D:/my-projects/my-new-app/.codex-backup/frontend-smoke/compact-messages-dark.png",
-    "sha256": "878f32af8abeb1fa9f60ffa195037b119bda3cde7510ee08a88509199f0b591d",
-    "status": "Actual unmodified renderer test capture. Local stage preview only. Clean current release capture required before publication."
+    "file": "public/media/product/chats-dark.png",
+    "sha256": "8717a6c6fd267431aa400bfdeb3d425af3bdfb1a088ff3bb96966154defdcb2b",
+    "source": "Existing unmodified desktop renderer with isolated fictional fixtures",
+    "theme": "dark",
+    "view": "chats",
+    "privateData": false,
+    "addresses": "No device addresses shown",
+    "status": "Sanitized local preview; owner visual review required before public deployment"
   },
   {
-    "file": "public/media/living-network/chat-demo-light.png",
-    "source": "D:/my-projects/my-new-app/.codex-backup/frontend-smoke/compact-messages-light.png",
-    "sha256": "f83477f9b9442c1d6439909d824edefd8c4f93162a92c334c56aea5f184f9e93",
-    "status": "Actual unmodified renderer test capture. Local stage preview only. Clean current release capture required before publication."
+    "file": "public/media/product/chats-light.png",
+    "sha256": "ebf1721a7d984e783d8935334893aeedef7c8b45be6394d6406c865599352a5f",
+    "source": "Existing unmodified desktop renderer with isolated fictional fixtures",
+    "theme": "light",
+    "view": "chats",
+    "privateData": false,
+    "addresses": "No device addresses shown",
+    "status": "Sanitized local preview; owner visual review required before public deployment"
+  },
+  {
+    "file": "public/media/product/groups-dark.png",
+    "sha256": "f229d32cc26184871435e424996a053e9c6f74b621952f15d0097278a40aec54",
+    "source": "Existing unmodified desktop renderer with isolated fictional fixtures",
+    "theme": "dark",
+    "view": "groups",
+    "privateData": false,
+    "addresses": "No device addresses shown",
+    "status": "Sanitized local preview; owner visual review required before public deployment"
+  },
+  {
+    "file": "public/media/product/groups-light.png",
+    "sha256": "b6f0bd93dcb764a4557b17c464bf00dd08bc010b1da89d3d36dc196c12dce9bd",
+    "source": "Existing unmodified desktop renderer with isolated fictional fixtures",
+    "theme": "light",
+    "view": "groups",
+    "privateData": false,
+    "addresses": "No device addresses shown",
+    "status": "Sanitized local preview; owner visual review required before public deployment"
+  },
+  {
+    "file": "public/media/product/files-dark.png",
+    "sha256": "7bac1ff66cbb2a479711063a3661fde1796050d46e9f74677db9779420fd8136",
+    "source": "Existing unmodified desktop renderer with isolated fictional fixtures",
+    "theme": "dark",
+    "view": "files",
+    "privateData": false,
+    "addresses": "No device addresses shown",
+    "status": "Sanitized local preview; owner visual review required before public deployment"
+  },
+  {
+    "file": "public/media/product/files-light.png",
+    "sha256": "91832855ac618d5e257e65ba439f6c6bc50814c838b4cf532349f06f5a99dded",
+    "source": "Existing unmodified desktop renderer with isolated fictional fixtures",
+    "theme": "light",
+    "view": "files",
+    "privateData": false,
+    "addresses": "No device addresses shown",
+    "status": "Sanitized local preview; owner visual review required before public deployment"
+  },
+  {
+    "file": "public/media/product/network-dark.png",
+    "sha256": "ba21758be311dec9154841451d0652afb2afc1a17f174ebc0e67ff0e985c3574",
+    "source": "Existing unmodified desktop renderer with isolated fictional fixtures",
+    "theme": "dark",
+    "view": "network",
+    "privateData": false,
+    "addresses": "RFC 5737 documentation addresses, not real devices",
+    "status": "Sanitized local preview; owner visual review required before public deployment"
+  },
+  {
+    "file": "public/media/product/network-light.png",
+    "sha256": "ef4d7fe46f91b538b9faaab274bdd643fd8456a48d9bf0a932bc46ac1782a096",
+    "source": "Existing unmodified desktop renderer with isolated fictional fixtures",
+    "theme": "light",
+    "view": "network",
+    "privateData": false,
+    "addresses": "RFC 5737 documentation addresses, not real devices",
+    "status": "Sanitized local preview; owner visual review required before public deployment"
   }
 ]
