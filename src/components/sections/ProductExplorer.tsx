@@ -1,13 +1,14 @@
 "use client";
+import { useScenePreferences } from "@/components/living-network/useScenePreferences";
 import { useRef, useState, type KeyboardEvent } from "react";
-import { motion, useAnimate, useReducedMotion } from "motion/react";
+import { motion, useAnimate } from "motion/react";
 import { productViews } from "@/lib/products";
 import { ThemeScreenshot } from "@/components/site/ThemeScreenshot";
 export function ProductExplorer({id="experience"}:{id?:string}) {
   const [selected,setSelected] = useState(0);
   const [panel,animate] = useAnimate<HTMLDivElement>();
   const buttons = useRef<(HTMLButtonElement|null)[]>([]);
-  const reduce = useReducedMotion();
+  const reduce = !useScenePreferences().motion;
   const view = productViews[selected];
   const choose = (index:number) => {setSelected(index);if(panel.current)void animate(panel.current,{opacity:[reduce?1:.65,1],y:[reduce?0:8,0]},{duration:reduce?0:.24});};
   const keys = (event:KeyboardEvent<HTMLButtonElement>,index:number) => {

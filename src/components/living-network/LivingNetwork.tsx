@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { Component, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
 import { Icon } from "@/components/site/Icons";
 import { NetworkFallback } from "./NetworkFallback";
 import { useScenePreferences } from "./useScenePreferences";
@@ -38,7 +38,7 @@ export function LivingNetwork() {
   const [transfer, setTransfer] = useState<Transfer>("message");
   const [phase, setPhase] = useState(0);
   const preferences = useScenePreferences();
-  const reduce = useReducedMotion();
+  const reduce = !preferences.motion;
   const onReady = useCallback(() => setReady(preferences.theme), [preferences.theme]);
   const onUnavailable = useCallback(() => { setUnavailable(true); setReady(null); }, []);
   const canvas = preferences.capable && load && !lighter && !unavailable;

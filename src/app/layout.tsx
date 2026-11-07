@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   robots: {index: false, follow: false},
 };
 // Runs before paint; only this root attribute differs during hydration. No external requests.
-const themeScript = "(()=>{const r=document.documentElement;r.dataset.enhanced='';let t;try{t=localStorage.getItem('lymora-website-theme')}catch{}r.dataset.theme=t==='dark'||t==='light'?t:matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'})()";
+const themeScript = "(()=>{const r=document.documentElement;r.dataset.enhanced='';r.dataset.motion='full';let t;try{t=localStorage.getItem('lymora-website-theme')}catch{}r.dataset.theme=t==='dark'||t==='light'?t:matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'})()";
 export default function RootLayout({children}: {children: ReactNode}) {
   return <html lang="en" suppressHydrationWarning className={manrope.variable + " " + dmSans.variable}><head><script dangerouslySetInnerHTML={{__html: themeScript}}/></head><body><a className="skip-link" href="#main">Skip to content</a><NetworkWallpaper/><div className="site-shell"><SiteHeader/><PageRevealMotion>{children}<SiteFooter/></PageRevealMotion></div></body></html>;
 }

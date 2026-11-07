@@ -15,3 +15,5 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+- Latest explicit motion policy: the owner requests always-on website animations even when the browser reports reduced motion, and no public header animation switch. Preserve this intentional exception to the earlier attachment defaults. Keep hidden-tab/offscreen pauses and lightweight mobile/low-capability rendering. See docs/GLASS_NETWORK_MOTION.md.

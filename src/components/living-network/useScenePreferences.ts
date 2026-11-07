@@ -5,8 +5,7 @@ import { useSyncExternalStore } from "react";
 type NetworkHints = EventTarget & { saveData?: boolean; effectiveType?: string };
 type NavigatorHints = Navigator & { connection?: NetworkHints; deviceMemory?: number };
 const queries = {
-  motion: "(prefers-reduced-motion: no-preference)",
-  capable: "(min-width: 901px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)",
+  capable: "(min-width: 901px) and (hover: hover) and (pointer: fine)",
 };
 function subscribePreferences(callback: () => void) {
   const media = Object.values(queries).map(query => matchMedia(query));
@@ -44,7 +43,8 @@ function subscribeVisibility(callback: () => void) {
 export function useScenePreferences() {
   return {
     capable: useSyncExternalStore(subscribePreferences, isCapable, () => false),
-    motion: useSyncExternalStore(subscribePreferences, () => matchMedia(queries.motion).matches, () => false),
+    // Owner explicitly requested always-on website motion, independent of OS preference.
+    motion: true,
     theme: useSyncExternalStore(subscribeTheme, themeSnapshot, () => "light" as const),
     visible: useSyncExternalStore(subscribeVisibility, () => !document.hidden, () => true),
   };

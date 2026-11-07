@@ -1,19 +1,19 @@
 /* Orange is activity; neutral computer outlines keep the network readable. */
-:root { --network-wire:#c7470b; --network-head:#a93605; --network-trail:#ed6826; }
-[data-theme='dark'] { --network-wire:#e76528; --network-head:#ffe0bf; --network-trail:#ff9356; }
-@media(prefers-color-scheme:dark){:root:not([data-theme='light']){--network-wire:#e76528;--network-head:#ffe0bf;--network-trail:#ff9356;}}
+:root { --network-wire:#b84b1b; --network-head:#8f2d08; --network-trail:#d64d10; --network-device:#81756b; }
+[data-theme='dark'] { --network-wire:#e76528; --network-head:#ffe0bf; --network-trail:#ff9356; --network-device:#746c65; }
+@media(prefers-color-scheme:dark){:root:not([data-theme='light']){--network-wire:#e76528;--network-head:#ffe0bf;--network-trail:#ff9356;--network-device:#746c65;}}
 .network-wallpaper .ambient-routes path { stroke:var(--network-wire);stroke-width:1.15;opacity:0; }
 .network-wallpaper .ambient-streaks,.network-wallpaper .ambient-streak-glows,.network-wallpaper .ambient-head-glows { opacity:0; }
 .network-wallpaper[data-animated='true'] .ambient-streaks { opacity:1; }
 .network-wallpaper[data-animated='true'] .ambient-streak-glows { opacity:.18; }
 .network-wallpaper[data-animated='true'] .ambient-head-glows { opacity:.2; }
-.ambient-streaks path { opacity:0;stroke:var(--network-trail);stroke-width:2.4;stroke-linecap:round; }
+.ambient-streaks path { opacity:0;stroke:var(--network-trail);stroke-width:3.2;stroke-linecap:round; }
 .ambient-streak-glows path { opacity:0;stroke:var(--accent);stroke-width:10;stroke-linecap:round; }
 .ambient-head-glows { fill:var(--accent); }
 .network-wallpaper .ambient-signals { fill:var(--network-head); }
 .network-wallpaper[data-animated='true'] .ambient-signals { opacity:1; }
-.network-wallpaper .ambient-computers { stroke:var(--diagram-line);opacity:.65; }
-.network-wallpaper .wallpaper-scrim { background:linear-gradient(90deg,color-mix(in srgb,var(--canvas) 91%,transparent),color-mix(in srgb,var(--canvas) 56%,transparent) 32%,color-mix(in srgb,var(--canvas) 18%,transparent) 78%,color-mix(in srgb,var(--canvas) 70%,transparent)); }
+.network-wallpaper .ambient-computers { stroke:var(--network-device);opacity:.65; }
+.network-wallpaper .wallpaper-scrim { background:linear-gradient(90deg,color-mix(in srgb,var(--canvas) 78%,transparent),color-mix(in srgb,var(--canvas) 32%,transparent) 32%,color-mix(in srgb,var(--canvas) 8%,transparent) 78%,color-mix(in srgb,var(--canvas) 42%,transparent)); }
 .reading-progress { position:fixed;inset:0 auto auto 0;width:100%;height:2px;z-index:150;transform:scaleX(0);transform-origin:left;background:var(--accent);pointer-events:none; }
 .homepage-motion { overflow:clip; }
 .homepage-motion .product-stage { perspective:1400px; }
@@ -26,7 +26,6 @@
 .network-ribbon em { color:var(--accent); }
 .usecase-section:has(.network-ribbon) { row-gap:48px; }
 @media(max-width:600px){.network-ribbon > div{font-size:52px;gap:24px;}.usecase-section:has(.network-ribbon){row-gap:30px;}}
-@media(prefers-reduced-motion:reduce){.reading-progress{display:none;}.network-wallpaper .ambient-streaks,.network-wallpaper .ambient-streak-glows,.network-wallpaper .ambient-head-glows{display:none;}.network-ribbon>div{white-space:normal;flex-wrap:wrap;width:100%;font-size:clamp(38px,6vw,72px);gap:8px 24px;}}
 @media print{.ambience-control,.reading-progress{display:none;}[data-scroll-heading],[data-scroll-horizontal],[data-scroll-surface],[data-scroll-depth],[data-scroll-ribbon]{transform:none!important;}}
 
 /* A contained scene leaves real layout space for its controls. */
@@ -39,10 +38,30 @@
 .brand-hero .network-controls { flex-wrap:wrap; }
 .network-controls button[aria-pressed='true'] { color:var(--accent);background:var(--accent-subtle); }
 .network-wallpaper .ambient-computers { opacity:1; }
-.ambient-case { stroke:color-mix(in srgb,var(--network-wire) calc(var(--arrival,0) * 100%),var(--diagram-line));stroke-width:calc(1.2px + var(--arrival,0) * 1.8px);fill:color-mix(in srgb,var(--accent) calc(var(--arrival,0) * 16%),transparent); }
+.ambient-case { stroke:color-mix(in srgb,var(--network-wire) calc(var(--arrival,0) * 100%),var(--network-device));stroke-width:calc(1.2px + var(--arrival,0) * 1.8px);fill:color-mix(in srgb,var(--accent) calc(var(--arrival,0) * 16%),transparent); }
 .ambient-arrival-glow { stroke:var(--accent);stroke-width:7;fill:var(--accent);opacity:calc(var(--arrival,0) * .22); }
 .network-wallpaper:not([data-animated='true']) .ambient-routes path[data-static='true'] { opacity:.3; }
 .fallback-screen::after { content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 0 3px var(--accent),inset 0 0 38px var(--scene-glow);opacity:var(--arrival,0); }
 .fallback-path-muted { stroke:var(--accent);stroke-dasharray:none;opacity:.15; }
 .reveal-word { display:inline-block;perspective:500px;transform-origin:center bottom; }
 @media(max-width:600px){.brand-hero .network-interaction{margin-top:18px;}.brand-hero .network-choices button{padding-inline:8px;font-size:10px;}.brand-hero .network-caption{padding-inline:0;}.network-controls{gap:1px;}}
+
+/* Visible, local animation preference and restrained interaction feedback. */
+html[data-motion='full'] :is(.product-link,.resource-links a,.button,.nav-featured,.footer-orbit) { transition:translate 260ms ease,background 200ms ease,border-color 200ms ease,box-shadow 260ms ease; }
+@media(hover:hover) and (pointer:fine){
+ html[data-motion='full'] :is(.product-link,.resource-links a,.button,.footer-orbit):hover { translate:0 -3px; }
+ html[data-motion='full'] :is(.text-link,.hero-text-link,.product-link,.resource-links a) svg { transition:translate 260ms ease; }
+ html[data-motion='full'] :is(.text-link,.hero-text-link,.product-link,.resource-links a):hover svg { translate:3px 0; }
+ html[data-motion='full'] .product-screen .theme-screenshot img { transition:scale 550ms ease; }
+ html[data-motion='full'] .product-screen:hover .theme-screenshot img { scale:1.015; }
+}
+
+/* A stable ring with three cross-links: direct peers, no central server. */
+.network-wallpaper .ambient-routes path[data-static='true'] { opacity:.24; }
+.network-wallpaper .ambient-screen { stroke:var(--network-device);stroke-width:.8;fill:color-mix(in srgb,var(--canvas) 68%,transparent);opacity:.72; }
+[data-theme='light'] .network-wallpaper { background:radial-gradient(ellipse at 92% 24%,#d45b1524,transparent 48%),radial-gradient(ellipse at 16% 78%,#a44a1612,transparent 44%); }
+
+/* Keep the live network behind a soft glass layer; foreground stays crisp. */
+.network-wallpaper svg { filter:blur(1.15px);opacity:.84; }
+.network-wallpaper .wallpaper-scrim::after { content:"";position:absolute;inset:0;background:linear-gradient(132deg,transparent 22%,color-mix(in srgb,var(--glass-edge) 28%,transparent) 46%,transparent 65%),linear-gradient(180deg,color-mix(in srgb,var(--canvas) 10%,transparent),transparent 35%,color-mix(in srgb,var(--canvas) 16%,transparent)); }
+@media(max-width:900px),(prefers-reduced-transparency:reduce){.network-wallpaper svg{filter:none;opacity:.72;}.network-wallpaper .wallpaper-scrim::after{display:none;}}

@@ -117,3 +117,59 @@ Final refinement verification: lint, production TypeScript/static build, all 595
 local references and the extended Edge browser checks pass. No console/runtime
 errors, missing assets or external requests were observed. Desktop Git status
 remains clean. Captures were refreshed from the corrected build.
+
+## Always-on motion and mesh contrast (latest owner direction)
+
+The actual local development browser was probed without media emulation and
+reported prefers-reduced-motion: reduce. Under the earlier policy this disabled
+the scene, word reveals and CSS motion. Forcing normal motion reproduced the
+working animation; the IP address was not the cause.
+
+The owner then explicitly requested permanently active website motion and removal
+of the header switch. The temporary site-toggle implementation was removed.
+useScenePreferences now returns motion=true, and the pre-paint root script sets
+data-motion=full. Legacy saved animation values are ignored. Hero, word reveals,
+Motion interactions and CSS share this policy. No Windows/browser setting is
+changed. This is an explicit exception to the earlier attachment default of
+following reduced motion. Low-capability/mobile rendering and hidden-tab/offscreen
+pauses remain; existing scene/ambience pause controls remain accessible.
+
+Headings and images now restart their reveal on re-entry. Hover adds a small
+button/link lift, icon movement and a screenshot zoom on a separate image node,
+without competing with GSAP wrapper transforms.
+
+The background uses six larger 84x54 vector monitor cases, a ring with three
+cross-links and randomly selected direct packet routes. Every route starts and
+ends exactly on a bezel. The stable nine-link mesh prevents the background from
+appearing empty between packets. The hero camera moves from 11.6 to 10.8 for a
+modest size increase while paint containment protects the controls. The wallpaper
+uses meet framing so monitor icons fit instead of being cropped at narrow desktop
+aspect ratios.
+
+Light-mode monitor outlines, orange beam cores and the warm ambient wash have
+stronger contrast; the masking gradient no longer washes out the whole network.
+The SVG stays resolution-independent. The one active packet now uses the native
+GSAP/browser frame cadence rather than the previous 30 Hz drawing throttle.
+There is no 4K raster video or new rendering engine/dependency.
+
+Verification includes the actual development URL http://127.0.0.1:3100 with the
+real reduced-motion setting, automatic 3D/word animation, hover, scroll reveal,
+and no runtime errors. Production browser checks cover exact line endpoints,
+mesh structure, repeatable word reveals, pause/arrival/random routing, navigation,
+responsive widths 320 through 3840 and actual 3840x2160 dark/light PNG captures:
+
+- design/glass-network/captures/Lymora-Homepage-dark-4K.png
+- design/glass-network/captures/Lymora-Homepage-light-4K.png
+
+These are software-rendered browser captures, not a hardware 4K frame-rate
+benchmark. The existing user-started dev server is left running. No deployment,
+commit or desktop-application mutation is performed.
+
+## Soft glass background finish
+
+The final visual request adds a 1.15px blur and 84% opacity to the wallpaper SVG
+only, plus a static diagonal reflection and a light canvas veil on its scrim.
+Text, controls, the real product screenshots and the foreground 3D PCs remain
+sharp. Mobile and reduced-transparency viewers skip the filter/reflection and
+use a subdued static-opacity background instead. No extra animation loop,
+backdrop-filter layer or dependency is introduced.

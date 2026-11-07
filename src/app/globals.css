@@ -169,9 +169,9 @@ html[data-enhanced] .enhanced-control { display: inline-flex; }
   .hero-actions { gap: 4px 20px; } .hero-text-link { min-height: 40px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  *, *::before, *::after { transition-duration: 0s !important; animation-duration: 0s !important; animation-iteration-count: 1 !important; }
-  .fallback-packet, .fallback-receipt { display: none; }
+  html:not([data-motion='full']) { scroll-behavior: auto; }
+  html:not([data-motion='full']) *, html:not([data-motion='full']) *::before, html:not([data-motion='full']) *::after { transition-duration: 0s !important; animation-duration: 0s !important; animation-iteration-count: 1 !important; }
+  html:not([data-motion='full']) .fallback-packet, html:not([data-motion='full']) .fallback-receipt { display: none; }
 }
 
 /* Stage 2: one direct route, explicit accessible choices, finite shared clock. */

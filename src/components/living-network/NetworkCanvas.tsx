@@ -82,7 +82,7 @@ function World(props: NetworkCanvasProps) {
       rig.current.rotation.y += (y - rig.current.rotation.y) * .12;
       if (Math.abs(rig.current.rotation.x - x) + Math.abs(rig.current.rotation.y - y) > .0002) invalidate();
     }
-    camera.position.z = 11.6 - .16 * smooth(story.connect);
+    camera.position.z = 10.8 - .16 * smooth(story.connect);
     camera.position.y = .35;
     camera.position.x = .35;
     if (packet.current) {route.getPoint(story.travel, position); packet.current.position.copy(position); packet.current.quaternion.copy(camera.quaternion); packet.current.visible = story.packet;}
@@ -102,7 +102,7 @@ function World(props: NetworkCanvasProps) {
   </>;
 }
 export default function NetworkCanvas(props: NetworkCanvasProps) {
-  return <Canvas className="network-canvas" frameloop="demand" dpr={[1, 1.5]} camera={{position: [.35, .35, 11.6], fov: 35.5}} gl={{alpha: true, antialias: true, powerPreference: "low-power"}} fallback={null} aria-hidden="true">
+  return <Canvas className="network-canvas" frameloop="demand" dpr={[1, 1.5]} camera={{position: [.35, .35, 10.8], fov: 35.5}} gl={{alpha: true, antialias: true, powerPreference: "low-power"}} fallback={null} aria-hidden="true">
     <Suspense fallback={null}><World {...props} /></Suspense>
   </Canvas>;
 }

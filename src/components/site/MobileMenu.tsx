@@ -1,16 +1,17 @@
 "use client";
+import { useScenePreferences } from "@/components/living-network/useScenePreferences";
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { messenger } from "@/lib/products";
-import { useAnimate, useReducedMotion } from "motion/react";
+import { useAnimate } from "motion/react";
 import { motionTiming } from "@/lib/motion";
 import { Icon } from "./Icons";
 export function MobileMenu() {
   const details = useRef<HTMLDetailsElement>(null);
   const pathname = usePathname();
   const [panel, animate] = useAnimate<HTMLElement>();
-  const reduce = useReducedMotion();
+  const reduce = !useScenePreferences().motion;
   useEffect(() => {
     const close = () => { if (details.current) details.current.open = false; };
     const escape = (event: KeyboardEvent) => {
