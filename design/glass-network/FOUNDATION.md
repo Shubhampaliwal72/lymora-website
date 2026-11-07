@@ -57,7 +57,7 @@ review viewports, not generated screenshots or proof that UI tests were run.
   seven visible direct paths and six computer/node representations. No second
   full-screen Three renderer is introduced.
 - GSAP owns the continuous signal clock and throttles SVG drawing to at most
-  24 updates/second. It also owns the small pointer wrapper transforms.
+  30 updates/second (one 10-second signal circuit). It also owns the small pointer wrapper transforms.
 - GSAP ScrollTrigger owns a different outer wrapper's bounded vertical/rotation
   shift as the document scrolls. It cleans up/recalculates on route changes.
 - Motion owns navigation and independent tab interactions. Existing R3F owns the
@@ -90,3 +90,10 @@ review files use existing approved original assets.
 The owner will perform visual/browser acceptance. This pass runs code/lint,
 static compilation and internal-link checks only. No deployment, DNS change,
 release publication or automatic commit is performed.
+
+## Live motion update
+
+The latest request authorizes live orange trails, horizontal/vertical scroll
+motion and actual full-page captures. See docs/GLASS_NETWORK_MOTION.md for
+ownership, checks and image locations. The code-only verification above
+describes the original foundation checkpoint.

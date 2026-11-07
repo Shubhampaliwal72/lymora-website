@@ -7,7 +7,9 @@
     "build": "next build",
     "lint": "eslint . --max-warnings=0",
     "typecheck": "next typegen && tsc --noEmit",
-    "verify:browser": "node scripts/verify-browser.mjs"
+    "verify:browser": "node scripts/verify-browser.mjs",
+    "postbuild": "node scripts/normalize-static-segments.mjs",
+    "verify:motion": "node scripts/verify-network-motion.mjs"
   },
   "dependencies": {
     "@gsap/react": "2.1.2",

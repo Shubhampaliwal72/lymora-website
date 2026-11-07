@@ -47,3 +47,6 @@ next-env.d.ts
 /design/living-network/*.svg
 /design/living-network/previews/
 /design/living-network/REVIEW_CHECKS.json
+
+# Full-size local website review captures
+/design/glass-network/captures/
