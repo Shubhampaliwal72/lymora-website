@@ -1,6 +1,7 @@
 /** Homepage motion checks and full-page review PNGs. Loopback only; no uploads. */
 import assert from 'node:assert/strict';
 import { verifyLaunchUi } from './verify-launch-ui.mjs';
+import { verifyPremiumUi } from './verify-premium-ui.mjs';
 import fs from 'node:fs/promises';
 import http from 'node:http';
 import path from 'node:path';
@@ -109,117 +110,9 @@ try {
   };
 
 
-  const exportDir=path.join(root,'design/glass-network/captures');await fs.mkdir(exportDir,{recursive:true});
   const checks=[];
-  const go=async top=>{await evaluate('window.scrollTo({top:'+top+',behavior:"instant"})');await pause(1250);};
-  const bounds=async selector=>evaluate('(()=>{const r=document.querySelector('+JSON.stringify(selector)+').getBoundingClientRect();return{top:r.top+scrollY,height:r.height}})()');
-  const transform=selector=>evaluate('getComputedStyle(document.querySelector('+JSON.stringify(selector)+')).transform');
-  const checkRibbon=async()=>{
-    const ribbon=await bounds('.network-ribbon'),height=await evaluate('innerHeight');
-    await go(ribbon.top-height*.82);
-    const start=await transform('[data-scroll-ribbon]');
-    assert(await evaluate("(()=>{const box=document.querySelector('.network-ribbon').getBoundingClientRect(),first=document.querySelector('[data-scroll-ribbon] > :first-child').getBoundingClientRect();return first.left>=box.left-.75&&first.right<=box.right+.75&&first.top>=0&&first.bottom<=innerHeight})()"),'First ribbon phrase is fully visible during its reading hold');
-    await go(ribbon.top-height*.4);
-    assert(await evaluate("(()=>{const box=document.querySelector('.network-ribbon').getBoundingClientRect(),last=document.querySelector('[data-scroll-ribbon] > :last-child').getBoundingClientRect();return last.left>=box.left-.75&&last.right<=box.right+.75&&last.top>=0&&last.bottom<=innerHeight})()"),'Last ribbon phrase is fully visible before leaving the viewport');
-    if(await evaluate("document.querySelector('[data-scroll-ribbon]').scrollWidth>document.querySelector('.network-ribbon').clientWidth+2"))assert.notEqual(await transform('[data-scroll-ribbon]'),start,'Ribbon moves only when content overflows');
-    const finish=await transform('[data-scroll-ribbon]');await go(ribbon.top-height*.3);assert.equal(await transform('[data-scroll-ribbon]'),finish,'Last phrase holds instead of drifting out');
-  };
-  const checkHeader=async()=>{
-    assert(await evaluate("!!document.querySelector('.desktop-nav > a[href=\"/\"]') && !!document.querySelector('#mobile-navigation > a[href=\"/\"]')"),'Desktop and mobile have Home navigation');
-    if(await evaluate('innerWidth>900'))assert(await evaluate("(()=>{const h=document.querySelector('.header-inner').getBoundingClientRect(),n=document.querySelector('.desktop-nav').getBoundingClientRect(),b=document.querySelector('.brand-lockup').getBoundingClientRect(),a=document.querySelector('.header-actions').getBoundingClientRect();return Math.abs((n.left+n.right-h.left-h.right)/2)<1&&b.right+6<=n.left&&n.right+6<=a.left})()"),'Header menu is centered and does not collide with branding or actions');
-  };
-
   const launchOnly=process.argv.includes('--launch-only')||process.env.LYMORA_VERIFY_LAUNCH_ONLY==='1';
-  if(!launchOnly){
-  await viewport(1440,1000);await media('dark',true);await load();
-  await waitFor("document.querySelectorAll('.reveal-word').length>0 && document.querySelector('.living-network').dataset.mode==='3d'",'Motion starts without opt-in even with system reduction');
-  assert.equal(await evaluate("document.documentElement.dataset.motion"),'full','Owner-requested motion defaults on');
-  assert.equal(await evaluate("!!document.querySelector('.motion-toggle')"),false,'No public motion switch');
-  checks.push('always-on motion without opt-in or header switch');
-  await viewport(1440,1000);await media('dark');await load();await waitFor("document.querySelector('.living-network').dataset.mode==='3d'",'Desktop scene loads');
-  const offset=()=>evaluate("JSON.stringify([...document.querySelectorAll('.ambient-streaks path')].map(path=>path.getAttribute('stroke-dashoffset')))");
-  const before=await offset();await pause(450);assert.notEqual(await offset(),before,'Orange light moves without scrolling');
-  const colour=await evaluate("getComputedStyle(document.querySelector('.ambient-routes path')).stroke");assert.match(colour,/rgb/);const rgb=colour.match(/\d+/g).map(Number);assert(rgb[0]>rgb[1]&&rgb[1]>rgb[2],'Wire colour is orange');
-  await evaluate("document.querySelector('.ambience-control').click()");await pause(250);const held=await offset();await pause(450);assert.equal(await offset(),held,'Pause ambience freezes the light');await evaluate("document.querySelector('.ambience-control').click()");
-  checks.push('orange wires and independently moving light trails','pause/resume ambience');
-  const hoverTarget=await evaluate("(()=>{const r=document.querySelector('.hero-actions .button').getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2}})()");
-  await cdp('Input.dispatchMouseEvent',{type:'mouseMoved',...hoverTarget});await pause(350);
-  assert.notEqual(await evaluate("getComputedStyle(document.querySelector('.hero-actions .button')).translate"),'none','Primary action has visible hover motion');
-  await cdp('Input.dispatchMouseEvent',{type:'mouseMoved',x:2,y:120});
-  await checkHeader();
-  const homeBefore=await evaluate("getComputedStyle(document.querySelector('.desktop-nav > a[href=\"/\"]')).backgroundColor");
-  const navPoint=await evaluate("(()=>{const r=document.querySelector('.desktop-nav > a[href=\"/\"]').getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2}})()");
-  await cdp('Input.dispatchMouseEvent',{type:'mouseMoved',...navPoint});await pause(280);
-  assert.equal(await evaluate("getComputedStyle(document.querySelector('.desktop-nav > a[href=\"/\"]')).backgroundColor"),homeBefore,'Navigation hover adds no background');
-  await cdp('Input.dispatchMouseEvent',{type:'mouseMoved',x:2,y:120});
-  checks.push('real pointer hover feedback','Home navigation, centered header and text-only menu hover');
-
-  await waitFor("[...document.querySelectorAll('.ambient-computers > g')].some(pc=>Number(pc.style.getPropertyValue('--arrival'))>.1)",'Packet reaches and lights a computer');
-  assert(await evaluate("[...document.querySelectorAll('.ambient-computers > g')].some(pc=>Number(pc.style.getPropertyValue('--arrival'))>.05)"),'Receiving computer glows');
-  const initialPair=await evaluate("document.querySelector('.living-network').dataset.source+'-'+document.querySelector('.living-network').dataset.endpoint");
-  await waitFor("document.querySelector('.living-network').dataset.source+'-'+document.querySelector('.living-network').dataset.endpoint!=="+JSON.stringify(initialPair),'Automatic route changes after delivery');
-  assert(await evaluate("(()=>{const world=document.querySelector('.network-world'),controls=document.querySelector('.network-demo-strip'),a=world.getBoundingClientRect(),b=controls.getBoundingClientRect();return getComputedStyle(world).overflow==='hidden'&&a.bottom<=b.top})()"),'3D scene is contained above controls');
-  assert(await evaluate("parseFloat(getComputedStyle(document.querySelector('.header-inner')).borderTopLeftRadius)>100"),'Header has fully rounded ends');
-  checks.push('arrival glow and automatic PC-to-PC route changes','contained scene and fully rounded header');
-  assert.equal(await evaluate("document.querySelectorAll('.ambient-routes path[data-static=\"true\"]').length"),9,'Mesh has a stable ring and cross-links');
-  assert.equal(await evaluate("document.querySelector('.ambient-case').getAttribute('width')"),'84','Background PCs are larger');
-  assert(await evaluate(`(()=>{const cases=[...document.querySelectorAll('.ambient-case')].map(pc=>{const b=pc.getBBox(),m=pc.parentElement.transform.baseVal.consolidate().matrix;return{x:b.x+m.e,y:b.y+m.f,w:b.width,h:b.height}});return [...document.querySelectorAll('.ambient-routes path')].every(path=>[path.getPointAtLength(0),path.getPointAtLength(path.getTotalLength())].every(p=>cases.some(b=>p.x>=b.x-.1&&p.x<=b.x+b.w+.1&&p.y>=b.y-.1&&p.y<=b.y+b.h+.1&&Math.min(Math.abs(p.x-b.x),Math.abs(p.x-b.x-b.w),Math.abs(p.y-b.y),Math.abs(p.y-b.y-b.h))<.1)))})()`),'Every line ends on a computer bezel');
-  checks.push('structured nine-link mesh and exact PC connection endpoints');
-
-
-  const firstHorizontal=await transform('.ecosystem-copy'),eco=await bounds('.ecosystem-copy');await go(eco.top-280);assert.notEqual(await transform('.ecosystem-copy'),firstHorizontal,'Horizontal reveal responds to scroll');
-  assert.equal(await evaluate("getComputedStyle(document.querySelector('.ecosystem-copy .reveal-word')).opacity"),'1','Heading words finish revealing after scrolling into view');
-  await go(0);
-  assert(Number(await evaluate("getComputedStyle(document.querySelector('.ecosystem-copy .reveal-word')).opacity"))<.2,'Heading reveal resets when leaving above its trigger');
-  await go(eco.top-280);
-  assert.equal(await evaluate("getComputedStyle(document.querySelector('.ecosystem-copy .reveal-word')).opacity"),'1','Heading reveal replays when revisiting');
-
-  await checkRibbon();
-  assert(await evaluate("document.querySelectorAll('.reveal-word').length>10"),'Headings have word reveal animation');
-  assert(await evaluate("(()=>{const h=document.querySelector('#ecosystem-title'),first=h.querySelector(':scope > .reveal-word'),second=h.querySelector(':scope > span:not(.reveal-word)');return getComputedStyle(first).color===getComputedStyle(h).color&&getComputedStyle(first).color!==getComputedStyle(second).color})()"),'Word animation preserves the primary and secondary heading colors');
-  checks.push('horizontal content reveal responds to scroll','horizontal ribbon follows vertical scroll','word-by-word scroll reveals','heading contrast survives word splitting');
-  for(const theme of ['dark','light']){
-    await media(theme);await load();await waitFor("document.querySelector('.living-network').dataset.mode==='3d'",'Desktop 3D ready');
-    await waitFor("document.querySelector('.living-network').dataset.phase==='4'",'Capture arrival state');
-    await evaluate("document.querySelector('[aria-label=\"Pause network preview\"]').click()");
-    const height=await evaluate('document.documentElement.scrollHeight');
-    for(let top=0;top<height;top+=750){await evaluate('window.scrollTo({top:'+top+',behavior:"instant"})');await pause(160);}
-    await pause(1200);await go(0);
-    await waitFor("[...document.querySelectorAll('.theme-screenshot img')].filter(i=>getComputedStyle(i).display!=='none').every(i=>i.complete&&i.naturalWidth>0)",'Original screenshot assets load');
-    assert.equal(await evaluate('document.documentElement.scrollWidth<=innerWidth'),true,'No desktop overflow');
-    const metrics=await cdp('Page.getLayoutMetrics'),clip={x:0,y:0,width:metrics.cssContentSize.width,height:metrics.cssContentSize.height,scale:1};
-    const full=await cdp('Page.captureScreenshot',{format:'png',captureBeyondViewport:true,clip});
-    await fs.writeFile(path.join(exportDir,'Lymora-Homepage-'+theme+'-Full.png'),Buffer.from(full.data,'base64'));
-    const hero=await cdp('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});await fs.writeFile(path.join(exportDir,'Lymora-Homepage-'+theme+'-Hero.png'),Buffer.from(hero.data,'base64'));
-    report.push({theme,width:clip.width,height:clip.height,file:'design/glass-network/captures/Lymora-Homepage-'+theme+'-Full.png'});
-    for(const [name,selector]of [['showcase','#experience'],['connection','#how-it-works'],['spaces','.usecase-section'],['footer','.glass-footer']]){const rect=await bounds(selector);await go(rect.top-120);const shot=await cdp('Page.captureScreenshot',{format:'png'});await fs.writeFile(path.join(output,'motion-'+theme+'-'+name+'.png'),Buffer.from(shot.data,'base64'));}
-    await go(0);
-  }
-  for(const width of [320,375,768,901,1024,1920,3840]){await viewport(width,900);await load();assert.equal(await evaluate('document.documentElement.scrollWidth<=innerWidth'),true,'No overflow at '+width);if(width<=900)assert.equal(await evaluate("!!document.querySelector('canvas')"),false,'Mobile is lightweight');await checkHeader();await checkRibbon();}
-  checks.push('320 through 3840px layouts without horizontal overflow','mobile skips WebGL','first and last ribbon phrases remain visible at every tested width');
-  for(const theme of ['dark','light']){
-    await viewport(3840,2160);await media(theme,true);await load();
-    await waitFor("document.querySelector('.living-network').dataset.mode==='3d'",'4K scene ready');
-    await waitFor("document.querySelector('.living-network').dataset.phase==='4'",'4K arrival capture');
-    await evaluate("document.querySelector('[aria-label=\"Pause network preview\"]').click()");
-    const image=await cdp('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
-    const file='Lymora-Homepage-'+theme+'-4K.png';await fs.writeFile(path.join(exportDir,file),Buffer.from(image.data,'base64'));
-    report.push({theme:theme+'/4K',width:3840,height:2160,file:'design/glass-network/captures/'+file});
-  }
-  checks.push('native 3840x2160 dark/light browser captures');
-
-  await viewport(375,900);await media('dark');await load();let mobileHeight=await evaluate('document.documentElement.scrollHeight');for(let top=0;top<mobileHeight;top+=750){await evaluate('window.scrollTo({top:'+top+',behavior:"instant"})');await pause(180);}await go(0);
-  const mobileMetrics=await cdp('Page.getLayoutMetrics'),mobileClip={x:0,y:0,width:mobileMetrics.cssContentSize.width,height:mobileMetrics.cssContentSize.height,scale:1};const mobileShot=await cdp('Page.captureScreenshot',{format:'png',captureBeyondViewport:true,clip:mobileClip});await fs.writeFile(path.join(exportDir,'Lymora-Homepage-mobile-Full.png'),Buffer.from(mobileShot.data,'base64'));report.push({theme:'dark/mobile',width:mobileClip.width,height:mobileClip.height,file:'design/glass-network/captures/Lymora-Homepage-mobile-Full.png'});
-  await viewport(1440,1000);await media('dark',true);await load();assert.equal(await evaluate("document.documentElement.dataset.motion"),'full');assert.notEqual(await evaluate("getComputedStyle(document.querySelector('.ambient-streaks')).display"),'none');
-  checks.push('always-on behavior is independent of system reduced-motion settings');
-  await media("dark",false);
-  await evaluate(`document.querySelector('a[href="/about/"]').click()`);
-  await waitFor('location.pathname==="/about/" && document.querySelector("h1")?.textContent.includes("Good technology")','Static-export client navigation works');
-  assert(await evaluate("document.querySelectorAll('.reveal-word').length>0"),'Other pages receive text reveals');
-  await media('dark',true);await pause(300);
-  assert(await evaluate("document.querySelectorAll('.reveal-word').length>0"),'Owner-requested reveals remain active');
-  checks.push('client navigation resolves static-export segment data','other-page reveals remain active without a motion switch');
-  }
+  if(!launchOnly) await verifyPremiumUi({cdp,evaluate,load,viewport,media,waitFor,pause,url,checks,report,output});
   await verifyLaunchUi({cdp,evaluate,load,viewport,media,waitFor,pause,url,checks});
   assert.deepEqual(errors,[],'No console/runtime/hydration errors');assert.deepEqual(missing,[],'No missing assets');assert.deepEqual(external,[],'No external requests');
   const result={passed:true,browser:version.Browser,checks,exports:report,scope:'Actual static-export browser capture; software WebGL, not a hardware FPS benchmark.'};await fs.writeFile(path.join(output,launchOnly?'launch-ui-results.json':'network-motion-results.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result,null,2));await send('Target.closeTarget',{targetId:target.targetId});await send('Browser.close');

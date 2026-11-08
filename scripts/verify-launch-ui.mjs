@@ -25,6 +25,7 @@ export async function verifyLaunchUi({cdp,evaluate,load,viewport,media,waitFor,p
     await key('Escape',27);
     await waitFor(`!document.querySelector('dialog[open]')`,'Escape closes screenshot');
     assert.equal(await evaluate(`document.activeElement.classList.contains('screenshot-trigger')`),true,'Focus returns to invoking screenshot');
+    await waitFor(`document.body.style.overflow !== 'hidden'`,'React cleanup restores page scrolling');
     assert.notEqual(await evaluate(`document.body.style.overflow`),'hidden','Scroll restored');
     await evaluate(`document.querySelector('#experience .screenshot-trigger').click();document.querySelector('dialog[open] [aria-label="Close screenshot"]').click()`);
     await waitFor(`!document.querySelector('dialog[open]')`,'Close button works');

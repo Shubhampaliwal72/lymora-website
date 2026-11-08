@@ -43,7 +43,7 @@ function subscribeVisibility(callback: () => void) {
 export function useScenePreferences() {
   return {
     capable: useSyncExternalStore(subscribePreferences, isCapable, () => false),
-    // Owner explicitly requested always-on website motion, independent of OS preference.
+    // Owner requests continuous motion; lightweight rendering is gated separately.
     motion: true,
     theme: useSyncExternalStore(subscribeTheme, themeSnapshot, () => "light" as const),
     visible: useSyncExternalStore(subscribeVisibility, () => !document.hidden, () => true),

@@ -1,4 +1,21 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Icon } from "./Icons";
 import { messenger } from "@/lib/products";
-export function SiteFooter(){return <footer className="glass-footer"><div className="container"><div className="footer-statement"><div><p className="eyebrow"><span className="signal-dot"/>The next connection starts here</p><h2>Less distance.<br/><span>More possibility.</span></h2></div><Link href={messenger.path} className="footer-orbit" aria-label="Explore Lymora LAN Messenger"><Icon name="arrow"/></Link></div><div className="footer-directory glass-panel"><div className="footer-brand"><Link href="/">Lymora<span aria-hidden="true">.</span></Link><p>Useful technology.<br/>Made for the spaces we share.</p></div><nav aria-label="Footer products"><h3>Products</h3><Link href={messenger.path}>LAN Messenger</Link><Link href={messenger.path + "#features"}>Explore the app</Link><Link href="/downloads/">Windows downloads</Link></nav><nav aria-label="Footer resources"><h3>Resources</h3><Link href={messenger.docs}>Documentation</Link><Link href={messenger.docs + "#troubleshooting"}>Connection help</Link><Link href={messenger.releases}>Release notes</Link><Link href="/downloads/#support">Help &amp; contact</Link></nav><nav aria-label="Footer Lymora"><h3>Lymora</h3><Link href="/about/">About the brand</Link><Link href="/privacy/">Privacy &amp; security</Link><Link href="/products/">Product directory</Link></nav></div><div className="footer-colophon"><span>Lymora &middot; Thoughtfully connected.</span><span>Website preview &middot; Downloads pending release verification</span><a href="#main">Back to top &uarr;</a></div></div></footer>;}
+
+const columns = [
+  {label: "Products", links: [{href: messenger.path, label: "LAN Messenger"}, {href: messenger.path + "#features", label: "Explore the app"}, {href: "/downloads/", label: "Windows downloads"}]},
+  {label: "Resources", links: [{href: messenger.docs, label: "Documentation"}, {href: messenger.docs + "#troubleshooting", label: "Connection help"}, {href: messenger.releases, label: "Release notes"}, {href: "/downloads/#support", label: "Help & contact"}]},
+  {label: "Lymora", links: [{href: "/about/", label: "About the brand"}, {href: "/privacy/", label: "Privacy & security"}, {href: "/products/", label: "Product directory"}]},
+];
+
+export function SiteFooter() {
+  return <footer className="glass-footer"><div className="container">
+    <div className="footer-statement"><div><p className="eyebrow"><span className="signal-dot"/>Lymora LAN Messenger</p><h2>Keep the conversation<br/><span>close to home.</span></h2></div><Link href="/downloads/" className="footer-orbit" aria-label="Check Windows download availability"><Icon name="arrow"/></Link></div>
+    <div className="footer-directory glass-panel">
+      <div className="footer-brand"><Link href="/" className="footer-brand-link" aria-label="Lymora home"><span className="brand-symbol"><Image className="brand-dark" src="/brand/mark-dark.png" width={512} height={512} alt=""/><Image className="brand-light" src="/brand/mark-light.png" width={512} height={512} alt=""/></span><span>Lymora<span className="footer-brand-dot" aria-hidden="true">.</span></span></Link><p>Useful technology.<br/>Made for the spaces we share.</p><span className="footer-platform"><Icon name="windows"/>Made for Windows PCs</span></div>
+      {columns.map(column => <nav key={column.label} aria-label={"Footer " + column.label}><h3>{column.label}</h3>{column.links.map(link => <Link key={link.href} href={link.href}>{link.label}<Icon name="arrow"/></Link>)}</nav>)}
+    </div>
+    <div className="footer-colophon"><span>Lymora &middot; Thoughtfully connected.</span><span>Windows installer coming soon</span><a href="#main">Back to top <Icon name="down"/></a></div>
+  </div></footer>;
+}

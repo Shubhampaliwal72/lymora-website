@@ -39,7 +39,7 @@ export function LivingNetwork() {
   const reduce = !preferences.motion;
   const onReady = useCallback(() => setReady(preferences.theme), [preferences.theme]);
   const onUnavailable = useCallback(() => { setUnavailable(true); setReady(null); }, []);
-  const canvas = preferences.capable && load && !unavailable;
+  const canvas = preferences.motion && preferences.capable && load && !unavailable;
   const active = playing && preferences.visible && intersecting && preferences.motion;
   const destination = endpoints.find(peer => peer.id === endpoint)!.name;
   const select = useCallback((peer: Endpoint) => {setPair([peer === "you" ? "studio" : "you", peer]); setPlaying(true); setRun(value => value + 1);}, []);
@@ -72,11 +72,11 @@ export function LivingNetwork() {
     <div className="network-world">
       <NetworkFallback clock={clock} invalidateRef={fallbackDraw} source={source} endpoint={endpoint} transfer={transfer} />
       {canvas && <SceneBoundary onUnavailable={onUnavailable}><NetworkCanvas theme={preferences.theme} clock={clock} pointer={pointer} invalidateRef={invalidate} source={source} endpoint={endpoint} transfer={transfer} onSelect={select} onReady={onReady} onUnavailable={onUnavailable} /></SceneBoundary>}
-      {illustratedDevices.map(peer=><button key={peer.id} type="button" className="network-device-label" style={{left:peer.label[0]/10+"%",top:peer.label[1]/7.8+"%"}} aria-label={"Send preview to "+endpoints.find(item=>item.id===peer.id)!.name} aria-pressed={endpoint===peer.id} onClick={()=>select(peer.id)}>{endpoints.find(item=>item.id===peer.id)!.name}<span aria-hidden="true"/></button>)}
+      {illustratedDevices.map(peer=><button key={peer.id} type="button" className="network-device-label" style={{left:peer.label[0]/10+"%",top:"clamp(22px, "+peer.label[1]/7.8+"%, calc(100% - 22px))"}} aria-label={"Send preview to "+endpoints.find(item=>item.id===peer.id)!.name} aria-pressed={endpoint===peer.id} onClick={()=>select(peer.id)}>{endpoints.find(item=>item.id===peer.id)!.name}<span aria-hidden="true"/></button>)}
     </div>
     <div className="network-demo-strip">
       <div className="network-demo-status"><span className="demo-kicker"><span className="signal-dot"/>Live LAN preview</span><p aria-live="off"><span>{endpoints.find(peer=>peer.id===source)!.name}</span><span className="demo-direction" aria-hidden="true">&rarr;</span><span>{destination}</span><small>{["Discovering", "Connecting", "Sending", "Arriving", "Delivered"][phase]}</small></p><span className="sr-only">{status}</span></div>
-      <div className="network-demo-actions"><div className="demo-transfer" role="group" aria-label="Preview content">{(["message","file"] as const).map(kind=><motion.button key={kind} type="button" aria-label={kind==="message"?"Send a message in the preview":"Send a file in the preview"} aria-pressed={transfer===kind} onClick={()=>{setTransfer(kind);replay();}} whileTap={reduce?undefined:{scale:.97}}><Icon name={kind}/><span>{kind==="message"?"Message":"File"}</span></motion.button>)}</div><button className="demo-pause" type="button" aria-label={playing?"Pause network preview":"Play network preview"} onClick={()=>setPlaying(value=>!value)}><Icon name={playing?"pause":"play"}/></button></div>
+      <div className="network-demo-actions"><div className="demo-transfer" role="group" aria-label="Preview content">{(["message","file"] as const).map(kind=><motion.button key={kind} type="button" aria-label={kind==="message"?"Send a message in the preview":"Send a file in the preview"} aria-pressed={transfer===kind} onClick={()=>{setTransfer(kind);replay();}} whileTap={reduce?undefined:{scale:.97}}><Icon name={kind}/><span>{kind==="message"?"Message":"File"}</span></motion.button>)}</div>{preferences.motion && <button className="demo-pause" type="button" aria-label={playing?"Pause network preview":"Play network preview"} onClick={()=>setPlaying(value=>!value)}><Icon name={playing?"pause":"play"}/></button>}</div>
     </div>
     <figcaption className="network-caption" id="network-caption"><span>Illustrated LAN &middot; actual app, fictional demo data</span><span>Choose a PC to follow the connection.</span></figcaption>
   </figure>;

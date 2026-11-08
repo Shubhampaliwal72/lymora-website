@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -9,27 +9,37 @@ import { useGSAP } from "@gsap/react";
 import { useScenePreferences } from "@/components/living-network/useScenePreferences";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger, SplitText);
-/** Words, paragraphs and screenshot content have separate owners from the
- * homepage's outer parallax wrappers and Motion's tab transitions. */
-export function PageRevealMotion({children}:{children:ReactNode}) {
-  const root=useRef<HTMLDivElement>(null), pathname=usePathname();
-  const {motion,capable}=useScenePreferences();
-  useGSAP(()=>{
-    if(!motion||!root.current)return;
-    const select=gsap.utils.selector(root);
-    const splits:SplitText[]=[];
-    select("main h2, main .page-intro h1").forEach((heading:Element)=>{
-      if(heading.closest("dialog"))return;
-      const split=SplitText.create(heading,{type:"words",tag:"span",wordsClass:"reveal-word",aria:"auto"});splits.push(split);
-      gsap.from(split.words,{yPercent:70,opacity:.08,rotationX:capable?-18:0,duration:.85,stagger:.045,ease:"power3.out",scrollTrigger:{trigger:heading,start:"top 88%",toggleActions:"restart none restart reset"}});
+
+/** Marketing words reveal on entry and replay only after leaving the viewport. */
+export function PageRevealMotion({children}: {children: ReactNode}) {
+  const root = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
+  const {motion} = useScenePreferences();
+  useEffect(() => { document.documentElement.dataset.motion = motion ? "full" : "reduced"; }, [motion]);
+  useGSAP(() => {
+    if (!motion || !root.current || root.current.querySelector(".reading-page")) return;
+    const splits: SplitText[] = [];
+    const select = gsap.utils.selector(root);
+    select("main h2, main .page-intro h1").forEach((heading: Element) => {
+      if (heading.closest("dialog")) return;
+      const split = SplitText.create(heading, {type: "words", tag: "span", wordsClass: "reveal-word", aria: "auto"});
+      splits.push(split);
+      gsap.from(split.words, {yPercent: 35, opacity: .2, duration: .85, stagger: .04, ease: "power3.out", scrollTrigger: {trigger: heading, start: "top 92%", toggleActions: "play none play reverse"}});
     });
-    select(".theme-screenshot").forEach((image:Element)=>gsap.from(image,{y:capable?42:20,scale:.94,opacity:.15,duration:1.1,ease:"power3.out",scrollTrigger:{trigger:image.parentElement,start:"top 87%",toggleActions:"restart none restart reset"}}));
-    select("main section > p, .page-lead, .prose > p, .product-stage-copy > p, .connection-instructions li > div, .usecase-list > div > p").forEach((copy:Element)=>gsap.from(copy,{y:20,opacity:.15,duration:.75,ease:"power2.out",scrollTrigger:{trigger:copy,start:"top 90%",toggleActions:"restart none restart reset"}}));
-    let disposed=false;
-    const refresh=()=>{if(!disposed)ScrollTrigger.refresh();};
+    // Only stable introductory copy is split. Dynamic tab descriptions keep Motion ownership.
+    select(".chapter-heading-copy > p, main .page-lead, .prose .large-copy").forEach((copy: Element) => {
+      const split = SplitText.create(copy, {
+        type: "lines", linesClass: "reveal-copy-line", aria: "auto", autoSplit: true,
+        onSplit: self => gsap.from(self.lines, {y: 14, opacity: .28, duration: .85, stagger: .09, ease: "power3.out", clearProps: "transform,opacity", scrollTrigger: {trigger: copy, start: "top 90%", once: true}}),
+      });
+      splits.push(split);
+    });
+    let disposed = false;
+    const refresh = () => { if (!disposed) ScrollTrigger.refresh(); };
     void document.fonts.ready.then(refresh);
-    const images=Array.from(root.current.querySelectorAll("img"));images.forEach(image=>image.addEventListener("load",refresh));
-    return()=>{disposed=true;images.forEach(image=>image.removeEventListener("load",refresh));splits.forEach(split=>split.revert());};
-  },{scope:root,dependencies:[pathname,motion,capable],revertOnUpdate:true});
+    const images = Array.from(root.current.querySelectorAll("img"));
+    images.forEach(image => image.addEventListener("load", refresh));
+    return () => { disposed = true; images.forEach(image => image.removeEventListener("load", refresh)); splits.forEach(split => split.revert()); };
+  }, {scope: root, dependencies: [pathname, motion], revertOnUpdate: true});
   return <div ref={root} className="page-reveal-content">{children}</div>;
 }

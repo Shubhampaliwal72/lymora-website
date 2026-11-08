@@ -1,17 +1,58 @@
 import Link from "next/link";
 import { pageMetadata } from "@/lib/site";
-export const metadata = pageMetadata("/", "Technology, closer.");
 import { HomeScrollMotion } from "@/components/animations/HomeScrollMotion";
+import { ConnectionStory } from "@/components/animations/ConnectionStory";
+import { ScrollStatement } from "@/components/animations/ScrollStatement";
 import { LivingHero } from "@/components/living-network/LivingHero";
 import { ProductExplorer } from "@/components/sections/ProductExplorer";
+import { SectionHeading } from "@/components/site/SectionHeading";
+import { DownloadAction } from "@/components/site/DownloadAction";
 import { Icon } from "@/components/site/Icons";
 import { messenger } from "@/lib/products";
-export default function Home(){return <HomeScrollMotion>
-  <LivingHero/>
-  <section id="products" className="container ecosystem-section section-space" aria-labelledby="ecosystem-title"><div className="ecosystem-index" data-scroll-depth aria-hidden="true">01<span>/ The beginning</span></div><div className="ecosystem-copy" data-scroll-horizontal><p className="eyebrow">One brand. Room to grow.</p><h2 id="ecosystem-title">Small distances.<br/><span>Better possibilities.</span></h2><p>Lymora is a home for useful technology. Our first product makes a familiar thing feel more direct: talking to the people on your local network.</p><Link href={messenger.path} className="product-link glass-panel"><span className="product-link-icon"><Icon name="message"/></span><span><small>Our first product</small><strong>LAN Messenger</strong><span>{messenger.summary}</span></span><Icon name="arrow"/></Link><Link href="/products/" className="text-link">Explore the product directory<Icon name="arrow"/></Link></div></section>
-  <div className="container"><ProductExplorer/></div>
-  <section id="how-it-works" className="container connection-foundation section-space" aria-labelledby="connect-title"><div className="section-heading" data-scroll-heading><div><p className="eyebrow">From nearby to connected</p><h2 id="connect-title">Less setup.<br/><span>More conversation.</span></h2></div><Link href={messenger.docs} className="text-link">The connection guide<Icon name="arrow"/></Link></div><div className="connection-route glass-panel" data-scroll-wire aria-hidden="true"><span><Icon name="windows"/>Your PC</span><i/><span className="route-label">Your local network</span><i/><span><Icon name="windows"/>Their PC</span></div><ol className="connection-instructions"><li data-scroll-horizontal><span>01</span><div><h3>Make yourself at home.</h3><p>Install Lymora on both Windows PCs. Choose a display name and allow local-network messaging.</p></div></li><li data-scroll-horizontal><span>02</span><div><h3>Find your people.</h3><p>Use the same reachable network. Discover nearby Lymora devices or add their address when discovery needs help.</p></div></li><li data-scroll-horizontal><span>03</span><div><h3>Start something together.</h3><p>Open a conversation, create a group or share the file you are working on. No cloud registration is needed.</p></div></li></ol></section>
-  <section className="container usecase-section section-space" aria-labelledby="usecase-title"><div className="network-ribbon" aria-hidden="true"><div data-scroll-ribbon><span>Work nearby.</span><em>Think together.</em><span>Keep it local.</span></div></div><div className="usecase-heading" data-scroll-heading><p className="eyebrow">Built for being together</p><h2 id="usecase-title">Same space.<br/>Shared momentum.</h2><p>For the moments when the person you need is already nearby.</p></div><div className="usecase-list">{[{name:"The studio",body:"Share the latest draft and keep feedback in one local conversation."},{name:"The office",body:"Bring nearby teammates together without creating another cloud account."},{name:"The classroom",body:"Exchange notes and files across connected PCs on a permitted local network."},{name:"Your own space",body:"Move between your Windows computers with conversations and files close at hand."}].map((item,index)=><div key={item.name} data-scroll-horizontal><span>0{index+1}</span><h3>{item.name}</h3><p>{item.body}</p></div>)}</div></section>
-  <section id="getting-started" className="container resource-section section-space" aria-labelledby="resource-title"><div className="section-heading" data-scroll-heading><div><p className="eyebrow">Know your connection</p><h2 id="resource-title">A little clarity<br/><span>goes a long way.</span></h2></div><p>Practical answers, honest boundaries.<br/>Everything you need before getting started.</p></div><div className="resource-links"><Link data-scroll-horizontal href={messenger.docs}><span>01 / Documentation</span><h3>From install to your first message.</h3><Icon name="arrow"/></Link><Link data-scroll-horizontal href="/privacy/"><span>02 / Privacy &amp; security</span><h3>Understand what stays local.</h3><Icon name="arrow"/></Link><Link data-scroll-horizontal href={messenger.docs+"#troubleshooting"}><span>03 / Connection help</span><h3>When nearby does not mean reachable.</h3><Icon name="arrow"/></Link></div></section>
-  <section id="download" className="container download-foundation glass-panel" data-scroll-heading aria-labelledby="download-title"><div><p className="eyebrow">Lymora LAN Messenger / Windows</p><h2 id="download-title">Your next conversation<br/>could be right here.</h2><p>A direct connection for the people and computers around you.</p></div><div><Link href="/downloads/" className="button button-primary">Windows download details<Icon name="arrow"/></Link><p className="availability-note">Public installer pending release verification.</p></div></section>
-</HomeScrollMotion>;}
+
+export const metadata = pageMetadata("/", "Technology, closer.");
+const chapters = [
+  {number: "01", href: "#experience", label: "Inside Lymora"},
+  {number: "02", href: "#how-it-works", label: "Get connected"},
+  {number: "03", href: "#together", label: "Work together"},
+  {number: "04", href: "#getting-started", label: "Know your connection"},
+  {number: "05", href: "#download", label: "Get Lymora"},
+];
+const uses = [
+  {name: "The studio", body: "Send the latest draft and keep feedback in a shared local conversation."},
+  {name: "The office", body: "Bring nearby teammates into a group without another cloud account."},
+  {name: "The classroom", body: "Exchange notes and files across Windows PCs on a permitted local network."},
+  {name: "Your own space", body: "Share files between your Windows computers, with a conversation close at hand."},
+];
+export default function Home() {
+  return <HomeScrollMotion>
+    <LivingHero/>
+    <div id="products" className="container product-journey">
+      <nav className="chapter-navigation" aria-label="On this page">{chapters.map(chapter =>
+        <a key={chapter.number} href={chapter.href}><span>{chapter.number}</span>{chapter.label}<Icon name="down"/></a>
+      )}</nav>
+      <ProductExplorer chapter="01"/>
+    </div>
+    <section id="how-it-works" className="container connection-foundation section-space" aria-labelledby="connect-title">
+      <SectionHeading number="02" label="Get connected" titleId="connect-title" title={<>Three steps.<br/><span>One local connection.</span></>}><p>Make yourself at home, find nearby PCs and start a conversation.</p><Link href={messenger.docs} className="text-link">Read the setup guide<Icon name="arrow"/></Link></SectionHeading>
+      <ConnectionStory/>
+    </section>
+    <section id="together" className="container usecase-section section-space" aria-labelledby="usecase-title">
+      <ScrollStatement/>
+      <SectionHeading number="03" label="Work together" titleId="usecase-title" title={<>For the people<br/><span>already nearby.</span></>}><p>Conversations and files for the places you share.</p></SectionHeading>
+      <div className="usecase-list">{uses.map(item => <div key={item.name} data-scroll-item><h3>{item.name}</h3><p>{item.body}</p></div>)}</div>
+    </section>
+    <section id="getting-started" className="container resource-section section-space" aria-labelledby="resource-title">
+      <SectionHeading number="04" label="Know your connection" titleId="resource-title" title={<>Clear answers.<br/><span>Before you begin.</span></>}><p>Setup, practical help and honest privacy details.</p></SectionHeading>
+      <div className="resource-links">
+        <Link data-scroll-item href={messenger.docs}><span>Documentation</span><h3>From installation to your first message.</h3><Icon name="arrow"/></Link>
+        <Link data-scroll-item href="/privacy/"><span>Privacy &amp; security</span><h3>What stays local. What travels on your LAN.</h3><Icon name="arrow"/></Link>
+        <Link data-scroll-item href={messenger.docs + "#troubleshooting"}><span>Connection help</span><h3>Find the reason a PC is not reachable.</h3><Icon name="arrow"/></Link>
+      </div>
+    </section>
+    <section id="download" className="container download-foundation glass-panel" aria-labelledby="download-title">
+      <SectionHeading number="05" label="Get Lymora" titleId="download-title" title={<>Your next connection.<br/><span>On Windows.</span></>}><p>LAN Messenger brings messages, groups and files to nearby PCs.</p></SectionHeading>
+      <div className="download-foundation-actions"><DownloadAction/><p className="availability-note">Public Windows installer coming soon.</p><Link href="/downloads/" className="text-link">Availability &amp; installation<Icon name="arrow"/></Link></div>
+    </section>
+  </HomeScrollMotion>;
+}

@@ -69,12 +69,14 @@ Installed exact dependencies:
 - `@gsap/react@2.1.2`: scoped React setup and cleanup.
 - `motion@14.10.1`: component interactions, imported from `motion/react`.
 
-GSAP owns hero text, a finite six-second product-preview clock, and the separate
-continuous SVG wallpaper clock. ScrollTrigger controls a different wallpaper
-wrapper during scroll. A visible Pause ambience control pauses the background;
-The latest owner policy keeps motion on independently of the OS preference; hidden/offscreen work pauses and a public pause control remains. R3F derives camera, device and signal geometry from that clock. Motion owns only independent DOM controls and the mobile navigation panel. Three.js is lazy-loaded on capable fine-pointer desktops; mobile/low-capability modes use the 2.5D fallback. Never let them control the same
-property on one element. Use small client components, visible static content,
-scoped cleanup and the explicit motion policy in AGENTS.md.
+GSAP owns the hero entrance, finite network clock, independent wallpaper clock,
+and one-time scroll reveals. Motion owns independent controls and tab transitions.
+Large editorial chapter numbers run continuously from 01 to 05; the slogan
+wraps without clipping. The owner requests always-on motion even when the OS
+reports reduced motion. Desktop 3D remains lazy-loaded; mobile uses the animated
+2.5D SVG view. A quieter perimeter ring replaces crossing background paths. Hidden/offscreen
+work pauses. See [UI refinement](docs/UI_REFINEMENT.md) for the current chapter
+sequence and animation ownership; earlier stage reports are historical.
 
 The approved scene uses @react-three/fiber@9.8.2 and three@0.187.0, with matching @types/three@0.187.0. Spline, Drei, physics, Rive and Lottie are not installed. No other animation engine is needed.
 
@@ -143,3 +145,8 @@ After a static build, node scripts/verify-static-links.mjs checks local navigati
 anchors and asset references without a browser or network requests. The older
 verify:browser command remains available for later visual regression work; it
 is not run automatically during this code-only foundation pass.
+
+The setup walkthrough uses a reversible dashed-to-orange LAN route and a
+connected three-step message story. The shared header has a measured SVG
+edge beam; product/docs section navigation indicates the current reading
+position. See docs/UI_REFINEMENT.md for animation ownership and verification.

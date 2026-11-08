@@ -16,4 +16,4 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
-- Latest explicit motion policy: the owner requests always-on website animations even when the browser reports reduced motion, and no public header animation switch. Preserve this intentional exception to the earlier attachment defaults. Keep hidden-tab/offscreen pauses and lightweight mobile/low-capability rendering. See docs/GLASS_NETWORK_MOTION.md.
+- Latest owner correction: restore the original large editorial 01 style continuously through 05. Animation stays on even when the OS requests reduced motion, without a public header switch. Keep manual pause controls, hidden/offscreen pauses and lightweight mobile rendering. The background uses a quiet six-PC perimeter ring, not crossing paths over the content. This supersedes the earlier 8 November reduced-motion refinement. See docs/UI_REFINEMENT.md.

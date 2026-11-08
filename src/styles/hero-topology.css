@@ -28,3 +28,14 @@
 @media(max-width:1100px) and (min-width:901px){.brand-hero .living-network{width:calc(100% + 30px);margin-left:0;}.network-demo-strip{align-items:flex-start;flex-direction:column;gap:12px;}.network-demo-actions{align-self:flex-end;}}
 @media(max-width:900px){.brand-hero .living-network{width:100%;max-width:720px;margin:24px auto 0;}.brand-hero .network-world{aspect-ratio:1000/780;}.network-demo-strip{margin-inline:0;}.brand-hero .network-caption{padding-inline:0;}}
 @media(max-width:600px){.network-demo-strip{align-items:flex-start;flex-direction:column;gap:12px;padding-top:14px;}.network-demo-actions{align-self:flex-end;}.brand-hero .network-device-label{font-size:10px;padding:6px;min-height:36px;}.brand-hero .network-caption{font-size:9px;align-items:flex-start;flex-direction:column;gap:2px;}.network-demo-status p{font-size:12px;}.demo-transfer button,.demo-pause{min-height:40px;}}
+
+/* Crisp packet paths and legible controls without oversized arrival halos. */
+.topology-wire[data-active='true'] { stroke-width:1.4;opacity:.65; }
+.topology-arrival { stroke-width:1.2;opacity:calc(var(--arrival,0)*.32); }
+.brand-hero .network-device-label { font-size:12px;min-height:44px; }
+.demo-kicker { font-size:11px; }
+.network-demo-status p { font-size:13px; }
+.network-demo-status small { font-size:12px; }
+.demo-transfer button,.demo-pause { min-height:44px;font-size:12px; }
+.brand-hero .network-caption { font-size:12px;line-height:1.6;gap:8px;align-items:flex-start; }
+@media(max-width:600px){.brand-hero .network-caption{padding-top:12px;}.brand-hero .network-device-label{font-size:11px;}.network-demo-strip{gap:10px;}.network-demo-actions{align-self:flex-start;}.network-demo-status p{font-size:13px;}}
