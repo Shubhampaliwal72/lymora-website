@@ -5,10 +5,9 @@ import { MobileMenu } from "./MobileMenu";
 import { ThemeToggle } from "./ThemeToggle";
 import { NavDisclosure } from "./NavDisclosure";
 import { Icon } from "./Icons";
-import { HeaderEdge } from "./HeaderEdge";
 import { messenger } from "@/lib/products";
 export function SiteHeader() {
-  return <header className="site-header glass-header"><div className="container header-inner glass-panel"><HeaderEdge/>
+  return <header className="site-header glass-header"><div className="container header-inner glass-panel">
     <Link href="/" className="brand brand-lockup" aria-label="Lymora home"><span className="brand-symbol"><Image className="brand-dark" src="/brand/mark-dark.png" width={512} height={512} alt=""/><Image className="brand-light" src="/brand/mark-light.png" width={512} height={512} alt=""/></span><span>Lymora<span className="brand-caption">Technology, closer.</span></span></Link>
     <nav className="desktop-nav" aria-label="Main navigation">
       <ActiveLink href="/">Home</ActiveLink>

@@ -147,6 +147,5 @@ verify:browser command remains available for later visual regression work; it
 is not run automatically during this code-only foundation pass.
 
 The setup walkthrough uses a reversible dashed-to-orange LAN route and a
-connected three-step message story. The shared header has a measured SVG
-edge beam; product/docs section navigation indicates the current reading
-position. See docs/UI_REFINEMENT.md for animation ownership and verification.
+connected three-step message story. The connection bar scrolls with the page;
+product/docs section navigation indicates the current reading position. See docs/UI_REFINEMENT.md for animation ownership and verification.

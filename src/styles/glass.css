@@ -460,20 +460,9 @@ body:has(.reading-page) .network-wallpaper { opacity:.16; }
 }
 
 
-/* Measured header edge: the SVG never clips dropdowns or intercepts clicks. */
-.glass-header .header-inner { position:relative; }
-.header-edge { position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0;overflow:visible; }
-.header-edge[data-ready='true'] { opacity:.75; }
-.header-edge rect { fill:none;stroke-linecap:round;vector-effect:non-scaling-stroke; }
-.header-edge-trail { stroke:var(--accent);stroke-width:1;stroke-dasharray:70 930;animation:header-edge-travel 16s linear infinite; }
-.header-edge-head { stroke:var(--network-head);stroke-width:1.5;stroke-dasharray:6 994;animation:header-edge-tip 16s linear infinite; }
-.header-edge[data-paused='true'] rect { animation-play-state:paused; }
-@keyframes header-edge-travel { from {stroke-dashoffset:0;} to {stroke-dashoffset:-1000;} }
-@keyframes header-edge-tip { from {stroke-dashoffset:-64;} to {stroke-dashoffset:-1064;} }
-
 /* Setup is a direct conversation, connected by a reversible scroll thread. */
 .setup-connection-story { --connection-left:0;--connection-right:0;--connection-thread:0;position:relative; }
-.connection-route { position:sticky;top:110px;z-index:15;display:grid;grid-template-columns:auto minmax(18px,1fr) auto minmax(18px,1fr) auto;align-items:center;gap:24px;padding:24px 30px;border-radius:20px; }
+.connection-route {display:grid;grid-template-columns:auto minmax(18px,1fr) auto minmax(18px,1fr) auto;align-items:center;gap:24px;padding:24px 30px;border-radius:20px; }
 .route-device { display:inline-flex;align-items:center;gap:10px;white-space:nowrap;font-size:14px; }
 .route-device svg { color:var(--accent); }
 .route-label { color:var(--text-secondary);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-align:center; }
@@ -534,13 +523,13 @@ body:has(.reading-page) .network-wallpaper { opacity:.16; }
 .footer-colophon>a:hover { color:var(--accent); }
 .footer-colophon>a svg { width:12px;height:12px;rotate:180deg; }
 @media(max-width:900px) {
- .connection-route { gap:16px;padding:22px;top:100px; }
+ .connection-route { gap:16px;padding:22px; }
  .connection-steps { width:100%; }
  .connection-step { gap:22px; }
  .connection-bubble { padding:24px; }
 }
 @media(max-width:600px) {
- .connection-route { top:90px;grid-template-columns:auto minmax(24px,1fr) auto;gap:12px 16px;padding:18px;border-radius:18px; }
+ .connection-route { grid-template-columns:auto minmax(24px,1fr) auto;gap:12px 16px;padding:18px;border-radius:18px; }
  .connection-route .route-device { font-size:12px;gap:8px; }
  .connection-route .route-label { grid-column:1 / -1;grid-row:2;font-size:10px; }
  .route-wire-second { display:none; }

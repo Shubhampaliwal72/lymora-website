@@ -213,3 +213,15 @@ field Core Web Vitals benchmark. Captures remain ignored in .verification/.
 No desktop, dependency, release, DNS or hosting configuration was changed.
 The requested Git operation updates local dev and main; pushing is separate
 because the connected Cloudflare project may deploy main automatically.
+
+
+## Owner correction: normal-flow connector and plain header edge
+
+The connection bar now scrolls normally with the page instead of staying
+sticky while the wires fill. Only its positioning and breakpoint offsets
+were removed; the reversible fill and three-step story are unchanged.
+The header edge beam, its client component, ResizeObserver and CSS keyframes
+were removed. The rounded header, normal border and navigation are preserved.
+Regression checks now verify that the bar moves with scroll before the fill
+completes, and that no header beam is rendered. This supersedes the earlier
+sticky-connector and header-beam descriptions above.

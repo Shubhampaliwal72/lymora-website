@@ -22,6 +22,12 @@ export async function verifyPremiumUi({cdp,evaluate,load,viewport,media,waitFor,
   };
   const verifyConnection = async theme => {
     const bounds = await evaluate('(()=>{const e=document.querySelector(".setup-connection-story"),r=e.getBoundingClientRect();return {start:r.top+scrollY-innerHeight*.78,end:r.bottom+scrollY-innerHeight*.65}})()');
+    assert.equal(await evaluate('getComputedStyle(document.querySelector(".connection-route")).position'),'static','Connection bar stays in normal document flow');
+    await evaluate('window.scrollTo({top:'+bounds.start+',behavior:"instant"})');await pause(100);
+    const beforeScroll=await evaluate('({y:document.querySelector(".connection-route").getBoundingClientRect().top,scroll:scrollY})');
+    await evaluate('window.scrollBy({top:160,behavior:"instant"})');await pause(150);
+    const afterScroll=await evaluate('({y:document.querySelector(".connection-route").getBoundingClientRect().top,scroll:scrollY})');
+    assert(Math.abs((beforeScroll.y-afterScroll.y)-(afterScroll.scroll-beforeScroll.scroll))<1,'Connection bar scrolls naturally before the lines finish filling');
     for(const progress of [0,.25,.75,1,0]) {
       const position=bounds.start+(bounds.end-bounds.start)*progress;
       await evaluate('window.scrollTo({top:'+position+',behavior:"instant"})');
@@ -67,13 +73,9 @@ export async function verifyPremiumUi({cdp,evaluate,load,viewport,media,waitFor,
     await cdp('Input.dispatchMouseEvent',{type:'mouseMoved',...nav});await pause(250);
     assert.equal(await evaluate('getComputedStyle(document.querySelector(".desktop-nav>a")).backgroundColor'),background,'Text-only navigation hover');
     await cdp('Input.dispatchMouseEvent',{type:'mouseMoved',x:2,y:110});
-    await waitFor('document.querySelector(".header-edge").dataset.ready==="true"','Header edge is measured');
-    const beam=await evaluate('getComputedStyle(document.querySelector(".header-edge-trail")).strokeDashoffset');
-    await pause(300);
-    assert.notEqual(await evaluate('getComputedStyle(document.querySelector(".header-edge-trail")).strokeDashoffset'),beam,'Orange beam travels on the header edge');
-    assert(await evaluate('(()=>{const e=document.querySelector(".header-edge"),r=e.querySelector("rect"),b=e.parentElement.getBoundingClientRect();return Math.abs(r.width.baseVal.value+2-b.width)<.5&&Math.abs(r.height.baseVal.value+2-b.height)<.5&&Math.abs(r.rx.baseVal.value-(b.height-2)/2)<.5})()'),'Beam follows actual rounded header dimensions');
+    assert.equal(await evaluate('document.querySelector(".header-edge")'),null,'Header beam is removed');
     await evaluate('document.querySelector(".nav-disclosure summary").click()');
-    assert(await evaluate('(()=>{const e=document.querySelector(".nav-disclosure[open] .nav-dropdown"),r=e.getBoundingClientRect();return e.contains(document.elementFromPoint(r.left+r.width/2,r.top+32))})()'),'Header beam does not clip navigation dropdown');
+    assert(await evaluate('(()=>{const e=document.querySelector(".nav-disclosure[open] .nav-dropdown"),r=e.getBoundingClientRect();return e.contains(document.elementFromPoint(r.left+r.width/2,r.top+32))})()'),'Navigation dropdown remains unclipped');
     await cdp('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
     assert.equal(await evaluate('document.querySelectorAll(".nav-disclosure[open]").length'),0,'Header dropdown closes with Escape');
     assert.equal(await evaluate('document.querySelectorAll(".footer-brand-link img").length'),2,'Footer uses original theme-aware brand artwork');
@@ -107,7 +109,6 @@ export async function verifyPremiumUi({cdp,evaluate,load,viewport,media,waitFor,
     assert(await evaluate('document.documentElement.scrollWidth<=innerWidth'),'No horizontal page overflow at '+width);
     assert(await evaluate('(()=>{const b=document.querySelector(".statement-window").getBoundingClientRect();return [...document.querySelectorAll(".statement-phrase")].every(e=>{const range=document.createRange();range.selectNodeContents(e);const r=range.getBoundingClientRect();return r.left>=b.left-.5&&r.right<=b.right+.5})})()'),'Every slider phrase fits horizontally at '+width);
     if(width===320||width===375){await verifyConnection('mobile-'+width);await statementAt(0);await statementAt(1);await statementAt(2);}
-    assert(await evaluate('(()=>{const e=document.querySelector(".header-edge"),r=e.querySelector("rect"),b=e.parentElement.getBoundingClientRect();return Math.abs(r.width.baseVal.value+2-b.width)<.5})()'),'Header edge resizes at '+width);
     assert(await evaluate('(()=>{const b=document.querySelector(".network-world").getBoundingClientRect();return [...document.querySelectorAll(".network-device-label")].every(e=>{const r=e.getBoundingClientRect();return r.left>=b.left-.5&&r.right<=b.right+.5&&r.top>=b.top-.5&&r.bottom<=b.bottom+.5})})()'),'PC labels remain inside scene at '+width);
     if(width>900)assert(await evaluate('(()=>{const n=document.querySelector(".desktop-nav").getBoundingClientRect(),b=document.querySelector(".brand-lockup").getBoundingClientRect(),a=document.querySelector(".header-actions").getBoundingClientRect();return b.right+4<=n.left&&n.right+4<=a.left})()'),'Header navigation does not collide at '+width);
     else assert.equal(await evaluate('!!document.querySelector("canvas")'),false,'Small screens avoid WebGL');
@@ -160,6 +161,6 @@ export async function verifyPremiumUi({cdp,evaluate,load,viewport,media,waitFor,
   await evaluate('document.querySelectorAll(".product-subnav a")[1].click()');await pause(1500);
   await waitFor('document.querySelector(".product-subnav a[aria-current=location]")?.hash==="#everyday"','Product navigation tracks the current section');
   await scrollTo('.footer-directory');await capture('footer-dark');
-  checks.push('reversible dashed-to-orange route; sequential forward/reverse setup highlights in both themes and 320/375px; measured live header beam; unclipped keyboard dropdown; branded footer; shared breadcrumbs and current-section navigation');
+  checks.push('reversible dashed-to-orange route; sequential forward/reverse setup highlights in both themes and 320/375px; non-sticky connection bar; header beam removed; unclipped keyboard dropdown; branded footer; shared breadcrumbs and current-section navigation');
   checks.push('all seven secondary routes at mobile/desktop; quiet documentation/privacy; one product showcase; documentation anchors');
 }
