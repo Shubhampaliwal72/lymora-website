@@ -21,7 +21,7 @@ export async function verifyPremiumUi({cdp,evaluate,load,viewport,media,waitFor,
     report.push({file:path.relative(process.cwd(),file)});
   };
   const verifyConnection = async theme => {
-    const bounds = await evaluate('(()=>{const e=document.querySelector(".setup-connection-story"),r=e.getBoundingClientRect();return {start:r.top+scrollY-innerHeight*.78,end:r.bottom+scrollY-innerHeight*.65}})()');
+    const bounds = await evaluate('(()=>{const e=document.querySelector(".connection-diagram"),r=e.getBoundingClientRect();return {start:r.top+scrollY-innerHeight*.82,end:r.top+scrollY-innerHeight*.42}})()');
     assert.equal(await evaluate('getComputedStyle(document.querySelector(".connection-route")).position'),'static','Connection bar stays in normal document flow');
     await evaluate('window.scrollTo({top:'+bounds.start+',behavior:"instant"})');await pause(100);
     const beforeScroll=await evaluate('({y:document.querySelector(".connection-route").getBoundingClientRect().top,scroll:scrollY})');
@@ -32,8 +32,13 @@ export async function verifyPremiumUi({cdp,evaluate,load,viewport,media,waitFor,
       const position=bounds.start+(bounds.end-bounds.start)*progress;
       await evaluate('window.scrollTo({top:'+position+',behavior:"instant"})');
       const expectedLeft=Math.min(1,progress*2),expectedRight=Math.max(0,progress*2-1);
-      await waitFor('(()=>{const s=getComputedStyle(document.querySelector(".setup-connection-story"));return Math.abs(parseFloat(s.getPropertyValue("--connection-left"))-'+expectedLeft+')<.025&&Math.abs(parseFloat(s.getPropertyValue("--connection-right"))-'+expectedRight+')<.025})()','Dashed route fills and reverses at '+progress);
+      await waitFor('(()=>{const s=getComputedStyle(document.querySelector(".connection-diagram"));return Math.abs(parseFloat(s.getPropertyValue("--connection-left"))-'+expectedLeft+')<.025&&Math.abs(parseFloat(s.getPropertyValue("--connection-right"))-'+expectedRight+')<.025})()','Dashed route fills and reverses at '+progress);
     }
+    await evaluate('window.scrollTo({top:'+bounds.end+',behavior:"instant"})');
+    await waitFor('(()=>{const d=document.querySelector(".connection-diagram"),s=getComputedStyle(d);return parseFloat(s.getPropertyValue("--connection-left"))>.995&&parseFloat(s.getPropertyValue("--connection-right"))>.995})()','Both wires complete in their own visible scroll range');
+    assert(await evaluate('(()=>{const d=document.querySelector(".connection-diagram").getBoundingClientRect(),h=document.querySelector(".header-inner").getBoundingClientRect();return d.top>h.bottom+24&&d.bottom<innerHeight-24})()'),'Complete connection stays fully visible below the header');
+    assert(await evaluate('(()=>{const d=document.querySelector(".connection-diagram").getBoundingClientRect(),w=document.querySelector(".connection-walkthrough"),r=w.getBoundingClientRect(),s=getComputedStyle(w),l=w.querySelector("ol").getBoundingClientRect();return r.top-d.bottom>=39&&parseFloat(s.borderTopWidth)>=1&&l.top-r.top>=31})()'),'Diagram and setup steps have a distinct divider and breathing room');
+    await capture('connection-complete-'+theme);
     assert((await evaluate('getComputedStyle(document.querySelector(".route-wire")).backgroundImage')).includes('repeating-linear-gradient'),'Unfilled route retains a dashed base');
     for(const index of [0,1,2,1,0]) {
       await evaluate('(()=>{const e=document.querySelectorAll(".connection-step")['+index+'],r=e.getBoundingClientRect();window.scrollTo({top:scrollY+r.top+r.height/2-innerHeight*.6,behavior:"instant"})})()');
@@ -161,6 +166,6 @@ export async function verifyPremiumUi({cdp,evaluate,load,viewport,media,waitFor,
   await evaluate('document.querySelectorAll(".product-subnav a")[1].click()');await pause(1500);
   await waitFor('document.querySelector(".product-subnav a[aria-current=location]")?.hash==="#everyday"','Product navigation tracks the current section');
   await scrollTo('.footer-directory');await capture('footer-dark');
-  checks.push('reversible dashed-to-orange route; sequential forward/reverse setup highlights in both themes and 320/375px; non-sticky connection bar; header beam removed; unclipped keyboard dropdown; branded footer; shared breadcrumbs and current-section navigation');
+  checks.push('reversible dashed-to-orange route; sequential forward/reverse setup highlights in both themes and 320/375px; non-sticky connection bar; wires complete while fully visible; separated setup walkthrough; header beam removed; unclipped keyboard dropdown; branded footer; shared breadcrumbs and current-section navigation');
   checks.push('all seven secondary routes at mobile/desktop; quiet documentation/privacy; one product showcase; documentation anchors');
 }

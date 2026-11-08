@@ -461,15 +461,18 @@ body:has(.reading-page) .network-wallpaper { opacity:.16; }
 
 
 /* Setup is a direct conversation, connected by a reversible scroll thread. */
-.setup-connection-story { --connection-left:0;--connection-right:0;--connection-thread:0;position:relative; }
-.connection-route {display:grid;grid-template-columns:auto minmax(18px,1fr) auto minmax(18px,1fr) auto;align-items:center;gap:24px;padding:24px 30px;border-radius:20px; }
+.setup-connection-story { --connection-thread:0;position:relative; }
+.connection-diagram { --connection-left:0;--connection-right:0;margin:0;padding-top:12px; }
+.connection-diagram-caption { margin-bottom:16px;color:var(--text-muted);font-size:11px;line-height:1.7;letter-spacing:.1em;text-transform:uppercase; }
+.connection-walkthrough { margin-top:clamp(40px,4vw,56px);padding-top:clamp(32px,3vw,44px);border-top:1px solid var(--border); }
+.connection-route { display:grid;grid-template-columns:auto minmax(18px,1fr) auto minmax(18px,1fr) auto;align-items:center;gap:24px;padding:24px 30px;border-radius:20px; }
 .route-device { display:inline-flex;align-items:center;gap:10px;white-space:nowrap;font-size:14px; }
 .route-device svg { color:var(--accent); }
 .route-label { color:var(--text-secondary);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-align:center; }
 .route-wire { position:relative;display:block;height:1px;min-width:0;background:repeating-linear-gradient(90deg,var(--diagram-line) 0 5px,transparent 5px 10px); }
 .route-wire::after { content:"";position:absolute;inset:0;background:var(--accent);transform:scaleX(var(--connection-left));transform-origin:left;box-shadow:0 0 5px color-mix(in srgb,var(--accent) 15%,transparent); }
 .route-wire-second::after { transform:scaleX(var(--connection-right)); }
-.connection-steps { position:relative;display:grid;gap:24px;list-style:none;width:min(100%,940px);margin:42px auto 0;padding:0; }
+.connection-steps { position:relative;display:grid;gap:24px;list-style:none;width:min(100%,940px);margin:0 auto;padding:0; }
 .connection-steps::before,.connection-steps::after { content:"";position:absolute;left:25px;top:70px;bottom:70px;width:1px;background:repeating-linear-gradient(180deg,var(--diagram-line) 0 5px,transparent 5px 10px); }
 .connection-steps::after { background:var(--accent);transform:scaleY(var(--connection-thread));transform-origin:top; }
 .connection-step { position:relative;display:grid;grid-template-columns:52px minmax(0,1fr);align-items:center;gap:28px; }
@@ -533,7 +536,7 @@ body:has(.reading-page) .network-wallpaper { opacity:.16; }
  .connection-route .route-device { font-size:12px;gap:8px; }
  .connection-route .route-label { grid-column:1 / -1;grid-row:2;font-size:10px; }
  .route-wire-second { display:none; }
- .connection-steps { gap:20px;margin-top:28px; }
+ .connection-steps { gap:20px; }
  .connection-step { grid-template-columns:34px minmax(0,1fr);gap:16px; }
  .connection-node { width:34px;height:34px;font-size:10px; }
  .connection-steps::before,.connection-steps::after { left:16px;top:90px;bottom:90px; }

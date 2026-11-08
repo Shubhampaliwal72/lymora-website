@@ -225,3 +225,16 @@ were removed. The rounded header, normal border and navigation are preserved.
 Regression checks now verify that the bar moves with scroll before the fill
 completes, and that no header beam is rendered. This supersedes the earlier
 sticky-connector and header-beam descriptions above.
+
+
+## Owner correction: finish the diagram before it scrolls out
+
+The horizontal connector had still inherited the full setup-story scroll
+range after becoming non-sticky. ConnectionStory now gives the diagram its
+own reversible 82%-to-42% viewport range, finishing both wires while the
+entire diagram is visible below the header. The vertical setup thread keeps
+its longer range and existing step highlights. No pinning or sticky behavior
+is reintroduced. A small diagram caption, separate wrapper, divider and
+responsive spacing distinguish the connection diagram from the setup panels.
+Browser checks measure complete wire fills while visible, the separation gap
+and divider, and unchanged forward/reverse step highlights on desktop/mobile.
