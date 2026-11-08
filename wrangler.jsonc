@@ -1,0 +1,7 @@
+{
+  "name": "lymora",
+  "compatibility_date": "2026-11-08",
+  "assets": {
+    "directory": "./out"
+  }
+}
