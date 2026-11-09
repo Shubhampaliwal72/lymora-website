@@ -1,5 +1,6 @@
 /** Additional launch UI checks, using the existing local browser harness. */
 import assert from 'node:assert/strict';
+import { verifyWindowsDownload } from './verify-download-ui.mjs';
 import { verifyTopologyUi } from './verify-topology-ui.mjs';
 export async function verifyLaunchUi({cdp,evaluate,load,viewport,media,waitFor,pause,url,checks}) {
   await verifyTopologyUi({cdp,evaluate,load,viewport,media,waitFor,pause,checks});
@@ -40,9 +41,9 @@ export async function verifyLaunchUi({cdp,evaluate,load,viewport,media,waitFor,p
   await viewport(1440,1000);
   await evaluate(`document.querySelector('.header-download').click()`);
   await waitFor(`location.pathname==='/downloads/' && !!document.querySelector('#support')`,'Downloads client navigation');
-  assert(await evaluate(`document.querySelector('.download-coming-soon')?.disabled && document.querySelector('.download-coming-soon').textContent.includes('Coming Soon')`),'Coming Soon is truly disabled');
-  assert.equal(await evaluate(`[...document.querySelectorAll('a')].filter(a=>a.href.includes('/releases/download/')||a.protocol==='mailto:'||(a.hostname==='github.com'&&a.pathname.includes('/issues'))).length`),0,'No unverified installer or support URLs');
+  await verifyWindowsDownload(evaluate);
+  assert.equal(await evaluate(`[...document.querySelectorAll('a')].filter(a=>a.protocol==='mailto:'||(a.hostname==='github.com'&&a.pathname.includes('/issues'))).length`),0,'No unverified support URLs');
   assert.equal(await evaluate(`document.querySelector('#support .button').getAttribute('href')`),'/products/lan-messenger/docs/#troubleshooting','Help is a working internal guide');
   const response=await fetch(url+'/downloads/');assert.equal(response.headers.get('x-frame-options'),'DENY','Local harness applies prepared frame protection');assert(response.headers.get('content-security-policy')?.includes("frame-ancestors 'none'"),'Local harness applies prepared CSP');
-  checks.push('disabled download and honest support availability; prepared CSP enforced by local harness');
+  checks.push('approved Windows download and honest support availability; prepared CSP enforced by local harness');
 }

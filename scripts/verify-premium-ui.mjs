@@ -1,5 +1,6 @@
 /** Verify the approved UI changes against the actual static site, not source strings. */
 import assert from 'node:assert/strict';
+import { verifyWindowsDownload, verifyDownloadNavigation } from './verify-download-ui.mjs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
@@ -65,7 +66,7 @@ export async function verifyPremiumUi({cdp,evaluate,load,viewport,media,waitFor,
     assert.equal(await evaluate('document.querySelector(".network-wallpaper").dataset.topology'),'perimeter-ring','Background is structured around the reading area');
     assert(await evaluate('[...document.querySelectorAll(".chapter-navigation a")].every(a=>!!document.querySelector(a.getAttribute("href")))'),'Every chapter navigates to a real section');
     assert.equal(await evaluate('document.querySelectorAll("#experience [role=tab]").length'),4,'Four real product views');
-    assert(await evaluate('document.querySelector("#download .download-coming-soon").disabled'),'Homepage download remains honestly unavailable');
+    await verifyDownloadNavigation(evaluate, "#download");
     const before=await evaluate('JSON.stringify([...document.querySelectorAll(".ambient-streaks path")].map(p=>p.getAttribute("stroke-dashoffset")))');
     await waitFor('JSON.stringify([...document.querySelectorAll(".ambient-streaks path")].map(p=>p.getAttribute("stroke-dashoffset")))!=='+JSON.stringify(before),'Packet paths animate independently of scroll');
     await evaluate('document.querySelector(".ambience-control").click()');await pause(200);
@@ -155,7 +156,7 @@ export async function verifyPremiumUi({cdp,evaluate,load,viewport,media,waitFor,
         assert(Number(await evaluate('getComputedStyle(document.querySelector(".network-wallpaper")).opacity'))<=.2,'Reading background is quiet');
       }
       if(route==='/products/lan-messenger/')assert.equal(await evaluate('document.querySelectorAll("main .screenshot-trigger").length'),1,'Product page has one reusable screenshot showcase');
-      if(route==='/downloads/')assert(await evaluate('document.querySelector(".download-coming-soon").disabled'),'Downloads remain unavailable');
+      if(route==='/downloads/')await verifyWindowsDownload(evaluate);
     }
   }
   await open('/products/lan-messenger/docs/');

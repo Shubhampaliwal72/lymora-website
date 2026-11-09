@@ -1,0 +1,27 @@
+{
+  "version": "1.0.0",
+  "build": "013",
+  "publishedAt": "2026-11-09",
+  "builtAt": "2026-11-01T13:34:29.668Z",
+  "architecture": "x64",
+  "windowsRequirement": "Windows 10 or later (64-bit)",
+  "size": "72.3 MiB",
+  "bytes": 75834964,
+  "assetName": "Lymora.LAN-Setup-1.0.0-build.013-x64.exe",
+  "signed": false,
+  "sha256": "a97f73067cdc9d6ee90be64c06562ae9e5977f775e3e78fb68a244c5c5dd101c",
+  "downloadUrl": "https://github.com/Shubhampaliwal72/lymora-website/releases/download/lan-messenger-v1.0.0-build.013/Lymora.LAN-Setup-1.0.0-build.013-x64.exe",
+  "checksumUrl": "https://github.com/Shubhampaliwal72/lymora-website/releases/download/lan-messenger-v1.0.0-build.013/SHA256SUMS.txt",
+  "notesUrl": "https://github.com/Shubhampaliwal72/lymora-website/releases/tag/lan-messenger-v1.0.0-build.013",
+  "changes": [
+    "Direct LAN messaging and encrypted device connections.",
+    "Group creation, invitations and conversations.",
+    "Reviewed files and folders, supported image previews, local search and scheduling."
+  ],
+  "knownIssues": [
+    "This installer is not digitally signed. Windows may display an unknown-publisher or SmartScreen prompt.",
+    "Build 013 does not include the newer group-management UI for member removal and leave/close/delete controls.",
+    "The later uninstaller update-cache cleanup fix is not included."
+  ],
+  "channel": "development"
+}

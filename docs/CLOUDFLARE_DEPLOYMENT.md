@@ -58,10 +58,12 @@ Canonical address: https://lymora.in . Connect your domain and www, check certif
 
 ## Downloads, support and releases
 
-Edit src/lib/public-links.ts after information is verified and approved, then rebuild:
+Release metadata is in src/lib/releases/windows.json, referenced by src/lib/public-links.ts. Update only after verification and owner approval, then rebuild:
 
-- release: null keeps a genuinely disabled Coming Soon button, with no fabricated public version or installer link.
-- A future approved release supplies version/date, tested Windows requirement, architecture, file size, checksum, actual changes/known issues, and verified GitHub Releases download/notes URLs.
+- Windows 1.0.0 build 013 is owner-approved and published on GitHub Releases. Its exact installer, size, SHA-256, publication date and known limitations are configured centrally. See WINDOWS_RELEASE.md.
+- Windows is the only supported platform presented. No macOS/Linux Coming Soon promise is published. Setting release to null restores the disabled Windows state.
+- /downloads/ centralizes installer links, compatibility, version, checksum and release notes. Other pages use internal navigation CTAs. The older releases route keeps a working handoff and a Downloads canonical; it is excluded from the sitemap.
+- A future approved release must update its build/version/date, Windows requirement, architecture, file size, checksum, actual changes/known issues and verified GitHub Releases URLs.
 - support.email and support.issuesUrl remain null until their mailbox or tracker is configured and verified. The internal troubleshooting guide works now.
 - Do not place Windows installers in public/. Plan distribution through approved GitHub Releases, independently of website deployment.
 
@@ -76,7 +78,7 @@ Removed the unused production-redirect example and replaced the earlier account/
 ## Checks before uploading
 
 - Pass lint, typecheck, build, verify:export and verify:launch.
-- Inspect desktop/mobile in both themes, original screenshots, hero routes, keyboard controls and Coming Soon state.
+- Inspect desktop/mobile in both themes, original screenshots, hero routes, keyboard controls, the centralized Windows download and generic Downloads navigation.
 - Check public support/release configuration before activation; no placeholder links or demo email addresses.
 - After upload: directly open nested pages, test the 404 page, verify HTTPS/canonical redirects, headers and actual production indexing.
 - public/_headers is consumed by Cloudflare Pages. Another hosting provider may require equivalent dashboard/header configuration. The policy permits Next's inline scripts/styles and the current self-hosted visual stack; it is not a guarantee of XSS prevention.

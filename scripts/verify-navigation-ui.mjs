@@ -23,13 +23,13 @@ export async function verifyNavigationUi({cdp,evaluate,viewport,media,waitFor,pa
  assert.equal(await evaluate('document.querySelectorAll("main h1 .reveal-word").length'),0,'Page title is immediately readable');
  assert.equal(await evaluate('getComputedStyle(document.querySelector(".route-arrival")).animationDuration'),'0.18s','Arrival stays within 150-250ms');
  await evaluate('document.documentElement.dataset.navigationDocument="preserved"');
- for(const route of ['/products/','/products/lan-messenger/','/products/lan-messenger/docs/','/downloads/','/products/lan-messenger/releases/','/privacy/','/about/','/']) {
+ for(const route of ['/products/','/products/lan-messenger/','/products/lan-messenger/docs/','/downloads/','/privacy/','/about/','/']) {
   await click(route);await settled(route);
   assert.equal(await evaluate('document.documentElement.dataset.navigationDocument'),'preserved','Internal routes use client navigation: '+route);
   assert.equal(await evaluate('document.querySelectorAll("main h1").length'),1,'One readable title after '+route);
   await liveBackground();
  }
- checks.push('initial load; client navigation across all eight routes; readable titles; 180ms arrival');
+ checks.push('initial load; client navigation across all seven primary routes; readable titles; 180ms arrival');
  await probe();await click('/');await pause(250);
  await evaluate('document.querySelector(".chapter-navigation a").click()');await pause(350);
  assert.equal(await evaluate('window.__navEvents.some(e=>e.visible==="true")'),false,'Same-route and same-page hashes never flash progress');

@@ -49,7 +49,7 @@ export default function Docs() {
         <section id="setup">
           <GuideHeading number="01" label="First-time setup" title="From install to hello.">Five small steps. One local conversation.</GuideHeading>
           <ol className="guide-steps">
-            <li data-guide-reveal><div><strong>Start with both PCs.</strong>Get a verified Windows installer when it becomes available on the <Link className="guide-inline-link" href="/downloads/">Downloads page</Link>. Install compatible builds on both PCs.</div></li>
+            <li data-guide-reveal><div><strong>Start with both PCs.</strong>Get the Windows installer from the <Link className="guide-inline-link" href="/downloads/">Downloads page</Link>. Install compatible builds on both PCs.</div></li>
             <li data-guide-reveal><div><strong>Make it yours.</strong>Choose a required display name. Team and avatar details are optional; no email, phone number or cloud registration is required.</div></li>
             <li data-guide-reveal><div><strong>Choose your network.</strong>Read the local-network explanation and explicitly allow LAN messaging on a network you trust.</div></li>
             <li data-guide-reveal><div><strong>Set your preferences.</strong>Choose notifications, Windows startup and an optional download location. You can change these choices later in Settings.</div></li>
@@ -66,7 +66,7 @@ export default function Docs() {
           <GuideHeading number="03" label="Conversations" title="One person, or your people."/>
           <div className="guide-conversations">
             <article className="guide-conversation glass-panel" data-guide-reveal><Icon name="message"/><h3>A direct conversation.</h3><p>Select a nearby contact to message them. Use the conversation header for search, scheduling and shared images.</p></article>
-            <article className="guide-conversation glass-panel" data-guide-reveal><Icon name="message"/><h3>Your group, together.</h3><p>Create a group from Groups, choose members and send an invitation. Recipients accept group membership. The creator manages the group; a member can leave without erasing everyone else&apos;s history.</p></article>
+            <article className="guide-conversation glass-panel" data-guide-reveal><Icon name="message"/><h3>Your group, together.</h3><p>Create a group from Groups, choose members and send an invitation. Recipients accept group membership. You can view the member list. Check the release notes on Downloads for the controls included in your version.</p></article>
           </div>
           <div className="guide-keyboard" aria-label="Messaging shortcuts"><span><kbd>Enter</kbd> Send a message</span><span><kbd>Shift</kbd><span aria-hidden="true">+</span><kbd>Enter</kbd> New line</span></div>
           <div className="guide-copy"><p>Delivery/read indicators describe different stages. A failed message offers an explicit retry. A local edit or Delete for me affects your local copy; do not assume a remote copy has changed.</p></div>

@@ -6,7 +6,7 @@ import { ScrollStatement } from "@/components/animations/ScrollStatement";
 import { LivingHero } from "@/components/living-network/LivingHero";
 import { ProductExplorer } from "@/components/sections/ProductExplorer";
 import { SectionHeading } from "@/components/site/SectionHeading";
-import { DownloadAction } from "@/components/site/DownloadAction";
+import { DownloadLink } from "@/components/site/DownloadLink";
 import { Icon } from "@/components/site/Icons";
 import { messenger } from "@/lib/products";
 
@@ -165,14 +165,7 @@ export default function Home() {
           <p>LAN Messenger brings messages, groups and files to nearby PCs.</p>
         </SectionHeading>
         <div className="download-foundation-actions">
-          <DownloadAction />
-          <p className="availability-note">
-            Public Windows installer coming soon.
-          </p>
-          <Link href="/downloads/" className="text-link">
-            Availability &amp; installation
-            <Icon name="arrow" />
-          </Link>
+          <DownloadLink/>
         </div>
       </section>
     </HomeScrollMotion>

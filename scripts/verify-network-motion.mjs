@@ -1,5 +1,6 @@
 /** Homepage motion checks and full-page review PNGs. Loopback only; no uploads. */
 import assert from 'node:assert/strict';
+import { verifyDownloadUi } from './verify-download-ui.mjs';
 import { verifyDocumentationUi } from './verify-documentation-ui.mjs';
 import { verifyGlassUi } from './verify-glass-ui.mjs';
 import { verifyLaunchUi } from './verify-launch-ui.mjs';
@@ -120,6 +121,8 @@ try {
 
 
   const checks=[];
+  const downloadsOnly=process.argv.includes('--downloads-only');
+  if(downloadsOnly)await verifyDownloadUi({cdp,evaluate,viewport,media,waitFor,pause,url,checks,output});
   const docsOnly=process.argv.includes('--docs-only');
   if(docsOnly)await verifyDocumentationUi({cdp,evaluate,viewport,media,waitFor,pause,url,checks,output});
   const glassOnly=process.argv.includes('--glass-only');
@@ -127,10 +130,10 @@ try {
   const launchOnly=process.argv.includes('--launch-only')||process.env.LYMORA_VERIFY_LAUNCH_ONLY==='1';
   const navigationOnly=process.argv.includes('--navigation-only');
   if(navigationOnly) await verifyNavigationUi({cdp,evaluate,viewport,media,waitFor,pause,url,checks,requests,errors,faults,output});
-  if(!docsOnly&&!glassOnly&&!launchOnly&&!navigationOnly) await verifyPremiumUi({cdp,evaluate,load,viewport,media,waitFor,pause,url,checks,report,output});
-  if(!docsOnly&&!glassOnly&&!navigationOnly) await verifyLaunchUi({cdp,evaluate,load,viewport,media,waitFor,pause,url,checks});
+  if(!downloadsOnly&&!docsOnly&&!glassOnly&&!launchOnly&&!navigationOnly) await verifyPremiumUi({cdp,evaluate,load,viewport,media,waitFor,pause,url,checks,report,output});
+  if(!downloadsOnly&&!docsOnly&&!glassOnly&&!navigationOnly) await verifyLaunchUi({cdp,evaluate,load,viewport,media,waitFor,pause,url,checks});
   assert.deepEqual(errors,[],'No console/runtime/hydration errors');assert.deepEqual(missing,[],'No missing assets');assert.deepEqual(external,[],'No external requests');
-  const result={passed:true,browser:version.Browser,checks,exports:report,scope:'Actual static-export browser capture; software WebGL, not a hardware FPS benchmark.'};await fs.writeFile(path.join(output,docsOnly?'documentation-ui-results.json':glassOnly?'glass-ui-results.json':navigationOnly?'navigation-ui-results.json':launchOnly?'launch-ui-results.json':'network-motion-results.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result,null,2));await send('Target.closeTarget',{targetId:target.targetId});await send('Browser.close');
+  const result={passed:true,browser:version.Browser,checks,exports:report,scope:'Actual static-export browser capture; software WebGL, not a hardware FPS benchmark.'};await fs.writeFile(path.join(output,downloadsOnly?'downloads-ui-results.json':docsOnly?'documentation-ui-results.json':glassOnly?'glass-ui-results.json':navigationOnly?'navigation-ui-results.json':launchOnly?'launch-ui-results.json':'network-motion-results.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result,null,2));await send('Target.closeTarget',{targetId:target.targetId});await send('Browser.close');
 } finally {
   if(socket)socket.close();for(const promise of pending.values()){clearTimeout(promise.timeout);promise.reject(Error('Browser closed'));}pending.clear();server.close();if(browser.exitCode===null)browser.kill();
 }

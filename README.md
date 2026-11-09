@@ -139,8 +139,9 @@ The current local preview is http://127.0.0.1:3100. It is a stage checkpoint: fu
 The product registry is in src/lib/products.ts. Add only real products; each
 application can have its own overview, documentation, screenshots, release notes
 and download destination. Current routes are listed in design/glass-network/FOUNDATION.md.
-Original screenshot pixels and provenance are preserved. Public downloads remain
-pending verified release metadata. The website is still noindex and local-only.
+Original screenshot pixels and provenance are preserved. Windows build 013 is available through the centralized Downloads page. Other
+platforms are not currently advertised. See docs/WINDOWS_RELEASE.md for integrity and build limitations.
+Website deployment and public indexing still require separate owner approval.
 
 After a static build, node scripts/verify-static-links.mjs checks local navigation,
 anchors and asset references without a browser or network requests. The older

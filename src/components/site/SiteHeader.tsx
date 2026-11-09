@@ -6,6 +6,7 @@ import { ThemeToggle } from "./ThemeToggle";
 import { NavDisclosure } from "./NavDisclosure";
 import { NavigationItem } from "./NavigationItem";
 import { Icon } from "./Icons";
+import { DownloadLink } from "./DownloadLink";
 import { messenger } from "@/lib/products";
 
 export function SiteHeader() {
@@ -32,8 +33,9 @@ export function SiteHeader() {
         </div>
         <div className="nav-menu-footnote"><span className="signal-dot"/><span>Thoughtful software. Clear answers.</span></div>
       </NavDisclosure>
+      <ActiveLink href="/downloads/">Downloads</ActiveLink>
       <ActiveLink href="/about/">About</ActiveLink>
     </nav>
-    <div className="header-actions"><ThemeToggle/><Link className="button button-primary header-download" href="/downloads/">For Windows<Icon name="arrow"/></Link><MobileMenu/></div>
+    <div className="header-actions"><ThemeToggle/><DownloadLink className="header-download" label="Get Lymora"/><MobileMenu/></div>
   </div></header>;
 }

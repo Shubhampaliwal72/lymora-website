@@ -51,7 +51,7 @@ export function MobileMenu() {
       <NavigationItem href={messenger.releases} title="Release notes"/>
       <NavigationItem href="/privacy/" title="Privacy & security"/>
       <NavigationItem href="/about/" title="About Lymora"/>
-      <NavigationItem href="/downloads/" title="Windows availability" icon="windows" className="mobile-download"/>
+      <NavigationItem href="/downloads/" title="Downloads" icon="down" className="mobile-download"/>
     </nav>
   </details>;
 }
