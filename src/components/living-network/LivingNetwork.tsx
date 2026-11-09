@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { Component, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { motion } from "motion/react";
+import { MotionConfig, motion } from "motion/react";
 import { Icon } from "@/components/site/Icons";
 import { NetworkFallback } from "./NetworkFallback";
 import { useScenePreferences } from "./useScenePreferences";
@@ -69,7 +69,7 @@ export function LivingNetwork() {
     invalidate.current?.();
   };
   const status = ["Finding nearby computers", "Connecting directly to " + destination, (transfer === "file" ? "File" : "Message") + " on its way to " + destination, (transfer === "file" ? "File" : "Message") + " arrives at " + destination, (transfer === "file" ? "File" : "Message") + " received by " + destination][phase];
-  return <figure ref={root} className="living-network" data-mode={canvas && ready === preferences.theme ? "3d" : "illustrated"} data-endpoint={endpoint} data-source={source} data-automatic="true" data-topology="peer-mesh" data-transfer={transfer} data-phase={phase} onPointerMove={move} onPointerLeave={() => {pointer.current.x = 0; pointer.current.y = 0; invalidate.current?.();}} aria-labelledby="network-caption">
+  return <MotionConfig reducedMotion="never"><figure ref={root} className="living-network" data-mode={canvas && ready === preferences.theme ? "3d" : "illustrated"} data-endpoint={endpoint} data-source={source} data-automatic="true" data-topology="peer-mesh" data-transfer={transfer} data-phase={phase} onPointerMove={move} onPointerLeave={() => {pointer.current.x = 0; pointer.current.y = 0; invalidate.current?.();}} aria-labelledby="network-caption">
     <div className="network-world">
       <NetworkFallback clock={clock} invalidateRef={fallbackDraw} source={source} endpoint={endpoint} transfer={transfer} />
       {canvas && <SceneBoundary onUnavailable={onUnavailable}><NetworkCanvas theme={preferences.theme} clock={clock} pointer={pointer} invalidateRef={invalidate} source={source} endpoint={endpoint} transfer={transfer} onSelect={select} onReady={onReady} onUnavailable={onUnavailable} /></SceneBoundary>}
@@ -80,5 +80,5 @@ export function LivingNetwork() {
       <div className="network-demo-actions"><div className="demo-transfer" role="group" aria-label="Preview content">{(["message","file"] as const).map(kind=><motion.button key={kind} type="button" aria-label={kind==="message"?"Send a message in the preview":"Send a file in the preview"} aria-pressed={transfer===kind} onClick={()=>{setTransfer(kind);replay();}} whileTap={reduce?undefined:{scale:.97}}><Icon name={kind}/><span>{kind==="message"?"Message":"File"}</span></motion.button>)}</div>{preferences.motion && <button className="demo-pause" type="button" aria-label={playing?"Pause network preview":"Play network preview"} onClick={()=>setPlaying(value=>!value)}><Icon name={playing?"pause":"play"}/></button>}</div>
     </div>
     <figcaption className="network-caption" id="network-caption"><span>Illustrated LAN &middot; actual app, fictional demo data</span><span>Choose a PC to follow the connection.</span></figcaption>
-  </figure>;
+  </figure></MotionConfig>;
 }

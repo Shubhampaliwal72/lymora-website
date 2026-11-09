@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 import { NavigationItem } from "./NavigationItem";
 import { usePathname } from "next/navigation";
 import { messenger } from "@/lib/products";
-import { useAnimate } from "motion/react";
+import { useAnimate } from "motion/react-mini";
 import { motionTiming } from "@/lib/motion";
 import { Icon } from "./Icons";
 export function MobileMenu() {
@@ -32,7 +32,7 @@ export function MobileMenu() {
     };
   }, []);
   useEffect(() => {if(details.current)details.current.open = false;},[pathname]);
-  return <details ref={details} className="mobile-menu" onBlur={event => { if (event.relatedTarget instanceof Node && !event.currentTarget.contains(event.relatedTarget)) event.currentTarget.open = false; }} onToggle={(event) => { if (event.currentTarget.open && panel.current) { const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches; if (reduce) return; void animate(panel.current, {opacity: [.75, 1], y: [-6, 0]}, {duration: motionTiming.menu}); } }}>
+  return <details ref={details} className="mobile-menu" onBlur={event => { if (event.relatedTarget instanceof Node && !event.currentTarget.contains(event.relatedTarget)) event.currentTarget.open = false; }} onToggle={(event) => { if (event.currentTarget.open && panel.current) { const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches; if (reduce) return; void animate(panel.current, {opacity: [.75, 1], transform: ["translateY(-6px)", "translateY(0px)"]}, {duration: motionTiming.menu}); } }}>
     <summary className="icon-button" aria-label="Navigation menu" aria-controls="mobile-navigation"><Icon name="menu" className="menu-bars"/><Icon name="close" className="menu-close"/></summary>
     <nav ref={panel} id="mobile-navigation" className="mobile-panel" aria-label="Mobile navigation" onClick={(event) => { if ((event.target as HTMLElement).closest("a") && details.current) details.current.open = false; }}>
       <div className="nav-menu-intro"><span className="eyebrow">Explore Lymora</span><p>Technology, closer.</p></div>

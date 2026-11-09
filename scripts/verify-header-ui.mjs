@@ -19,21 +19,10 @@ export async function verifyHeaderUi({cdp,evaluate,viewport,media,waitFor,pause,
   };
   const rect=selector=>evaluate('(()=>{const r=document.querySelector('+JSON.stringify(selector)+').getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}})()');
   const capture=async name=>{const png=await cdp('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});await writeFile(path.join(output,'header-'+name+'.png'),Buffer.from(png.data,'base64'));};
-  const move=async(x,y)=>cdp('Input.dispatchMouseEvent',{type:'mouseMoved',x,y});
   for(const theme of ['dark','light']) {
     await viewport(1440,1000);await media(theme);await open();
     assert.equal(await evaluate('document.documentElement.dataset.theme'),theme,'Requested theme applied');
-    const copy=await rect('.brand-copy');
-    const mark=await rect('.site-header .brand-symbol');
-    const baseline=await evaluate('getComputedStyle(document.querySelector(".site-header .brand-symbol")).transform');
-    await move(mark.x+mark.width/2,mark.y+mark.height/2);await pause(250);
-    assert.notEqual(await evaluate('getComputedStyle(document.querySelector(".site-header .brand-symbol")).transform'),baseline,'Only logo symbol gains 3D tilt on hover');
-    assert.deepEqual(await rect('.brand-copy'),copy,'Wordmark and tagline stay completely stationary');
-    assert.equal(await evaluate('getComputedStyle(document.querySelector(".brand-copy")).transform'),'none','Wordmark has no animation transform');
-    assert(await evaluate('Number(getComputedStyle(document.querySelector(".site-header .brand-symbol"),"::after").opacity)>0.5'),'Logo reflection appears on hover');
-    assert(await evaluate('getComputedStyle(document.querySelector(".site-header .brand-symbol"),"::after").maskImage.includes("mark-")'),'Reflection clips to original logo artwork');
-    await move(1400,900);await waitFor('!document.querySelector(".site-header .brand-symbol").dataset.flipping','Finite logo flip returns to rest even after pointer exit');
-    assert.equal(await evaluate('getComputedStyle(document.querySelector(".site-header .brand-symbol")).transform'),baseline,'Logo returns to its original position');
+    assert.equal(await evaluate('getComputedStyle(document.querySelector(".site-header .brand-symbol")).animationName'),'brand-symbol-live','Logo starts automatically without hovering');
     const normal=await rect('.header-inner');
     const documentTop=await evaluate('document.querySelector("main").getBoundingClientRect().top+scrollY');
     await evaluate('window.scrollTo({top:420,behavior:"instant"})');
@@ -60,7 +49,7 @@ export async function verifyHeaderUi({cdp,evaluate,viewport,media,waitFor,pause,
     await evaluate('document.querySelector(".header-download").click()');
     await waitFor('location.pathname==="/downloads/"&&!!document.querySelector(".download-windows")','Get Lymora navigates to real Downloads');
   }
-  checks.push('Both themes: symbol-only 3D tilt/masked reflection and smooth return; stationary wordmark/tagline; compact header without content shift; keyboard dropdowns; correct active routes; working theme toggle and Get Lymora');
+  checks.push('Both themes: automatic symbol-only animation; stationary wordmark/tagline; compact header without content shift; keyboard dropdowns; correct active routes; working theme toggle and Get Lymora');
   for(const width of [320,375,768,1024,1100,1101,1440,1920]) {
     await viewport(width,850);await media(width%2?'light':'dark');await open();
     assert(await evaluate('document.documentElement.scrollWidth<=innerWidth'),'No horizontal overflow at '+width);
@@ -85,11 +74,7 @@ export async function verifyHeaderUi({cdp,evaluate,viewport,media,waitFor,pause,
   }
   checks.push('320/375/768/1024/1100/1101/1440/1920px responsive navigation, mobile keyboard/scroll/route cleanup, centered desktop links and collision-free controls');
   await viewport(1440,1000);await media('dark',true);await open();
-  const logo=await rect('.site-header .brand-symbol');await move(logo.x+logo.width/2,logo.y+logo.height/2);await pause(100);
-  assert.equal(await evaluate('getComputedStyle(document.querySelector(".site-header .brand-symbol")).transform'),'none','Reduced motion disables logo tilt');
-  assert.equal(await evaluate('getComputedStyle(document.querySelector(".site-header .brand-symbol"),"::after").display'),'none','Reduced motion disables reflection');
-  assert(await evaluate('Number(getComputedStyle(document.querySelector(".site-header .brand-symbol")).opacity)<1'),'Reduced motion still gives visible hover feedback');
-  await waitFor('!document.querySelector(".site-header .brand-symbol").dataset.flipping','Reduced-motion feedback also resets for the next hover');
+  assert.equal(await evaluate('getComputedStyle(document.querySelector(".site-header .brand-symbol")).animationName'),'brand-symbol-live','Owner-approved live logo is independent of the OS menu-motion preference');
   await evaluate('document.querySelector(".nav-disclosure summary").click()');await pause(100);
   assert.equal(await evaluate('getComputedStyle(document.querySelector(".nav-disclosure[open] .nav-dropdown")).animationName'),'none','Reduced motion disables menu arrival movement');
   await viewport(375,850);await pause(200);
@@ -99,5 +84,5 @@ export async function verifyHeaderUi({cdp,evaluate,viewport,media,waitFor,pause,
   await viewport(1440,1000);await pause(100);
   assert.equal(await evaluate('document.querySelector(".mobile-menu").open'),false,'Mobile menu closes on desktop breakpoint');
   assert.equal(await evaluate('document.documentElement.dataset.motion'),'full','Header preferences do not disable existing site scenes');
-  checks.push('Reduced-motion logo and menus; responsive cleanup; existing brand/GSAP animation policy remains independent');
+  checks.push('Owner-approved live logo; reduced-motion menus; responsive cleanup; existing brand/GSAP animation policy remains independent');
 }

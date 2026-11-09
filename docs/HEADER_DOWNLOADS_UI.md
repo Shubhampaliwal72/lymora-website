@@ -1,74 +1,74 @@
-# Header and platform availability UI
+# Header, live logo and platform availability
 
-This change is limited to the independent website. No deployment, push, commit,
-desktop-app change, new dependency or release artifact is included.
+All implementation is in the independent website. No desktop-app changes, DNS,
+publishing or deployment is included.
 
-## Header
+## Current behavior
 
-- HeaderFrame observes one document marker with IntersectionObserver and compacts
-  after the first 64 pixels of scrolling. The header reserves its original height,
-  so compaction does not move page content. The observer disconnects on unmount.
-- The existing logo PNGs, wordmark and tagline remain. CSS owns only the symbol's
-  single hover flip and a reflection masked to the original artwork.
-  Wordmark and tagline have no transforms or animations. There is no idle loop.
-- Logo, dropdown, mobile-menu and header transitions respect reduced motion.
-  This does not change the existing GSAP/Three scene preference or pause controls.
-- Desktop navigation is centered. At 1100px and below, the existing native mobile
-  disclosure replaces the desktop links. Escape, outside clicks, focus leaving,
-  route changes and breakpoint changes close the appropriate menu.
-- Existing routes and Downloads CTA are retained. Products and Resources reflect
-  their actual destination pages; the theme control describes its next action.
-- No header-edge beam is added. Reduced transparency keeps surfaces solid.
+- HeaderFrame observes one document marker and compacts after 64 pixels of scroll.
+  Reserved header height prevents document shifts. Observers clean up on unmount.
+- The owner clarified that the orange logo must animate automatically rather than
+  only on hover. BrandSymbol now uses a repeating 8-second CSS cycle: a slow, continuous 360-degree rotation around
+  its own vertical axis, with a masked reflection. It has no lateral tilt, scale
+  change or translation, and returns to its original orientation each revolution.
+  Only the original PNG symbol moves. Wordmark and tagline remain stationary.
+- The owner explicitly requested this logo motion even with OS Reduced Motion.
+  This is a logo-only exception. Menu, navigation and page-arrival preferences
+  remain independent. No Windows settings are changed.
+- Logo motion pauses when the document is hidden or the symbol is offscreen.
+  The existing keyboard-accessible Pause/Resume ambience control pauses both the
+  logo and reflection. No additional public controls or dependencies are added.
+- Desktop links are centered; the existing mobile disclosure replaces them at
+  1100px and below. Escape, outside clicks, focus departure, route changes and
+  breakpoint changes close the appropriate menus. Existing real URLs, download
+  CTA, theme toggle, artwork, typography and both themes remain.
+- Simple DOM transitions use motion/react-mini. In Motion 14, the full useAnimate
+  hook itself calls useReducedMotion and emits a development warning, even when
+  the application has removed its own direct useReducedMotion call. The mini
+  entry point avoids that hook; MobileMenu still checks the OS preference before
+  playing its entry movement. Existing product-preview button motion has an
+  explicit local MotionConfig matching the owner's established brand policy.
+- No header-edge beam is introduced. Reduced transparency uses solid surfaces.
 
 ## Downloads
 
-Windows remains the only downloadable platform. The owner explicitly requested
-macOS and Linux Coming soon information in this change. UpcomingPlatforms shows
-those plans only on /downloads/, with no invented dates, system requirements,
-installer URLs or inactive controls. The Windows release manifest is unchanged.
+Windows is the only available installer. The owner approved macOS and Linux
+Coming soon information only on /downloads/. Those panels have no download
+controls, invented release dates, system requirements or URLs. The verified
+Windows release manifest is unchanged.
+
+## Three.js compatibility
+
+R3F 9.8.2 constructs the deprecated THREE.Clock internally. The version-guarded,
+idempotent scripts/r3f-timer-compat.mjs install adapter replaces only that internal
+constructor in its three runtime distributions with a THREE.Timer-backed clock
+interface. It preserves auto-start, start/stop, elapsed seconds and manual frame
+loop fields. postinstall applies it after npm ci; no console warnings are hidden,
+no beta renderer is installed, and no Three version is downgraded. Review/remove
+the adapter when upgrading R3F to a stable upstream Timer implementation.
 
 ## Verification
 
-Before the subsequent finite-logo flip and Timer compatibility changes, passed
-npm run lint, npm run typecheck, npm run build and npm run verify:export.
-Export validation resolves 727 local references across 11 HTML files and verifies
-8 routes and the Cloudflare static-asset constraints.
+The checks below passed for the automatic flip before the final 8-second,
+vertical-axis-only timing adjustment. That final CSS adjustment has not been
+retested. Checks covered the actual static export and the existing Next.js
+development server at http://127.0.0.1:3100. The user's server was not restarted.
 
-Focused headless Edge checks (against the actual static export):
+- npm run lint, npm run typecheck, npm run build and npm run verify:export.
+- node --test scripts/r3f-timer-compat.test.mjs: four tests for elapsed seconds,
+  start/stop/restart, writable manual-frame timestamps and idempotent installation.
+- node scripts/verify-network-motion.mjs --logo-only: natural playback over two
+  iterations, both themes, both OS motion modes, 320/375/1440px, real 3D startup,
+  rotation/return/reflection, stationary text, manual and visibility pause/resume.
+  It samples the real timeline without hover, seeking or changing OS settings.
+- --header-only: centered links, compaction, theme, active destinations, keyboard
+  menus, mobile bounds and navigation through 320/375/768/1024/1100/1101/1440/1920px.
+- --docs-only: guide navigation, disclosure transitions, keyboard/search behavior
+  and mobile layout after switching its DOM transitions to Motion mini.
 
-- node scripts/verify-network-motion.mjs --header-only: logo-only hover and smooth
-  return, stationary text, reflection mask, compaction with no document shift,
-  theme toggle, keyboard menus, active links, real CTA navigation, reduced motion,
-  responsive menu cleanup and collision-free layouts from 320px to 1920px.
-- node scripts/verify-network-motion.mjs --downloads-only: verified configured
-  Windows installer/checksum/release-note URLs, upcoming information without
-  controls, all eight routes, mobile CTAs and both themes at 320/375/1440px.
-- node scripts/verify-network-motion.mjs --glass-only: dropdown/dialog stacking,
-  background scrims, keyboard/focus restoration and reduced transparency.
-- npm run verify:launch: existing three-PC animation, message/file routing,
-  screenshot inspection and download/support behavior.
-
-Captures and reports are local-only in ignored .verification/. These checks use
-headless Edge/software WebGL; they do not certify physical-device FPS or every
-browser. No external resources were requested by the test pages.
-
-## Reduced-motion and Three.js warning correction
-
-The OS reduced-motion preference deliberately replaces the full 3D logo flip
-with a brief opacity pulse. Both variants reset and can be triggered again;
-wordmark and tagline remain stationary. No OS settings are changed.
-MobileMenu reads matchMedia at interaction time instead of calling Motion's
-warning-producing useReducedMotion hook. The reduced-motion menu stays static.
-
-R3F 9.8.2 constructs THREE.Clock internally, which Three 0.187 deprecates.
-scripts/r3f-timer-compat.cjs replaces only that constructor in the three pinned
-R3F runtime distributions with a THREE.Timer-backed implementation of the
-existing clock interface. It preserves start/stop, auto-start, elapsed time and
-manual/demand frame-loop behavior. The adapter is version-guarded, idempotent,
-and runs through postinstall after npm ci. No warning interception, beta engine,
-Three downgrade or deployment configuration change is involved. Review/remove
-this adapter when adopting a stable upstream Timer implementation.
-
-Restart an already-running development server once so its cached vendor modules
-pick up the corrected renderer. The latest follow-up has not been browser-tested,
-in keeping with the owner's request to inspect the development site themselves.
+The browser harness fails on console/runtime errors, missing assets, external
+requests, and either reported Clock/reduced-motion warning. Development runs use
+LYMORA_TEST_URL=http://127.0.0.1:3100 and write separate results in the ignored
+.verification/local-server/ directory. Static-run measurements, reports and
+captures are under .verification/. This uses headless Edge/software WebGL and is
+not a physical-device FPS benchmark or a claim of testing every browser.

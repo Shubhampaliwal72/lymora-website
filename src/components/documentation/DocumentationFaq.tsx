@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState, useSyncExternalStore, type MouseEvent } from "react";
-import { useAnimate } from "motion/react";
+import { useAnimate } from "motion/react-mini";
 
 export type GuideQuestion = {q: string; a: string};
 const subscribe = () => () => {};

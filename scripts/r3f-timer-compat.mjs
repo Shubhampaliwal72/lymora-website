@@ -3,8 +3,11 @@
  * Use Three.Timer behind its existing clock API until a stable R3F migration.
  * Version-guarded, idempotent and applied after npm ci. Never filters console output.
  */
-const fs = require('node:fs');
-const path = require('node:path');
+import fs from 'node:fs';
+import path from 'node:path';
+import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
+const resolvePackage = createRequire(import.meta.url).resolve;
 
 function createTimerClock(Timer) {
   const timer = new Timer();
@@ -39,7 +42,7 @@ function createTimerClock(Timer) {
 }
 
 function applyCompatibility() {
-  const root = path.dirname(require.resolve('@react-three/fiber/package.json'));
+  const root = path.dirname(resolvePackage('@react-three/fiber/package.json'));
   const metadata = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
   if (metadata.version !== '9.8.2') throw new Error('Review the Timer compatibility adapter before upgrading React Three Fiber.');
   const directory = path.join(root, 'dist');
@@ -57,5 +60,5 @@ function applyCompatibility() {
   for (const change of changes) fs.writeFileSync(change.target, change.source);
   console.log('React Three Fiber Timer compatibility: ' + changes.length + ' files updated.');
 }
-if (require.main === module) applyCompatibility();
-module.exports = {createTimerClock, applyCompatibility};
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) applyCompatibility();
+export {createTimerClock, applyCompatibility};

@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import { verifyDownloadUi } from './verify-download-ui.mjs';
 import { verifyHeaderUi } from './verify-header-ui.mjs';
+import { verifyLogoUi } from './verify-logo-ui.mjs';
 import { verifyDocumentationUi } from './verify-documentation-ui.mjs';
 import { verifyGlassUi } from './verify-glass-ui.mjs';
 import { verifyLaunchUi } from './verify-launch-ui.mjs';
@@ -14,7 +15,7 @@ import { spawn } from 'node:child_process';
 import { once } from 'node:events';
 
 const root = process.cwd();
-const output = path.join(root, '.verification');
+const output = path.join(root, '.verification', process.env.LYMORA_TEST_URL ? 'local-server' : '');
 await fs.mkdir(output, {recursive: true});
 const browserPath = process.env.LYMORA_BROWSER_PATH ?? 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
 await fs.access(browserPath);
@@ -54,7 +55,7 @@ const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 let socket;
 const pending = new Map();
 let id = 0;
-const errors = [], external = [], report = [], requests = [];
+const errors = [], warnings = [], external = [], report = [], requests = [];
 let target;
 try {
   let port;
@@ -75,6 +76,8 @@ try {
       errors.push(message.params.exceptionDetails.exception?.description ?? message.params.exceptionDetails.text);
     } else if(message.method === 'Runtime.consoleAPICalled' && message.params.type === 'error') {
       errors.push(message.params.args.map(arg => arg.value ?? arg.description).join(' '));
+    } else if(message.method === 'Runtime.consoleAPICalled' && message.params.type === 'warning') {
+      warnings.push(message.params.args.map(arg => arg.value ?? arg.description).join(' '));
     } else if(message.method === 'Network.requestWillBeSent') {
       const requestUrl=message.params.request.url;requests.push(requestUrl);
       if (/^https?:/.test(requestUrl) && !requestUrl.startsWith(url)) external.push(requestUrl);
@@ -122,6 +125,8 @@ try {
 
 
   const checks=[];
+  const logoOnly=process.argv.includes('--logo-only');
+  if(logoOnly)await verifyLogoUi({cdp,evaluate,viewport,media,waitFor,pause,url,checks,output});
   const headerOnly=process.argv.includes('--header-only');
   if(headerOnly)await verifyHeaderUi({cdp,evaluate,viewport,media,waitFor,pause,url,checks,output});
   const downloadsOnly=process.argv.includes('--downloads-only');
@@ -133,10 +138,11 @@ try {
   const launchOnly=process.argv.includes('--launch-only')||process.env.LYMORA_VERIFY_LAUNCH_ONLY==='1';
   const navigationOnly=process.argv.includes('--navigation-only');
   if(navigationOnly) await verifyNavigationUi({cdp,evaluate,viewport,media,waitFor,pause,url,checks,requests,errors,faults,output});
-  if(!headerOnly&&!downloadsOnly&&!docsOnly&&!glassOnly&&!launchOnly&&!navigationOnly) await verifyPremiumUi({cdp,evaluate,load,viewport,media,waitFor,pause,url,checks,report,output});
-  if(!headerOnly&&!downloadsOnly&&!docsOnly&&!glassOnly&&!navigationOnly) await verifyLaunchUi({cdp,evaluate,load,viewport,media,waitFor,pause,url,checks});
+  if(!logoOnly&&!headerOnly&&!downloadsOnly&&!docsOnly&&!glassOnly&&!launchOnly&&!navigationOnly) await verifyPremiumUi({cdp,evaluate,load,viewport,media,waitFor,pause,url,checks,report,output});
+  if(!logoOnly&&!headerOnly&&!downloadsOnly&&!docsOnly&&!glassOnly&&!navigationOnly) await verifyLaunchUi({cdp,evaluate,load,viewport,media,waitFor,pause,url,checks});
   assert.deepEqual(errors,[],'No console/runtime/hydration errors');assert.deepEqual(missing,[],'No missing assets');assert.deepEqual(external,[],'No external requests');
-  const result={passed:true,browser:version.Browser,checks,exports:report,scope:'Actual static-export browser capture; software WebGL, not a hardware FPS benchmark.'};await fs.writeFile(path.join(output,headerOnly?'header-ui-results.json':downloadsOnly?'downloads-ui-results.json':docsOnly?'documentation-ui-results.json':glassOnly?'glass-ui-results.json':navigationOnly?'navigation-ui-results.json':launchOnly?'launch-ui-results.json':'network-motion-results.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result,null,2));await send('Target.closeTarget',{targetId:target.targetId});await send('Browser.close');
+  assert.deepEqual(warnings.filter(message=>/THREE\.Clock:|Reduced Motion enabled/.test(message)),[],'No deprecated Clock or reduced-motion hook warnings');
+  const result={passed:true,browser:version.Browser,warnings,checks,exports:report,scope:process.env.LYMORA_TEST_URL?'Browser verification against the specified local server; software WebGL, not a hardware FPS benchmark.':'Actual static-export browser capture; software WebGL, not a hardware FPS benchmark.'};await fs.writeFile(path.join(output,logoOnly?'logo-ui-results.json':headerOnly?'header-ui-results.json':downloadsOnly?'downloads-ui-results.json':docsOnly?'documentation-ui-results.json':glassOnly?'glass-ui-results.json':navigationOnly?'navigation-ui-results.json':launchOnly?'launch-ui-results.json':'network-motion-results.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result,null,2));await send('Target.closeTarget',{targetId:target.targetId});await send('Browser.close');
 } finally {
   if(socket)socket.close();for(const promise of pending.values()){clearTimeout(promise.timeout);promise.reject(Error('Browser closed'));}pending.clear();server.close();if(browser.exitCode===null)browser.kill();
 }
