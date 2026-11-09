@@ -1,15 +1,21 @@
+import type { ReactNode } from "react";
 import { pageMetadata } from "@/lib/site";
 import Link from "@/components/site/NavigationLink";
 import { SectionNavigation } from "@/components/site/SectionNavigation";
 import { PageIntro } from "@/components/site/PageIntro";
+import { Icon } from "@/components/site/Icons";
+import { DocumentationMotion } from "@/components/documentation/DocumentationMotion";
+import { DocumentationFaq } from "@/components/documentation/DocumentationFaq";
+import "./documentation.css";
+
 export const metadata = pageMetadata("/products/lan-messenger/docs/", "LAN Messenger documentation", "Install Lymora, discover nearby PCs, share messages and files, and troubleshoot your LAN connection.");
 const sections = [
- {href: "#setup", label: "First-time setup"},
- {href: "#network", label: "Your network"},
- {href: "#messaging", label: "Messages & groups"},
- {href: "#files", label: "Sharing files"},
- {href: "#troubleshooting", label: "Troubleshooting"},
- {href: "#faq", label: "Common questions"},
+  {href: "#setup", label: "First-time setup"},
+  {href: "#network", label: "Your network"},
+  {href: "#messaging", label: "Messages & groups"},
+  {href: "#files", label: "Sharing files"},
+  {href: "#troubleshooting", label: "Troubleshooting"},
+  {href: "#faq", label: "Common questions"},
 ];
 const questions=[
  {q:"Do I need the internet?",a:"Not for messaging between reachable PCs on your local network. Downloading the installer may require internet access; the installed app does not need a cloud account."},
@@ -20,4 +26,67 @@ const questions=[
  {q:"Why are notifications not appearing?",a:"Check the app notification preference and Windows notification permissions. Do not disturb / Focus Assist can suppress banners even when Windows accepts a notification."},
  {q:"Does Lymora verify who controls a device?",a:"Not independently on first use. It remembers the device key from the first encrypted connection. Use a network you trust and check with the other person if a saved key changes."},
 ];
-export default function Docs(){return <main id="main" tabIndex={-1} className="container editorial-page reading-page"><PageIntro eyebrow="LAN Messenger / Documentation" title={<>A good connection<br/><em>starts here.</em></>} description="A practical guide to getting Lymora running and keeping conversations moving."/><div className="documentation-layout"><SectionNavigation className="docs-nav glass-panel" label="Documentation contents" items={sections}/><div className="documentation-content"><section id="setup" className="prose"><p className="eyebrow">01 / First-time setup</p><h2>From install to hello.</h2><ol><li>Get a verified Windows installer when it becomes available on the <Link href="/downloads/">Downloads page</Link>. Install compatible builds on both PCs.</li><li>Choose a required display name. Team and avatar details are optional; no email, phone number or cloud registration is required.</li><li>Read the local-network explanation and explicitly allow LAN messaging on a network you trust.</li><li>Choose notifications, Windows startup and an optional download location. You can change these choices later in Settings.</li><li>Open Lymora on the other PC, find it in nearby devices and open the conversation.</li></ol></section><section id="network" className="prose"><p className="eyebrow">02 / Network basics</p><h2>Nearby needs to be reachable.</h2><p>Both PCs must be running Lymora, with LAN access enabled and a route between them. Discovery advertises device metadata locally; messages and files move over direct encrypted connections.</p><p>Use a trusted private network. If Windows asks about firewall access, allow Lymora only on networks appropriate for your use. Do not disable the firewall as a general troubleshooting step.</p><p>Try Find devices again after both apps are open. If discovery remains blocked but the peer is reachable, use the app&apos;s Add IP option with the address shown by the other device. An address finds a route; it does not verify a person.</p></section><section id="messaging" className="prose"><p className="eyebrow">03 / Conversations</p><h2>One person, or your people.</h2><p>Select a nearby contact to message them. Enter sends; Shift + Enter inserts a new line. Use the conversation header for search, scheduling and shared images.</p><p>Create a group from Groups, choose members and send an invitation. Recipients accept group membership. The creator manages the group; a member can leave without erasing everyone else&apos;s history.</p><p>Delivery/read indicators describe different stages. A failed message offers an explicit retry. A local edit or Delete for me affects your local copy; do not assume a remote copy has changed.</p></section><section id="files" className="prose"><p className="eyebrow">04 / Files and folders</p><h2>Review. Send. Keep working.</h2><p>Choose files or a folder, or drop a selection into the conversation. Review the pending attachment list before confirming Send. Watch the displayed preparation/sending state and leave the app running until the transfer completes.</p><p>Folders are sent as ZIP attachments. Supported PNG, JPEG and GIF images can display a local preview. Save a received file using its download control, and treat unexpected files with care.</p><p>There is no fixed 25 MiB cap in the current implementation. Available disk space, connection stability and the receiving app still matter. Local upload progress is not a measurement of remote transfer speed.</p></section><section id="troubleshooting" className="prose"><p className="eyebrow">05 / When something gets in the way</p><h2>Check the simple things first.</h2><ul><li><strong>No nearby devices:</strong> open both apps, verify LAN consent, refresh discovery and check guest-network isolation.</li><li><strong>Found, but not delivered:</strong> confirm compatible builds, reachability and firewall permissions; a discovery announcement alone does not prove the message connection works.</li><li><strong>Changed device key:</strong> check with the other person, especially after reinstalling and removing data. Use the app&apos;s saved-key recovery flow deliberately, then retry the failed message.</li><li><strong>No Windows banner:</strong> check Lymora notification preferences, Windows app permissions and Do not disturb.</li><li><strong>Transfer not finishing:</strong> keep both apps running, check free disk space and connection stability, then use the actual error shown by the app.</li></ul><p>Use Network &rarr; Advanced support details for a problem you cannot identify. Review diagnostics before sharing them: they may contain device names and network addresses.</p></section><section id="faq" className="faq-section"><p className="eyebrow">The questions worth asking</p><h2>A little more clarity.</h2>{questions.map(item=><details key={item.q} className="faq-item"><summary>{item.q}<span aria-hidden="true">+</span></summary><p>{item.a}</p></details>)}</section></div></div></main>;}
+
+function GuideHeading({number, label, title, children}: {number: string; label: string; title: string; children?: ReactNode}) {
+  return <div className="guide-heading" data-guide-reveal><span className="guide-section-number" aria-hidden="true">{number}</span><div><p className="eyebrow">{label}</p><h2>{title}</h2>{children && <p>{children}</p>}</div></div>;
+}
+
+const checks = [
+  {title: "No nearby devices", text: "Open both apps, verify LAN consent, refresh discovery and check guest-network isolation."},
+  {title: "Found, but not delivered", text: "Confirm compatible builds, reachability and firewall permissions; a discovery announcement alone does not prove the message connection works."},
+  {title: "Changed device key", text: "Check with the other person, especially after reinstalling and removing data. Use the app's saved-key recovery flow deliberately, then retry the failed message."},
+  {title: "No Windows banner", text: "Check Lymora notification preferences, Windows app permissions and Do not disturb."},
+  {title: "Transfer not finishing", text: "Keep both apps running, check free disk space and connection stability, then use the actual error shown by the app."},
+];
+
+export default function Docs() {
+  return <main id="main" tabIndex={-1} className="container editorial-page reading-page messenger-docs">
+    <PageIntro eyebrow="LAN Messenger / Documentation" title={<>A good connection<br/><em>starts here.</em></>} description="A practical guide to getting Lymora running and keeping conversations moving."/>
+    <div className="guide-overview" aria-label="Guide essentials"><span><Icon name="windows"/>Windows PCs</span><span><span className="signal-dot"/>Direct local connection</span><span>No cloud account</span></div>
+    <div className="documentation-layout">
+      <aside className="docs-sidebar"><p className="docs-sidebar-label">In this guide</p><SectionNavigation className="docs-nav glass-panel" label="Documentation contents" items={sections}/><div className="docs-sidebar-note"><p>Something getting in the way?</p><a href="#troubleshooting">Start with the simple checks<Icon name="arrow"/></a></div></aside>
+      <DocumentationMotion>
+        <section id="setup">
+          <GuideHeading number="01" label="First-time setup" title="From install to hello.">Five small steps. One local conversation.</GuideHeading>
+          <ol className="guide-steps">
+            <li data-guide-reveal><div><strong>Start with both PCs.</strong>Get a verified Windows installer when it becomes available on the <Link className="guide-inline-link" href="/downloads/">Downloads page</Link>. Install compatible builds on both PCs.</div></li>
+            <li data-guide-reveal><div><strong>Make it yours.</strong>Choose a required display name. Team and avatar details are optional; no email, phone number or cloud registration is required.</div></li>
+            <li data-guide-reveal><div><strong>Choose your network.</strong>Read the local-network explanation and explicitly allow LAN messaging on a network you trust.</div></li>
+            <li data-guide-reveal><div><strong>Set your preferences.</strong>Choose notifications, Windows startup and an optional download location. You can change these choices later in Settings.</div></li>
+            <li data-guide-reveal><div><strong>Say hello.</strong>Open Lymora on the other PC, find it in nearby devices and open the conversation.</div></li>
+          </ol>
+        </section>
+        <section id="network">
+          <GuideHeading number="02" label="Network basics" title="Nearby needs to be reachable."/>
+          <div className="guide-network glass-panel" aria-label="Your PC connects directly to their PC over a reachable local network" data-guide-reveal><span className="guide-network-peer"><Icon name="windows"/>Your PC</span><span className="guide-network-wire" aria-hidden="true"/><span className="guide-network-center">Your local network</span><span className="guide-network-wire" aria-hidden="true"/><span className="guide-network-peer"><Icon name="windows"/>Their PC</span></div>
+          <div className="guide-copy"><p>Both PCs must be running Lymora, with LAN access enabled and a route between them. Discovery advertises device metadata locally; messages and files move over direct encrypted connections.</p><p>Try Find devices again after both apps are open. If discovery remains blocked but the peer is reachable, use the app&apos;s Add IP option with the address shown by the other device. An address finds a route; it does not verify a person.</p></div>
+          <div className="guide-callout"><Icon name="windows"/><p><strong>A trusted network comes first.</strong>Use a trusted private network. If Windows asks about firewall access, allow Lymora only on networks appropriate for your use. Do not disable the firewall as a general troubleshooting step.</p></div>
+        </section>
+        <section id="messaging">
+          <GuideHeading number="03" label="Conversations" title="One person, or your people."/>
+          <div className="guide-conversations">
+            <article className="guide-conversation glass-panel" data-guide-reveal><Icon name="message"/><h3>A direct conversation.</h3><p>Select a nearby contact to message them. Use the conversation header for search, scheduling and shared images.</p></article>
+            <article className="guide-conversation glass-panel" data-guide-reveal><Icon name="message"/><h3>Your group, together.</h3><p>Create a group from Groups, choose members and send an invitation. Recipients accept group membership. The creator manages the group; a member can leave without erasing everyone else&apos;s history.</p></article>
+          </div>
+          <div className="guide-keyboard" aria-label="Messaging shortcuts"><span><kbd>Enter</kbd> Send a message</span><span><kbd>Shift</kbd><span aria-hidden="true">+</span><kbd>Enter</kbd> New line</span></div>
+          <div className="guide-copy"><p>Delivery/read indicators describe different stages. A failed message offers an explicit retry. A local edit or Delete for me affects your local copy; do not assume a remote copy has changed.</p></div>
+        </section>
+        <section id="files">
+          <GuideHeading number="04" label="Files and folders" title="Review. Send. Keep working."/>
+          <div className="guide-file-flow glass-panel" data-guide-reveal><div><span>01</span><h3>Choose.</h3><p>Pick files or a folder, or drop a selection into the conversation.</p></div><div><span>02</span><h3>Review.</h3><p>Check the pending attachment list before confirming Send.</p></div><div><span>03</span><h3>Send.</h3><p>Watch preparation and sending. Keep the app running until complete.</p></div></div>
+          <div className="guide-copy"><p>Folders are sent as ZIP attachments. Supported PNG, JPEG and GIF images can display a local preview. Save a received file using its download control, and treat unexpected files with care.</p></div>
+          <div className="guide-callout"><Icon name="file"/><p><strong>Give the transfer room to finish.</strong>There is no fixed 25 MiB cap in the current implementation. Available disk space, connection stability and the receiving app still matter. Local upload progress is not a measurement of remote transfer speed.</p></div>
+        </section>
+        <section id="troubleshooting">
+          <GuideHeading number="05" label="When something gets in the way" title="Check the simple things first."/>
+          <div className="guide-checks">{checks.map((item, index) => <article key={item.title} className="guide-check" data-guide-reveal><span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span><div><h3>{item.title}</h3><p>{item.text}</p></div></article>)}</div>
+          <div className="guide-callout"><Icon name="file"/><p><strong>Still need a closer look?</strong>Use Network &rarr; Advanced support details for a problem you cannot identify. Review diagnostics before sharing them: they may contain device names and network addresses.</p></div>
+        </section>
+        <section id="faq" className="faq-section">
+          <GuideHeading number="06" label="The questions worth asking" title="A little more clarity.">The practical details behind a good local connection.</GuideHeading>
+          <DocumentationFaq questions={questions}/>
+        </section>
+      </DocumentationMotion>
+    </div>
+  </main>;
+}

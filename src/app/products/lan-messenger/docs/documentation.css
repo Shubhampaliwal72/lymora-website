@@ -1,0 +1,131 @@
+/* This reading experience is scoped to the documentation route only. */
+.messenger-docs { --guide-line:color-mix(in srgb,var(--accent) 24%,var(--border)); }
+.messenger-docs .page-intro { padding-bottom:30px; }
+.messenger-docs .guide-overview { display:flex;flex-wrap:wrap;gap:10px;margin:0 0 52px; }
+.messenger-docs .guide-overview>span { display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:100px;padding:9px 14px;font-size:12px;color:var(--text-secondary);background:color-mix(in srgb,var(--surface) 70%,transparent); }
+.messenger-docs .guide-overview svg { width:14px;height:14px;color:var(--accent); }
+.messenger-docs .documentation-layout { grid-template-columns:220px minmax(0,1fr);gap:clamp(32px,5vw,72px); }
+.messenger-docs .docs-sidebar { position:sticky;top:120px; }
+.messenger-docs .docs-sidebar-label { color:var(--text-muted);font-size:10px;letter-spacing:.14em;text-transform:uppercase;margin:0 0 16px 16px; }
+.messenger-docs .docs-nav { position:static;padding:10px;border-radius:20px;counter-reset:guide-index; }
+.messenger-docs .docs-nav a { gap:12px;counter-increment:guide-index;font-size:13px;padding:12px 10px;line-height:1.5;min-height:52px; }
+.messenger-docs .docs-nav a::before { content:counter(guide-index,decimal-leading-zero);font-size:10px;color:var(--text-muted);font-variant-numeric:tabular-nums; }
+.messenger-docs .docs-nav a[aria-current]::before { color:var(--accent); }
+.messenger-docs .docs-sidebar-note { margin:20px 14px 0;border-top:1px solid var(--border);padding-top:18px;font-size:12px;line-height:1.8;color:var(--text-secondary); }
+.messenger-docs .docs-sidebar-note a { display:inline-flex;align-items:center;gap:8px;color:var(--text-primary);min-height:36px; }
+.messenger-docs .docs-sidebar-note a:hover { color:var(--accent); }
+.messenger-docs .docs-sidebar-note svg { width:12px;height:12px; }
+.messenger-docs .documentation-content>section { padding:0 0 56px;margin:0 0 56px;scroll-margin-top:16px; }
+.messenger-docs .guide-heading { display:grid;grid-template-columns:42px minmax(0,1fr);gap:16px;align-items:start;margin-bottom:28px; }
+.messenger-docs .guide-section-number { display:grid;place-items:center;width:42px;height:42px;border:1px solid var(--guide-line);border-radius:14px;box-shadow:inset 0 1px 0 var(--glass-edge);background:linear-gradient(145deg,var(--glass-highlight),transparent),var(--accent-subtle);color:var(--accent);font-size:12px;font-variant-numeric:tabular-nums; }
+.messenger-docs .guide-heading .eyebrow { font-size:10px;letter-spacing:.14em;margin:0 0 8px;color:var(--accent); }
+.messenger-docs .guide-heading h2 { font-size:clamp(27px,3vw,38px);line-height:1.2;letter-spacing:-.04em;margin:0;color:var(--text-primary); }
+.messenger-docs .guide-heading p:not(.eyebrow) { margin:12px 0 0;color:var(--text-secondary);font-size:15px;line-height:1.8;max-width:54ch; }
+.messenger-docs .guide-steps { list-style:none;counter-reset:setup-step;margin:0;padding:0; }
+.messenger-docs .guide-steps>li { position:relative;counter-increment:setup-step;display:grid;grid-template-columns:30px minmax(0,1fr);gap:18px;padding:0 0 26px;margin:0;font-size:15px;line-height:1.85;color:var(--text-secondary); }
+.messenger-docs .guide-steps>li::before { content:counter(setup-step);display:grid;place-items:center;align-self:start;width:30px;height:30px;border:1px solid var(--border);border-radius:50%;font-size:11px;color:var(--accent);background:var(--canvas);position:relative;z-index:1; }
+.messenger-docs .guide-steps>li:not(:last-child)::after { content:"";position:absolute;left:14px;top:34px;bottom:4px;width:1px;background:linear-gradient(var(--guide-line),var(--border)); }
+.messenger-docs .guide-steps strong { display:block;margin-bottom:5px;font-family:var(--font-display),Arial,sans-serif;font-size:17px;font-weight:500;color:var(--text-primary);letter-spacing:-.02em; }
+.messenger-docs .guide-steps>li:last-child { padding-bottom:0; }
+.messenger-docs .guide-inline-link { color:var(--accent);text-decoration:underline;text-underline-offset:4px; }
+.messenger-docs .guide-network { display:grid;grid-template-columns:auto minmax(24px,1fr) auto minmax(24px,1fr) auto;align-items:center;gap:14px;border-radius:20px;padding:24px;margin-bottom:24px; }
+.messenger-docs .guide-network-peer { display:flex;flex-direction:column;align-items:center;gap:10px;color:var(--text-primary);font-size:12px; }
+.messenger-docs .guide-network-peer svg { width:26px;height:26px;color:var(--accent); }
+.messenger-docs .guide-network-center { color:var(--text-secondary);font-size:10px;text-transform:uppercase;letter-spacing:.08em;text-align:center; }
+.messenger-docs .guide-network-wire { height:1px;background:var(--guide-line);position:relative; }
+.messenger-docs .guide-network-wire::after { content:"";position:absolute;inset:-2px auto auto 50%;width:5px;height:5px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--scene-glow); }
+.messenger-docs .guide-copy { font-size:15px;line-height:1.85;color:var(--text-secondary); }
+.messenger-docs .guide-copy p { margin-bottom:18px; }
+.messenger-docs .guide-callout { display:flex;align-items:flex-start;gap:13px;border-left:2px solid var(--accent);border-radius:0 14px 14px 0;background:color-mix(in srgb,var(--accent-subtle) 55%,var(--surface));padding:18px 20px;margin:24px 0;color:var(--text-secondary);font-size:14px;line-height:1.8; }
+.messenger-docs .guide-callout>svg { flex-shrink:0;width:18px;height:18px;color:var(--accent);margin-top:3px; }
+.messenger-docs .guide-callout p { margin:0; }
+.messenger-docs .guide-callout strong { display:block;font-weight:500;color:var(--text-primary);margin-bottom:4px; }
+.messenger-docs .guide-conversations { display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px; }
+.messenger-docs .guide-conversation { padding:24px;border-radius:20px; }
+.messenger-docs .guide-conversation>svg { width:22px;height:22px;color:var(--accent);margin-bottom:18px; }
+.messenger-docs .guide-conversation h3 { font-size:19px;font-weight:500;letter-spacing:-.025em;margin:0 0 10px; }
+.messenger-docs .guide-conversation p { color:var(--text-secondary);font-size:14px;line-height:1.85;margin:0; }
+.messenger-docs .guide-keyboard { display:flex;align-items:center;flex-wrap:wrap;gap:12px 20px;padding:16px 0;color:var(--text-secondary);font-size:12px; }
+.messenger-docs .guide-keyboard>span { display:inline-flex;align-items:center;gap:7px; }
+.messenger-docs kbd { font:inherit;font-size:11px;line-height:1.6;border:1px solid var(--border);border-bottom-width:2px;border-radius:6px;background:var(--surface-raised);padding:3px 7px;color:var(--text-primary); }
+.messenger-docs .guide-file-flow { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:22px;border-radius:20px;margin-bottom:22px; }
+.messenger-docs .guide-file-flow>div { padding:0 18px;border-left:1px solid var(--border); }
+.messenger-docs .guide-file-flow>div:first-child { border-left:0;padding-left:0; }
+.messenger-docs .guide-file-flow>div:last-child { padding-right:0; }
+.messenger-docs .guide-file-flow span { color:var(--accent);font-size:10px;font-variant-numeric:tabular-nums; }
+.messenger-docs .guide-file-flow h3 { margin:12px 0 8px;font-size:18px;font-weight:500;letter-spacing:-.025em; }
+.messenger-docs .guide-file-flow p { margin:0;font-size:13px;color:var(--text-secondary);line-height:1.8; }
+.messenger-docs .guide-checks { display:grid;gap:12px;margin-bottom:24px; }
+.messenger-docs .guide-check { display:grid;grid-template-columns:28px minmax(0,1fr);gap:14px;padding:19px 20px;border:1px solid var(--border);border-radius:16px;background:linear-gradient(135deg,var(--glass-highlight),transparent 36%),var(--glass-fill); }
+.messenger-docs .guide-check>span { display:grid;place-items:center;width:27px;height:27px;border:1px solid var(--guide-line);border-radius:9px;color:var(--accent);font-size:10px; }
+.messenger-docs .guide-check h3 { margin:0 0 6px;font-size:16px;line-height:1.5;font-weight:500; }
+.messenger-docs .guide-check p { margin:0;color:var(--text-secondary);font-size:14px;line-height:1.8; }
+.messenger-docs .docs-faq-tools { display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:22px; }
+.messenger-docs .docs-faq-search { display:flex;align-items:center;gap:11px;width:min(100%,420px);padding:0 17px;border:1px solid var(--border);border-radius:100px;background:var(--glass-fill);box-shadow:inset 0 1px 0 var(--glass-edge); }
+.messenger-docs .docs-faq-search:focus-within { border-color:var(--accent);outline:2px solid var(--focus-ring);outline-offset:3px; }
+.messenger-docs .docs-faq-search>svg { width:17px;height:17px;flex-shrink:0;stroke:var(--text-muted);stroke-width:1.5; }
+.messenger-docs .docs-faq-search input { width:100%;min-width:0;border:0;background:transparent;color:var(--text-primary);outline:none;padding:14px 0;font:inherit;font-size:13px; }
+.messenger-docs .docs-faq-search input::placeholder { color:var(--text-muted); }
+.messenger-docs .docs-faq-count { color:var(--text-muted);font-size:11px;white-space:nowrap; }
+.messenger-docs .docs-questions { display:grid;gap:12px; }
+.messenger-docs .docs-question { border:1px solid var(--border);border-radius:18px;overflow:hidden;background:linear-gradient(135deg,var(--glass-highlight),transparent 42%),var(--glass-fill);box-shadow:inset 0 1px 0 var(--glass-edge);transition:border-color 220ms ease,box-shadow 220ms ease; }
+.messenger-docs .docs-question[open]:not([data-expanded='false']) { border-color:var(--guide-line);box-shadow:inset 2px 0 var(--accent),inset 0 1px 0 var(--glass-edge),0 10px 28px var(--pc-shadow); }
+.messenger-docs .docs-question summary { display:grid;grid-template-columns:24px minmax(0,1fr) 32px;align-items:center;gap:16px;min-height:80px;padding:20px 22px;cursor:pointer;list-style:none; }
+.messenger-docs .docs-question summary::-webkit-details-marker { display:none; }
+.messenger-docs .docs-question summary:focus-visible { outline-offset:-5px;border-radius:16px; }
+.messenger-docs .docs-question-number { color:var(--text-muted);font-size:10px;font-variant-numeric:tabular-nums; }
+.messenger-docs .docs-question-label { font-family:var(--font-display),Arial,sans-serif;color:var(--text-primary);font-size:15px;font-weight:500;line-height:1.65;letter-spacing:-.015em;transition:color 180ms ease; }
+.messenger-docs .docs-question summary:hover .docs-question-label { color:var(--accent); }
+.messenger-docs .docs-question-toggle { display:grid;place-items:center;width:32px;height:32px;border:1px solid var(--border);border-radius:50%;background:var(--surface-raised);transition:rotate 250ms ease,color 220ms ease,border-color 220ms ease;color:var(--text-secondary); }
+.messenger-docs .docs-question-toggle svg { width:15px;height:15px;stroke:currentColor;stroke-width:1.4; }
+.messenger-docs .docs-question[open]:not([data-expanded='false']) .docs-question-toggle { rotate:45deg;color:var(--accent);border-color:var(--guide-line); }
+.messenger-docs .docs-question-answer { overflow:hidden; }
+.messenger-docs .docs-question-answer-inner { padding:0 70px 24px 62px; }
+.messenger-docs .docs-question-answer p { border-top:1px solid var(--border);padding-top:18px;margin:0;font-size:14px;color:var(--text-secondary);line-height:1.9; }
+.messenger-docs .docs-faq-empty { padding:28px;border:1px dashed var(--border);border-radius:18px; }
+.messenger-docs .docs-faq-empty strong { font-size:17px;font-weight:500; }
+.messenger-docs .docs-faq-empty p { margin:10px 0;font-size:14px;color:var(--text-secondary);line-height:1.8; }
+.messenger-docs .docs-faq-empty button { display:inline-flex;align-items:center;gap:16px;min-height:44px;padding:0;background:none;border:0;color:var(--accent);font-size:13px; }
+@media(max-width:1000px) { .messenger-docs .documentation-layout { grid-template-columns:180px minmax(0,1fr);gap:32px; }.messenger-docs .guide-conversations { grid-template-columns:1fr; } }
+@media(max-width:700px) {
+ .messenger-docs .guide-overview { margin-bottom:30px;gap:8px; }
+ .messenger-docs .guide-overview>span { font-size:10px;padding:8px 11px; }
+ .messenger-docs .documentation-layout { grid-template-columns:1fr;gap:36px; }
+ .messenger-docs .docs-sidebar { position:static; }
+ .messenger-docs .docs-sidebar-label { margin-left:0; }
+ .messenger-docs .docs-nav { display:grid;grid-template-columns:1fr 1fr; }
+ .messenger-docs .docs-nav a { font-size:12px;gap:8px;padding:11px 8px; }
+ .messenger-docs .docs-sidebar-note { display:none; }
+ .messenger-docs .documentation-content>section { margin-bottom:38px;padding-bottom:38px; }
+ .messenger-docs .guide-heading { grid-template-columns:34px minmax(0,1fr);gap:12px; }
+ .messenger-docs .guide-section-number { width:34px;height:34px;border-radius:11px;font-size:10px; }
+ .messenger-docs .guide-heading h2 { font-size:27px; }
+ .messenger-docs .guide-heading p:not(.eyebrow) { font-size:14px; }
+ .messenger-docs .guide-steps>li { gap:13px;font-size:14px; }
+ .messenger-docs .guide-steps strong { font-size:16px; }
+ .messenger-docs .guide-network { padding:22px 16px;gap:10px; }
+ .messenger-docs .guide-network-center { font-size:9px;max-width:70px; }
+ .messenger-docs .guide-network-peer { font-size:11px; }
+ .messenger-docs .guide-copy { font-size:14px; }
+ .messenger-docs .guide-callout { padding:16px;font-size:13px; }
+ .messenger-docs .guide-file-flow { padding:18px;gap:16px; }
+ .messenger-docs .guide-file-flow>div { padding:0 0 0 12px; }
+ .messenger-docs .guide-file-flow h3 { font-size:16px; }
+ .messenger-docs .guide-file-flow p { font-size:12px; }
+ .messenger-docs .guide-check { padding:17px 15px;gap:11px; }
+ .messenger-docs .guide-check p { font-size:13px; }
+ .messenger-docs .docs-faq-tools { gap:12px; }
+ .messenger-docs .docs-question summary { grid-template-columns:20px minmax(0,1fr) 30px;gap:10px;padding:18px 15px; }
+ .messenger-docs .docs-question-label { font-size:14px; }
+ .messenger-docs .docs-question-answer-inner { padding:0 20px 22px 45px; }
+ .messenger-docs .docs-question-answer p { font-size:13px; }
+}
+@media(max-width:380px) { .messenger-docs .guide-file-flow { grid-template-columns:1fr;gap:14px; }.messenger-docs .guide-file-flow>div { border:0;padding:0; }.messenger-docs .guide-file-flow h3 { display:inline;margin-left:10px; }.messenger-docs .guide-file-flow p { margin-top:6px; }.messenger-docs .docs-faq-count { display:none; } }
+@media(prefers-reduced-transparency:reduce) { .messenger-docs :is(.guide-check,.docs-question,.docs-faq-search) { background:var(--surface); } }
+@media(forced-colors:active) { .messenger-docs :is(.docs-question,.guide-check,.guide-callout) { border:1px solid CanvasText;background:Canvas;box-shadow:none; }.messenger-docs .guide-section-number,.messenger-docs .docs-question-toggle { color:LinkText;border-color:CanvasText; } }
+
+/* Keep long reading lines comfortable and the floating control clear of the guide index. */
+.messenger-docs .guide-steps>li>div { max-width:65ch; }
+.messenger-docs .guide-copy { max-width:68ch; }
+.messenger-docs .docs-question-answer p { max-width:70ch; }
+@media(min-width:901px) { body:has(.messenger-docs) .ambience-control { width:40px;height:40px;padding:0;justify-content:center; }body:has(.messenger-docs) .ambience-control span { display:none; } }
