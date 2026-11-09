@@ -67,8 +67,7 @@ export async function verifyPremiumUi({cdp,evaluate,load,viewport,media,waitFor,
     assert.equal(await evaluate('document.querySelectorAll("#experience [role=tab]").length'),4,'Four real product views');
     assert(await evaluate('document.querySelector("#download .download-coming-soon").disabled'),'Homepage download remains honestly unavailable');
     const before=await evaluate('JSON.stringify([...document.querySelectorAll(".ambient-streaks path")].map(p=>p.getAttribute("stroke-dashoffset")))');
-    await pause(450);
-    assert.notEqual(await evaluate('JSON.stringify([...document.querySelectorAll(".ambient-streaks path")].map(p=>p.getAttribute("stroke-dashoffset")))'),before,'Packet paths animate independently of scroll');
+    await waitFor('JSON.stringify([...document.querySelectorAll(".ambient-streaks path")].map(p=>p.getAttribute("stroke-dashoffset")))!=='+JSON.stringify(before),'Packet paths animate independently of scroll');
     await evaluate('document.querySelector(".ambience-control").click()');await pause(200);
     const held=await evaluate('JSON.stringify([...document.querySelectorAll(".ambient-streaks path")].map(p=>p.getAttribute("stroke-dashoffset")))');
     await pause(250);assert.equal(await evaluate('JSON.stringify([...document.querySelectorAll(".ambient-streaks path")].map(p=>p.getAttribute("stroke-dashoffset")))'),held,'Background can pause');
@@ -141,8 +140,7 @@ export async function verifyPremiumUi({cdp,evaluate,load,viewport,media,waitFor,
   await viewport(375,1000);await load();
   assert.equal(await evaluate('!!document.querySelector("canvas")'),false,'Mobile still skips WebGL');
   const mobileBefore=await evaluate('JSON.stringify([...document.querySelectorAll(".ambient-streaks path")].map(p=>p.getAttribute("stroke-dashoffset")))');
-  await pause(450);
-  assert.notEqual(await evaluate('JSON.stringify([...document.querySelectorAll(".ambient-streaks path")].map(p=>p.getAttribute("stroke-dashoffset")))'),mobileBefore,'Lightweight background keeps moving on mobile');
+  await waitFor('JSON.stringify([...document.querySelectorAll(".ambient-streaks path")].map(p=>p.getAttribute("stroke-dashoffset")))!=='+JSON.stringify(mobileBefore),'Lightweight background keeps moving on mobile');
   checks.push('continuous brand motion under both OS preferences; reduced navigation effects; live mobile SVG background without WebGL when motion is enabled');
   const routes=['/products/','/products/lan-messenger/','/products/lan-messenger/docs/','/privacy/','/downloads/','/products/lan-messenger/releases/','/about/'];
   for(const width of [375,1440]) {

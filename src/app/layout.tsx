@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Suspense, type ReactNode } from "react";
 import "./globals.css";
+// Direct module import lets Next track the new stylesheet independently of Tailwind CSS imports.
+import "../styles/surfaces.css";
 import { publicLaunch, site } from "@/lib/site";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
