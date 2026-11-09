@@ -4,6 +4,7 @@ import { useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { useScenePreferences } from "@/components/living-network/useScenePreferences";
 import { Icon } from "@/components/site/Icons";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
@@ -17,6 +18,7 @@ const steps = [
 /** The visible connection diagram and the longer setup story have independent scroll ranges. */
 export function ConnectionStory() {
   const root = useRef<HTMLDivElement>(null);
+  const {motion} = useScenePreferences();
   useGSAP(() => {
     const element = root.current;
     const diagram = element?.querySelector<HTMLElement>(".connection-diagram");
@@ -37,6 +39,12 @@ export function ConnectionStory() {
         else panel.removeAttribute("aria-current");
       });
     };
+    if (!motion) {
+      gsap.set(diagram, {"--connection-left": 1, "--connection-right": 1});
+      gsap.set(element, {"--connection-thread": 1});
+      ScrollTrigger.create({trigger: walkthrough, start: "top 78%", end: "bottom 65%", onUpdate: highlight, onRefresh: highlight});
+      return;
+    }
     // Complete both wires while the whole diagram is still comfortably visible.
     gsap.timeline({scrollTrigger: {trigger: diagram, start: "top 82%", end: "top 42%", scrub: .3, invalidateOnRefresh: true}})
       .fromTo(diagram, {"--connection-left": 0, "--connection-right": 0}, {"--connection-left": 1, duration: .5, ease: "none"})
@@ -46,7 +54,7 @@ export function ConnectionStory() {
     let disposed = false;
     void document.fonts.ready.then(() => {if (!disposed) ScrollTrigger.refresh();});
     return () => {disposed = true;};
-  }, {scope: root});
+  }, {scope: root, dependencies: [motion], revertOnUpdate: true});
 
   return <div ref={root} className="setup-connection-story" data-active-step="0">
     <figure className="connection-diagram">

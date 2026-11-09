@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/site/NavigationLink";
 import { publicLinks } from "@/lib/public-links";
 import { messenger } from "@/lib/products";
 import { Icon } from "./Icons";

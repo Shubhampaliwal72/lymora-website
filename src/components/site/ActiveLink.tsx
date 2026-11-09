@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link";
+import Link from "@/components/site/NavigationLink";
 import { usePathname } from "next/navigation";
 import type { ComponentProps } from "react";
 

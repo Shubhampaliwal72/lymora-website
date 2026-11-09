@@ -44,11 +44,12 @@ export function LivingNetwork() {
   const destination = endpoints.find(peer => peer.id === endpoint)!.name;
   const select = useCallback((peer: Endpoint) => {setPair([peer === "you" ? "studio" : "you", peer]); setPlaying(true); setRun(value => value + 1);}, []);
   useEffect(() => {
-    let second = 0;
-    const first = requestAnimationFrame(() => { second = requestAnimationFrame(() => setLoad(true)); });
-    const observer = new IntersectionObserver(([entry]) => setIntersecting(entry.isIntersecting), {threshold: .05});
+    const observer = new IntersectionObserver(([entry]) => {
+      setIntersecting(entry.isIntersecting);
+      if (entry.isIntersecting) setLoad(true);
+    }, {threshold: .05});
     if (root.current) observer.observe(root.current);
-    return () => { cancelAnimationFrame(first); cancelAnimationFrame(second); observer.disconnect(); };
+    return () => observer.disconnect();
   }, []);
   useGSAP(() => {
     // Update React only at semantic boundaries; the per-frame path stays outside React.

@@ -3,6 +3,7 @@
 @import "../styles/glass.css";
 @import "../styles/network-motion.css";
 @import "../styles/hero-topology.css";
+@import "../styles/navigation.css";
 @theme inline { --color-background: var(--canvas); --color-foreground: var(--text-primary); --font-sans: var(--font-body); --font-heading: var(--font-display); }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 120px; }

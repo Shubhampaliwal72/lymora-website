@@ -17,3 +17,5 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 <!-- END:nextjs-agent-rules -->
 
 - Latest owner correction: restore the original large editorial 01 style continuously through 05. Animation stays on even when the OS requests reduced motion, without a public header switch. Keep manual pause controls, hidden/offscreen pauses and lightweight mobile rendering. The background uses a quiet six-PC perimeter ring, not crossing paths over the content. This supersedes the earlier 8 November reduced-motion refinement. See docs/UI_REFINEMENT.md.
+
+- Latest navigation UX requirement supersedes the always-on OS override: honor prefers-reduced-motion again. Keep static content visible, preserve the SVG scene fallback, use NavigationLink for internal routes and reserve the progress bar for genuine pending transitions. See docs/NAVIGATION_UX.md.

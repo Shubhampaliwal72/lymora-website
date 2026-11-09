@@ -72,9 +72,9 @@ Installed exact dependencies:
 GSAP owns the hero entrance, finite network clock, independent wallpaper clock,
 and one-time scroll reveals. Motion owns independent controls and tab transitions.
 Large editorial chapter numbers run continuously from 01 to 05; the slogan
-wraps without clipping. The owner requests always-on motion even when the OS
-reports reduced motion. Desktop 3D remains lazy-loaded; mobile uses the animated
-2.5D SVG view. A quieter perimeter ring replaces crossing background paths. Hidden/offscreen
+wraps without clipping. The navigation UX update honors OS reduced motion with
+static text and the SVG view. Otherwise desktop 3D loads when its hero enters
+the viewport; mobile uses the animated 2.5D SVG view. A quieter perimeter ring replaces crossing background paths. Hidden/offscreen
 work pauses. See [UI refinement](docs/UI_REFINEMENT.md) for the current chapter
 sequence and animation ownership; earlier stage reports are historical.
 
@@ -149,3 +149,7 @@ is not run automatically during this code-only foundation pass.
 The setup walkthrough uses a reversible dashed-to-orange LAN route and a
 connected three-step message story. The connection bar scrolls with the page;
 product/docs section navigation indicates the current reading position. See docs/UI_REFINEMENT.md for animation ownership and verification.
+
+For navigation feedback and loading behavior, see [Navigation UX](docs/NAVIGATION_UX.md).
+After a production build, npm run verify:navigation checks pending/failed/rapid
+navigation and the heavy-scene fallback against the local static export.

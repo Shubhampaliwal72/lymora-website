@@ -1,5 +1,5 @@
 import { pageMetadata } from "@/lib/site";
-import Link from "next/link";
+import Link from "@/components/site/NavigationLink";
 import { PageIntro } from "@/components/site/PageIntro";
 import { publicLinks } from "@/lib/public-links";
 export const metadata = pageMetadata("/products/lan-messenger/releases/", "LAN Messenger release notes");

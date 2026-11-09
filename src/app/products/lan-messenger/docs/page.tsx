@@ -1,5 +1,5 @@
 import { pageMetadata } from "@/lib/site";
-import Link from "next/link";
+import Link from "@/components/site/NavigationLink";
 import { SectionNavigation } from "@/components/site/SectionNavigation";
 import { PageIntro } from "@/components/site/PageIntro";
 export const metadata = pageMetadata("/products/lan-messenger/docs/", "LAN Messenger documentation", "Install Lymora, discover nearby PCs, share messages and files, and troubleshoot your LAN connection.");

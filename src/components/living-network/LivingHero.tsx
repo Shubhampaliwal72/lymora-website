@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/site/NavigationLink";
 import { HeroMotion } from "@/components/animations/HeroMotion";
 import { Icon } from "@/components/site/Icons";
 import { LivingNetwork } from "./LivingNetwork";

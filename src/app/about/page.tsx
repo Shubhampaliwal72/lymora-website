@@ -1,5 +1,5 @@
 import { pageMetadata } from "@/lib/site";
-import Link from "next/link";
+import Link from "@/components/site/NavigationLink";
 import Image from "next/image";
 import { PageIntro } from "@/components/site/PageIntro";
 import { Icon } from "@/components/site/Icons";

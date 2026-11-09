@@ -57,12 +57,14 @@ export function NetworkWallpaper(){
     const move=(event:PointerEvent)=>{if(!preferences.capable||event.pointerType!=="mouse"||document.hidden||root.current?.dataset.paused==="true")return;x((event.clientX/innerWidth-.5)*12);y((event.clientY/innerHeight-.5)*8);};
     window.addEventListener("pointermove",move,{passive:true});
     return()=>{paths.current.forEach(path=>path?.style.removeProperty("opacity"));computers.current.forEach(computer=>computer?.style.removeProperty("--arrival"));window.removeEventListener("pointermove",move);clock.current=null;scroll.current=null;};
-  },{scope:root,dependencies:[preferences.capable,preferences.motion,pathname],revertOnUpdate:true});
+  },{scope:root,dependencies:[preferences.capable,preferences.motion],revertOnUpdate:true});
   useEffect(()=>{
     const active=preferences.motion&&preferences.visible&&!paused;
     clock.current?.paused(!active);
     if(active)scroll.current?.scrollTrigger?.enable();else scroll.current?.scrollTrigger?.disable(false);
-  },[preferences.capable,preferences.motion,preferences.visible,paused,pathname]);
+  },[preferences.capable,preferences.motion,preferences.visible,paused]);
+  // The same background persists across routes; only its document-height range changes.
+  useEffect(()=>{scroll.current?.scrollTrigger?.refresh();},[pathname]);
   return <>
     <div ref={root} className="network-wallpaper" data-topology="perimeter-ring" data-animated={preferences.motion} data-paused={paused} aria-hidden="true"><div ref={depth} className="wallpaper-scroll-plane"><div ref={pointer} className="wallpaper-pointer-plane"><svg viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid meet" fill="none">
       <g className="ambient-routes">{routes.map((route,index)=><path key={route.d} ref={element=>{paths.current[index]=element;}} d={route.d} data-static="true"/>)}</g>

@@ -5,6 +5,7 @@ export async function verifyTopologyUi({cdp,evaluate,load,viewport,media,waitFor
   const output=path.resolve('.verification');
   for(const [width,theme] of [[1440,'dark'],[1440,'light'],[375,'dark'],[375,'light'],[901,'dark']]){
     await viewport(width,1000);await media(theme);await load();
+    await evaluate('window.scrollTo({top:0,behavior:"instant"})');
     if(width>900)await waitFor(`document.querySelector('.living-network').dataset.mode==='3d'`,'Desktop peer mesh loads');
     assert.equal(await evaluate(`document.querySelectorAll('.network-device-label').length`),3,'Three selectable PCs');
     assert.equal(await evaluate(`document.querySelectorAll('.topology-wire').length`),3,'Three direct mesh connections');

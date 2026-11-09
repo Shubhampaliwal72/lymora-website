@@ -1,5 +1,5 @@
 import { pageMetadata } from "@/lib/site";
-import Link from "next/link";
+import Link from "@/components/site/NavigationLink";
 import { SectionNavigation } from "@/components/site/SectionNavigation";
 import { PageIntro } from "@/components/site/PageIntro";
 import { ProductExplorer } from "@/components/sections/ProductExplorer";

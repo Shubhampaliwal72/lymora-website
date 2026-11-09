@@ -1,6 +1,7 @@
 /** Homepage motion checks and full-page review PNGs. Loopback only; no uploads. */
 import assert from 'node:assert/strict';
 import { verifyLaunchUi } from './verify-launch-ui.mjs';
+import { verifyNavigationUi } from './verify-navigation-ui.mjs';
 import { verifyPremiumUi } from './verify-premium-ui.mjs';
 import fs from 'node:fs/promises';
 import http from 'node:http';
@@ -16,12 +17,18 @@ await fs.access(browserPath);
 await fs.access(path.join(root, 'out/index.html'));
 const mime = {'.html':'text/html', '.js':'text/javascript', '.css':'text/css', '.png':'image/png', '.ico':'image/x-icon', '.woff2':'font/woff2', '.svg':'image/svg+xml', '.txt':'text/plain'};
 const missing = [];
+const faults = {route: "", delay: 0, fail: false, hits: 0};
 // Apply only the global header block locally to catch CSP regressions before Pages exists.
 const headerText=await fs.readFile(path.join(root,'public/_headers'),'utf8');
 const localHeaders=headerText.split(/\r?\n\r?\n/)[0].split(/\r?\n/).slice(1).map(line=>{const index=line.indexOf(':');return [line.slice(0,index).trim(),line.slice(index+1).trim()];});
 const server = http.createServer(async (request, response) => {
   try {
     const url = new URL(request.url, 'http://127.0.0.1');
+    if (faults.route && url.pathname.startsWith(faults.route) && /\.(txt|js)$/.test(url.pathname)) {
+      faults.hits++;
+      if (faults.delay) await new Promise(resolve => setTimeout(resolve, faults.delay));
+      if (faults.fail) {response.writeHead(503);response.end('Intentional local navigation test failure');return;}
+    }
     const staticRoot = path.join(root, 'out');
     let file = path.resolve(staticRoot, '.' + decodeURIComponent(url.pathname));
     if (file !== staticRoot && !file.startsWith(staticRoot + path.sep)) throw Error('Invalid path');
@@ -112,10 +119,12 @@ try {
 
   const checks=[];
   const launchOnly=process.argv.includes('--launch-only')||process.env.LYMORA_VERIFY_LAUNCH_ONLY==='1';
-  if(!launchOnly) await verifyPremiumUi({cdp,evaluate,load,viewport,media,waitFor,pause,url,checks,report,output});
-  await verifyLaunchUi({cdp,evaluate,load,viewport,media,waitFor,pause,url,checks});
+  const navigationOnly=process.argv.includes('--navigation-only');
+  if(navigationOnly) await verifyNavigationUi({cdp,evaluate,viewport,media,waitFor,pause,url,checks,requests,errors,faults,output});
+  if(!launchOnly&&!navigationOnly) await verifyPremiumUi({cdp,evaluate,load,viewport,media,waitFor,pause,url,checks,report,output});
+  if(!navigationOnly) await verifyLaunchUi({cdp,evaluate,load,viewport,media,waitFor,pause,url,checks});
   assert.deepEqual(errors,[],'No console/runtime/hydration errors');assert.deepEqual(missing,[],'No missing assets');assert.deepEqual(external,[],'No external requests');
-  const result={passed:true,browser:version.Browser,checks,exports:report,scope:'Actual static-export browser capture; software WebGL, not a hardware FPS benchmark.'};await fs.writeFile(path.join(output,launchOnly?'launch-ui-results.json':'network-motion-results.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result,null,2));await send('Target.closeTarget',{targetId:target.targetId});await send('Browser.close');
+  const result={passed:true,browser:version.Browser,checks,exports:report,scope:'Actual static-export browser capture; software WebGL, not a hardware FPS benchmark.'};await fs.writeFile(path.join(output,navigationOnly?'navigation-ui-results.json':launchOnly?'launch-ui-results.json':'network-motion-results.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result,null,2));await send('Target.closeTarget',{targetId:target.targetId});await send('Browser.close');
 } finally {
   if(socket)socket.close();for(const promise of pending.values()){clearTimeout(promise.timeout);promise.reject(Error('Browser closed'));}pending.clear();server.close();if(browser.exitCode===null)browser.kill();
 }

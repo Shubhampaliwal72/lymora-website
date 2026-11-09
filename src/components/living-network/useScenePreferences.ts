@@ -5,6 +5,7 @@ import { useSyncExternalStore } from "react";
 type NetworkHints = EventTarget & { saveData?: boolean; effectiveType?: string };
 type NavigatorHints = Navigator & { connection?: NetworkHints; deviceMemory?: number };
 const queries = {
+  motion: "(prefers-reduced-motion: no-preference)",
   capable: "(min-width: 901px) and (hover: hover) and (pointer: fine)",
 };
 function subscribePreferences(callback: () => void) {
@@ -43,8 +44,8 @@ function subscribeVisibility(callback: () => void) {
 export function useScenePreferences() {
   return {
     capable: useSyncExternalStore(subscribePreferences, isCapable, () => false),
-    // Owner requests continuous motion; lightweight rendering is gated separately.
-    motion: true,
+    // Navigation UX update honors the current accessibility preference.
+    motion: useSyncExternalStore(subscribePreferences, () => matchMedia(queries.motion).matches, () => false),
     theme: useSyncExternalStore(subscribeTheme, themeSnapshot, () => "light" as const),
     visible: useSyncExternalStore(subscribeVisibility, () => !document.hidden, () => true),
   };

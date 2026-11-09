@@ -1,5 +1,5 @@
 import { pageMetadata } from "@/lib/site";
-import Link from "next/link";
+import Link from "@/components/site/NavigationLink";
 import { publicLinks } from "@/lib/public-links";
 import { DownloadAction } from "@/components/site/DownloadAction";
 import { SupportSection } from "@/components/site/SupportSection";
