@@ -60,7 +60,7 @@ Canonical address: https://lymora.in . Connect your domain and www, check certif
 
 Release metadata is in src/lib/releases/windows.json, referenced by src/lib/public-links.ts. Update only after verification and owner approval, then rebuild:
 
-- Windows 1.0.0 build 013 is owner-approved and published on GitHub Releases. Its exact installer, size, SHA-256, publication date and known limitations are configured centrally. See WINDOWS_RELEASE.md.
+- Windows 1.0.1 build 014 is owner-approved and published on GitHub Releases. Its exact installer, size, SHA-256, publication date and known limitations are configured centrally. See WINDOWS_RELEASE.md.
 - Windows is the only supported platform presented. No macOS/Linux Coming Soon promise is published. Setting release to null restores the disabled Windows state.
 - /downloads/ centralizes installer links, compatibility, version, checksum and release notes. Other pages use internal navigation CTAs. The older releases route keeps a working handoff and a Downloads canonical; it is excluded from the sitemap.
 - A future approved release must update its build/version/date, Windows requirement, architecture, file size, checksum, actual changes/known issues and verified GitHub Releases URLs.

@@ -37,8 +37,8 @@ export async function verifyDownloadUi({cdp,evaluate,viewport,media,waitFor,paus
   }
   await open('/downloads/');
   assert.equal(await evaluate('document.querySelector(".download-release-notes a[href*=github]").href'),release.notesUrl,'Release notes point to the published build');
-  assert((await evaluate('document.querySelector(".download-release-notes").textContent')).includes('development channel'),'Original build channel disclosed');
-  assert((await evaluate('document.querySelector(".download-release-notes").textContent')).includes('member removal'),'Unavailable group controls disclosed');
+  assert((await evaluate('document.querySelector(".download-release-notes").textContent')).includes(release.channel+' channel'),'Original build channel disclosed');
+  for(const issue of release.knownIssues) assert((await evaluate('document.querySelector(".download-release-notes").textContent')).includes(issue),'Current release limitation disclosed');
   await open('/products/lan-messenger/docs/');
   assert(!(await evaluate('document.querySelector("main").textContent')).includes('build 013'),'Build-specific facts are centralized');
   const routes=['/','/products/','/products/lan-messenger/','/products/lan-messenger/docs/','/products/lan-messenger/releases/','/downloads/','/about/','/privacy/'];
