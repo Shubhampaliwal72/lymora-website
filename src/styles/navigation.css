@@ -14,10 +14,5 @@ html:has(.navigation-progress[data-visible='true']) .reading-progress { opacity:
  .route-arrival { animation:none; }
  .navigation-progress[data-state='pending']>span { animation:none;transform:scaleX(.35); }
  .navigation-progress[data-state='complete']>span { transition:none; }
- .living-network .network-canvas,.living-network .network-fallback { transition:none; }
- .connection-node,.connection-bubble,.connection-bubble::before,.product-screen .theme-screenshot img { transition:none; }
- .scroll-statement .statement-window { height:auto;overflow:visible; }
- .scroll-statement .statement-track { transform:none!important; }
- .scroll-statement .statement-progress { display:none; }
 }
 @media print { .navigation-progress { display:none; } }

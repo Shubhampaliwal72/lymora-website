@@ -72,8 +72,9 @@ Installed exact dependencies:
 GSAP owns the hero entrance, finite network clock, independent wallpaper clock,
 and one-time scroll reveals. Motion owns independent controls and tab transitions.
 Large editorial chapter numbers run continuously from 01 to 05; the slogan
-wraps without clipping. The navigation UX update honors OS reduced motion with
-static text and the SVG view. Otherwise desktop 3D loads when its hero enters
+wraps without clipping. Brand motion stays on as requested by the owner, independently
+of OS reduced motion; the navigation bar/page arrival still honor that preference.
+Desktop 3D loads when its hero enters
 the viewport; mobile uses the animated 2.5D SVG view. A quieter perimeter ring replaces crossing background paths. Hidden/offscreen
 work pauses. See [UI refinement](docs/UI_REFINEMENT.md) for the current chapter
 sequence and animation ownership; earlier stage reports are historical.

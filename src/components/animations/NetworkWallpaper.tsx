@@ -39,7 +39,7 @@ export function NetworkWallpaper(){
       root.current?.setAttribute("data-target",String(reverse?routes[selected].a:routes[selected].b));
     };
     choose();
-    clock.current=gsap.to(progress,{value:1,duration:6.4,ease:"none",repeat:-1,paused:true,onRepeat:choose,onUpdate:()=>{
+    clock.current=gsap.to(progress,{value:1,duration:6.4,ease:"none",repeat:-1,paused:document.hidden||root.current?.dataset.paused==="true",onRepeat:choose,onUpdate:()=>{
       const path=paths.current[selected];
       if(!root.current||!path)return;
       const p=progress.value, travel=Math.max(0,Math.min(1,(p-.08)/.7)), t=reverse?1-travel:travel;

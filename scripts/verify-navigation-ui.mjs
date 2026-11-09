@@ -12,6 +12,11 @@ export async function verifyNavigationUi({cdp,evaluate,viewport,media,waitFor,pa
  const click=route=>evaluate('[...document.querySelectorAll("a")].find(a=>a.getAttribute("href")==='+JSON.stringify(route)+').click()');
  const settled=route=>waitFor('location.pathname==='+JSON.stringify(route)+'&&document.querySelector(".navigation-progress")?.dataset.state==="idle"','Settled route '+route,250);
  const probe=()=>evaluate('(()=>{window.__navEvents=[];window.__navObserver?.disconnect();window.__navObserver=new MutationObserver(()=>{const e=document.querySelector(".navigation-progress");window.__navEvents.push({visible:e.dataset.visible,state:e.dataset.state,at:performance.now()})});window.__navObserver.observe(document.querySelector(".navigation-progress"),{attributes:true})})()');
+ const liveBackground=async()=>{
+  assert.equal(await evaluate('document.documentElement.dataset.motion'),'full','Route changes preserve brand motion');
+  const frame=await evaluate('JSON.stringify([...document.querySelectorAll(".ambient-streaks path")].map(p=>p.getAttribute("stroke-dashoffset")))');
+  await waitFor('JSON.stringify([...document.querySelectorAll(".ambient-streaks path")].map(p=>p.getAttribute("stroke-dashoffset")))!=='+JSON.stringify(frame),'Background clock keeps running across navigation');
+ };
  const capture=async name=>{const png=await cdp('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});await fs.writeFile(path.join(output,'navigation-'+name+'.png'),Buffer.from(png.data,'base64'));};
  await viewport(375,900);await media('light');await direct('/about/');
  assert.equal(await evaluate('document.querySelector(".navigation-progress").dataset.visible'),'false','No initial-load route overlay');
@@ -22,6 +27,7 @@ export async function verifyNavigationUi({cdp,evaluate,viewport,media,waitFor,pa
   await click(route);await settled(route);
   assert.equal(await evaluate('document.documentElement.dataset.navigationDocument'),'preserved','Internal routes use client navigation: '+route);
   assert.equal(await evaluate('document.querySelectorAll("main h1").length'),1,'One readable title after '+route);
+  await liveBackground();
  }
  checks.push('initial load; client navigation across all eight routes; readable titles; 180ms arrival');
  await probe();await click('/');await pause(250);
@@ -58,15 +64,17 @@ export async function verifyNavigationUi({cdp,evaluate,viewport,media,waitFor,pa
  await click('/privacy/');await click('/privacy/');await settled('/privacy/');faults.route='';faults.delay=0;
  checks.push('rapid different-link interruption and duplicate same-link clicks complete cleanly');
  await viewport(1440,1000);await media('dark',true);await direct('/');
- assert.equal(await evaluate('document.documentElement.dataset.motion'),'reduced');
+ await liveBackground();
  assert.equal(await evaluate('getComputedStyle(document.documentElement).scrollBehavior'),'auto','Reduced-motion hash navigation does not smooth scroll');
- assert.equal(await evaluate('!!document.querySelector("canvas")'),false,'Reduced motion skips 3D');
  assert.equal(await evaluate('getComputedStyle(document.querySelector(".route-arrival")).animationName'),'none');
  faults.route='/privacy/';faults.delay=800;await click('/privacy/');
  await waitFor('document.querySelector(".navigation-progress").dataset.visible==="true"','Reduced-motion pending state is still communicated');
  assert.equal(await evaluate('getComputedStyle(document.querySelector(".navigation-progress>span")).animationName'),'none','Reduced-motion bar stays still');
  await capture('pending-desktop-reduced');await settled('/privacy/');faults.route='';faults.delay=0;
- checks.push('desktop/mobile feedback; reduced-motion static bar, no page entrance animation and no WebGL');
+ await liveBackground();
+ await evaluate('history.back()');await settled('/');await liveBackground();
+ await evaluate('history.forward()');await settled('/privacy/');await liveBackground();
+ checks.push('desktop/mobile feedback; reduced-motion static navigation bar/arrival; brand motion survives all routes and browser history');
  // Viewport prefetch remains enabled on real Next links.
  await media('dark');await direct('/about/');await pause(800);
  assert(requests.some(u=>u.includes('/downloads/')&&u.includes('_rsc=')),'Next route payload requests/prefetch remain active');

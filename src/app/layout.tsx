@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   icons: {icon: [{url: "/brand/mark-dark.png", type: "image/png", sizes: "512x512"}], apple: "/brand/mark-light.png"},
 };
 // Runs before paint; only this root attribute differs during hydration. No external requests.
-const themeScript = "(()=>{const r=document.documentElement;r.dataset.enhanced='';r.dataset.motion=matchMedia('(prefers-reduced-motion: reduce)').matches?'reduced':'full';let t;try{t=localStorage.getItem('lymora-website-theme')}catch{}r.dataset.theme=t==='dark'||t==='light'?t:matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'})()";
+const themeScript = "(()=>{const r=document.documentElement;r.dataset.enhanced='';r.dataset.motion='full';let t;try{t=localStorage.getItem('lymora-website-theme')}catch{}r.dataset.theme=t==='dark'||t==='light'?t:matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'})()";
 export default function RootLayout({children}: {children: ReactNode}) {
   return <html lang="en" suppressHydrationWarning className={manrope.variable + " " + dmSans.variable}><head><script dangerouslySetInnerHTML={{__html: themeScript}}/></head><body><Suspense fallback={null}><NavigationFeedback/></Suspense><a className="skip-link" href="#main">Skip to content</a><NetworkWallpaper/><div className="site-shell"><SiteHeader/><PageRevealMotion>{children}<SiteFooter/></PageRevealMotion></div></body></html>;
 }

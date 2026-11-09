@@ -56,7 +56,7 @@ export function LivingNetwork() {
     const draw = () => {const next = storyAt(clock.current.progress).phase; if(next !== phaseRef.current) {phaseRef.current = next; setPhase(next);} fallbackDraw.current?.(); invalidate.current?.();};
     if (!preferences.motion) { clock.current.progress = 1; draw(); return; }
     clock.current.progress = 0; draw();
-    timeline.current = gsap.to(clock.current, {progress: 1, duration: INTRO_DURATION, ease: "none", paused: true, onUpdate: draw, onComplete: () => {setPair(nextPair([source,endpoint]));setRun(value=>value+1); }});
+    timeline.current = gsap.to(clock.current, {progress: 1, duration: INTRO_DURATION, ease: "none", paused: !active, onUpdate: draw, onComplete: () => {setPair(nextPair([source,endpoint]));setRun(value=>value+1); }});
     return () => { timeline.current = null; };
   }, {scope: root, dependencies: [run, source, endpoint, preferences.motion, preferences.capable], revertOnUpdate: true});
   useEffect(() => { timeline.current?.paused(!active); }, [active, run, preferences.capable]);

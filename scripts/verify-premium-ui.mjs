@@ -127,12 +127,15 @@ export async function verifyPremiumUi({cdp,evaluate,load,viewport,media,waitFor,
   }
   checks.push('320-3840px layout containment; vertical slider holds and complete text; header collision checks; lightweight mobile scene; keyboard mobile menu');
   await viewport(1440,1000);await media('dark',true);await load();
-  assert.equal(await evaluate('document.documentElement.dataset.motion'),'reduced','Latest navigation requirement respects reduced motion');
-  assert.equal(await evaluate('document.querySelector(".network-wallpaper").dataset.animated'),'false','Background stays static with reduced motion');
-  assert.equal(await evaluate('document.querySelectorAll(".reveal-word").length'),0,'Marketing text is immediately readable');
-  assert.equal(await evaluate('!!document.querySelector("canvas")'),false,'Reduced motion does not load WebGL');
+  assert.equal(await evaluate('document.documentElement.dataset.motion'),'full','Brand motion remains enabled independently of OS preference');
+  assert.equal(await evaluate('document.querySelector(".network-wallpaper").dataset.animated'),'true','Background is live with OS reduced motion');
+  assert(await evaluate('document.querySelectorAll(".reveal-word").length>0'),'Marketing word reveals stay enabled');
+  const reducedBefore=await evaluate('JSON.stringify([...document.querySelectorAll(".ambient-streaks path")].map(p=>p.getAttribute("stroke-dashoffset")))');
+  await waitFor('JSON.stringify([...document.querySelectorAll(".ambient-streaks path")].map(p=>p.getAttribute("stroke-dashoffset")))!=='+JSON.stringify(reducedBefore),'Brand packets keep moving with OS reduced motion');
   assert.equal(await evaluate('getComputedStyle(document.querySelector(".route-arrival")).animationName'),'none','Reduced motion disables route arrival animation');
-  assert(await evaluate('(()=>{const w=document.querySelector(".statement-window").getBoundingClientRect();return [...document.querySelectorAll(".statement-phrase")].every(e=>{const r=e.getBoundingClientRect();return r.top>=w.top&&r.bottom<=w.bottom})})()'),'All statement phrases remain available without animation');
+  for(let index=0;index<3;index++)await statementAt(index);
+  await verifyConnection('os-reduced');
+  assert.equal(await evaluate('getComputedStyle(document.querySelector(".statement-window")).overflow'),'hidden','Slider retains its single-phrase mask');
   await capture('reduced-motion');
   await media('dark');
   await viewport(375,1000);await load();
@@ -140,7 +143,7 @@ export async function verifyPremiumUi({cdp,evaluate,load,viewport,media,waitFor,
   const mobileBefore=await evaluate('JSON.stringify([...document.querySelectorAll(".ambient-streaks path")].map(p=>p.getAttribute("stroke-dashoffset")))');
   await pause(450);
   assert.notEqual(await evaluate('JSON.stringify([...document.querySelectorAll(".ambient-streaks path")].map(p=>p.getAttribute("stroke-dashoffset")))'),mobileBefore,'Lightweight background keeps moving on mobile');
-  checks.push('reduced-motion static text/scene fallback; live mobile SVG background without WebGL when motion is enabled');
+  checks.push('continuous brand motion under both OS preferences; reduced navigation effects; live mobile SVG background without WebGL when motion is enabled');
   const routes=['/products/','/products/lan-messenger/','/products/lan-messenger/docs/','/privacy/','/downloads/','/products/lan-messenger/releases/','/about/'];
   for(const width of [375,1440]) {
     await viewport(width,1000);await media(width===375?'light':'dark');

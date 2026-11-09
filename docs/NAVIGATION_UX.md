@@ -52,12 +52,11 @@ previous initialization loaded it after two frames even for an offscreen hero.
   WebGL renderer only after its hero intersects the viewport. Its existing
   useful SVG preview remains visible until textures and the first 3D frame
   are ready, and remains the fallback if WebGL is unavailable.
-- The current task explicitly restores respect for prefers-reduced-motion,
-  superseding the earlier always-on request. The initial inline preference
-  and client subscription agree. Reduced motion uses static scene/text,
-  complete connector wires, no entrance/panel movement, no smooth anchor
-  scrolling and a still navigation indicator. All three scroll-statement
-  phrases remain readable instead of disappearing in a clipped slider.
+- Motion policy was corrected after this checkpoint: the owner explicitly
+  requests always-on brand scenes and scroll storytelling. The initial inline
+  attribute and shared scene hook both keep brand motion enabled. OS reduced
+  motion applies only to the new page arrival, navigation indicator and anchor
+  scrolling; it does not disable the whole website. See MOTION_STABILITY.md.
 
 ## Where skeletons were avoided
 
@@ -176,5 +175,7 @@ added to every route. Browser checks use software rendering, not field
 performance measurements. Future imperative router.push callers should use
 the shared feedback API if they need tracking; current navigation uses Links.
 
-Changes remain on dev for review. No commit, push, deployment, dependency,
-installer, desktop-application or hosting-configuration change was performed.
+The navigation checkpoint was committed on dev as f867aa4 after review.
+The subsequent motion-policy correction is documented in MOTION_STABILITY.md.
+No push, deployment, dependency, installer, desktop-application or hosting-configuration
+change was performed.
