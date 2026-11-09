@@ -1,5 +1,4 @@
 "use client";
-import { useScenePreferences } from "@/components/living-network/useScenePreferences";
 import { useEffect, useRef } from "react";
 import { NavigationItem } from "./NavigationItem";
 import { usePathname } from "next/navigation";
@@ -11,7 +10,6 @@ export function MobileMenu() {
   const details = useRef<HTMLDetailsElement>(null);
   const pathname = usePathname();
   const [panel, animate] = useAnimate<HTMLElement>();
-  const reduce = !useScenePreferences().motion;
   useEffect(() => {
     const close = () => { if (details.current) details.current.open = false; };
     const escape = (event: KeyboardEvent) => {
@@ -22,7 +20,7 @@ export function MobileMenu() {
     const outside = (event: PointerEvent) => {
       if (event.target instanceof Node && !details.current?.contains(event.target)) close();
     };
-    const wide = matchMedia("(min-width: 901px)");
+    const wide = matchMedia("(min-width: 1101px)");
     const resize = () => { if (wide.matches) close(); };
     document.addEventListener("keydown", escape);
     document.addEventListener("pointerdown", outside);
@@ -34,7 +32,7 @@ export function MobileMenu() {
     };
   }, []);
   useEffect(() => {if(details.current)details.current.open = false;},[pathname]);
-  return <details ref={details} className="mobile-menu" onToggle={(event) => { if (event.currentTarget.open && panel.current) void animate(panel.current, {opacity: [reduce ? 1 : .75, 1], y: [reduce ? 0 : -6, 0]}, {duration: reduce ? 0 : motionTiming.menu}); }}>
+  return <details ref={details} className="mobile-menu" onBlur={event => { if (event.relatedTarget instanceof Node && !event.currentTarget.contains(event.relatedTarget)) event.currentTarget.open = false; }} onToggle={(event) => { if (event.currentTarget.open && panel.current) { const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches; if (reduce) return; void animate(panel.current, {opacity: [.75, 1], y: [-6, 0]}, {duration: motionTiming.menu}); } }}>
     <summary className="icon-button" aria-label="Navigation menu" aria-controls="mobile-navigation"><Icon name="menu" className="menu-bars"/><Icon name="close" className="menu-close"/></summary>
     <nav ref={panel} id="mobile-navigation" className="mobile-panel" aria-label="Mobile navigation" onClick={(event) => { if ((event.target as HTMLElement).closest("a") && details.current) details.current.open = false; }}>
       <div className="nav-menu-intro"><span className="eyebrow">Explore Lymora</span><p>Technology, closer.</p></div>

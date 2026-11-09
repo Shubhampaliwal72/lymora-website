@@ -5,6 +5,7 @@ import "./globals.css";
 // Direct module import lets Next track the new stylesheet independently of Tailwind CSS imports.
 import "../styles/surfaces.css";
 import "../styles/downloads.css";
+import "../styles/header.css";
 import { publicLaunch, site } from "@/lib/site";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";

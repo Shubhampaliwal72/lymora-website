@@ -22,7 +22,7 @@ The current release includes the group-administration and uninstaller cache-clea
 
 ## Website integration
 
-src/lib/releases/windows.json is the single release manifest. Only /downloads/ exposes installer, compatibility, checksum and release-note details. Header, homepage and product CTAs navigate there. The old release-notes route remains a handoff to the central page. Support channels stay null until verified; no speculative macOS/Linux promises are published.
+src/lib/releases/windows.json is the single release manifest. Only /downloads/ exposes installer, compatibility, checksum and release-note details. Header, homepage and product CTAs navigate there. The old release-notes route remains a handoff to the central page. Support channels stay null until verified; macOS/Linux Coming soon panels are informational, as approved by the owner; they expose no downloads, dates or compatibility promises.
 
 The existing public website repository hosts release assets independently of website deployment. Its source archives contain website code, not the private desktop application. No installer is copied into public/, out/ or Git source history. Website source changes do not deploy themselves; commit/push/deployment still need separate authorization.
 

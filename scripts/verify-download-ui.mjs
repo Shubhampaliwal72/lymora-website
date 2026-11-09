@@ -22,6 +22,9 @@ export async function verifyDownloadUi({cdp,evaluate,viewport,media,waitFor,paus
     assert(await evaluate('document.documentElement.scrollWidth<=innerWidth'),'Download layout fits '+width);
     assert.equal(await evaluate('document.querySelectorAll("[data-platform]").length'),1,'Only the supported Windows platform is presented');
     assert.equal(await evaluate('document.querySelector("[data-platform]").dataset.platform'),'windows','Windows support is explicit');
+    assert.deepEqual(await evaluate('[...document.querySelectorAll("[data-upcoming-platform]")].map(e=>e.dataset.upcomingPlatform)'),['macos','linux'],'Both approved upcoming platforms are informational');
+    assert.equal(await evaluate('document.querySelectorAll(".upcoming-platforms a,.upcoming-platforms button").length'),0,'No unavailable platform controls or placeholder URLs');
+    assert.equal(await evaluate('[...document.querySelectorAll(".upcoming-platform-status")].every(e=>e.textContent.includes("Coming soon"))'),true,'Upcoming platforms have clear availability');
     assert.equal(await evaluate('document.querySelector(".download-integrity code").textContent'),release.sha256,'Exact public SHA-256');
     assert.equal(await evaluate('document.querySelector(".download-integrity a").href'),release.checksumUrl,'Exact public checksum URL');
     assert((await evaluate('document.querySelector(".windows-release-facts").textContent')).includes('build '+release.build),'Build identity visible');
@@ -30,6 +33,9 @@ export async function verifyDownloadUi({cdp,evaluate,viewport,media,waitFor,paus
     await evaluate('document.querySelector(".platform-downloads").scrollIntoView({block:"start",behavior:"instant"})');await waitFor('[...document.querySelectorAll("#windows-download-title .reveal-word")].every(e=>Number(getComputedStyle(e).opacity)===1)','Download heading reveal completes');await pause(200);
     const image=await cdp('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
     await writeFile(path.join(output,'downloads-'+width+'-'+theme+'.png'),Buffer.from(image.data,'base64'));
+    await evaluate('document.querySelector(".upcoming-platforms").scrollIntoView({block:"center",behavior:"instant"})');await pause(500);
+    const upcoming=await cdp('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
+    await writeFile(path.join(output,'upcoming-platforms-'+width+'-'+theme+'.png'),Buffer.from(upcoming.data,'base64'));
   }
   await viewport(1440,1000);await media('dark');
   for(const route of ['/','/products/lan-messenger/']) {
@@ -44,8 +50,9 @@ export async function verifyDownloadUi({cdp,evaluate,viewport,media,waitFor,paus
   const routes=['/','/products/','/products/lan-messenger/','/products/lan-messenger/docs/','/products/lan-messenger/releases/','/downloads/','/about/','/privacy/'];
   for(const route of routes) {
     await open(route);
-    const facts=await evaluate("({external:[...document.querySelectorAll('a')].filter(a=>a.href.includes('/releases/download/')||a.href.includes('/releases/tag/')).map(a=>a.href),future:/macOS|Linux|Made for Windows PCs|Windows downloads/.test(document.body.innerText),footer:document.querySelector('.footer-directory a[href=\"/downloads/\"]')?.textContent,nav:document.querySelector('.desktop-nav>a[href=\"/downloads/\"]')?.getAttribute('aria-current')})");
-    assert.equal(facts.future,false,'No unconfirmed platform announcements or old footer labels: '+route);
+    const facts=await evaluate("({external:[...document.querySelectorAll('a')].filter(a=>a.href.includes('/releases/download/')||a.href.includes('/releases/tag/')).map(a=>a.href),future:/macOS|Linux/.test(document.body.innerText),oldLabels:/Made for Windows PCs|Windows downloads/.test(document.body.innerText),footer:document.querySelector('.footer-directory a[href=\"/downloads/\"]')?.textContent,nav:document.querySelector('.desktop-nav>a[href=\"/downloads/\"]')?.getAttribute('aria-current')})");
+    assert.equal(facts.future,route==='/downloads/','Approved upcoming platforms appear only on Downloads: '+route);
+    assert.equal(facts.oldLabels,false,'Old footer labels remain removed: '+route);
     assert.equal(facts.footer,'Downloads','Footer uses the generic Downloads label');
     if(route==='/downloads/') {
       assert.deepEqual(facts.external.sort(),[release.downloadUrl,release.checksumUrl,release.notesUrl].sort(),'Only the three approved release destinations');
@@ -64,5 +71,5 @@ export async function verifyDownloadUi({cdp,evaluate,viewport,media,waitFor,paus
   assert.equal(await evaluate('document.querySelector(".mobile-download .menu-title").textContent'),'Downloads','Mobile menu uses Downloads');
   await evaluate('document.querySelector(".mobile-download").click()');
   await waitFor('location.pathname==="/downloads/"&&!document.querySelector(".mobile-menu").open','Mobile navigation opens Downloads and closes menu');
-  checks.push('Centralized installer/checksum/release details; supported Windows only; generic desktop/mobile/footer Downloads navigation; working homepage/product CTAs and legacy release handoff; eight-route audit; 320/375/1440px in both themes; no invented support URLs');
+  checks.push('Centralized installer/checksum/release details; Windows installer with informational macOS/Linux plans; generic desktop/mobile/footer Downloads navigation; working homepage/product CTAs and legacy release handoff; eight-route audit; 320/375/1440px in both themes; no invented support URLs');
 }

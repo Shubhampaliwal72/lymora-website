@@ -37,9 +37,9 @@ export async function verifyGlassUi({cdp,evaluate,load,viewport,media,waitFor,pa
     assert.equal(await evaluate('!!document.querySelector(".nav-disclosure[open]")'),false,'Desktop disclosure closes when switching to mobile');
   }
   checks.push('dark/light frosted desktop menus: accent initials, neutral labels, crisp foreground, dimmed background, stacking, keyboard/outside close and responsive cleanup');
-  for(const width of [320,375,768,901]) {
+  for(const width of [320,375,768,1024,1101]) {
     await viewport(width,800);await media(width===320?'dark':'light');await load();await evaluate('window.scrollTo({top:0,behavior:"instant"})');
-    if(width<=900) {
+    if(width<=1100) {
       await evaluate('document.querySelector(".mobile-menu summary").click()');await pause(250);
       assert(await inside('.mobile-panel'),'Mobile menu fits viewport at '+width);
       await waitFor('Number(getComputedStyle(document.querySelector(".site-header"),"::before").opacity)>.99','Mobile background is subdued');
@@ -50,12 +50,12 @@ export async function verifyGlassUi({cdp,evaluate,load,viewport,media,waitFor,pa
       await key('Escape',27);await waitFor('Number(getComputedStyle(document.querySelector(".site-header"),"::before").opacity)===0','Backdrop clears after closing');
     } else {
       await evaluate('document.querySelectorAll(".nav-disclosure summary")[1].click()');await pause(250);
-      assert(await inside('.nav-disclosure[open] .nav-dropdown'),'Resources menu fits compact desktop at 901px');
+      assert(await inside('.nav-disclosure[open] .nav-dropdown'),'Resources menu fits compact desktop at 1101px');
       await key('Escape',27);
     }
     assert(await evaluate('document.documentElement.scrollWidth<=innerWidth'),'No horizontal overflow at '+width);
   }
-  checks.push('320/375/768px touch menu viewport bounds and internal scroll; 901px compact dropdown; clean backdrop removal');
+  checks.push('320/375/768/1024px touch menu viewport bounds and internal scroll; 1101px compact dropdown; clean backdrop removal');
   for(const [width,theme] of [[1440,'dark'],[375,'light']]) {
     await viewport(width,1000);await media(theme);await load();
     await evaluate('document.querySelector("#experience .screenshot-trigger").scrollIntoView({block:"center",behavior:"instant"})');await pause(600);

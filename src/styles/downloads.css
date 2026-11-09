@@ -32,3 +32,27 @@
 @media(max-width:500px) { .windows-release-facts { grid-template-columns:1fr;gap:16px; }.platform-download-heading { gap:10px; }.platform-download-heading .status-pill { font-size:9px; }.windows-download .inline-actions { align-items:flex-start;flex-direction:column;gap:0; } }
 @media(prefers-reduced-transparency:reduce) { .download-integrity { background:var(--surface); } }
 @media(forced-colors:active) { .platform-mark,.download-integrity { background:Canvas;border-color:CanvasText;color:CanvasText; } }
+
+/* Future platforms are information, visually distinct from the available installer. */
+.upcoming-platforms { margin:56px 0; }
+.upcoming-platforms-heading { display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:24px; }
+.upcoming-platforms-heading .eyebrow { margin-bottom:12px;color:var(--accent); }
+.site-shell .upcoming-platforms-heading h2 { font-size:clamp(26px,3vw,38px);letter-spacing:-.04em;margin:0; }
+.upcoming-platforms-heading>p { color:var(--text-secondary);font-size:13px;line-height:1.8;margin:0; }
+.upcoming-platforms-grid { display:grid;grid-template-columns:1fr 1fr;gap:20px; }
+.upcoming-platform { position:relative;isolation:isolate;display:flex;align-items:center;gap:28px;min-height:190px;padding:30px;border-radius:24px;overflow:hidden; }
+.upcoming-platform::before { content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse at 0 100%,color-mix(in srgb,var(--accent) 6%,transparent),transparent 65%); }
+.upcoming-platform-art { position:relative;display:grid;place-items:center;width:88px;height:88px;flex-shrink:0; }
+.platform-monogram { font-family:var(--font-display),Arial,sans-serif;font-size:46px;font-weight:400;letter-spacing:-.06em;color:var(--text-secondary); }
+.platform-orbit { position:absolute;inset:0;border:1px solid var(--border);border-radius:26px;rotate:-12deg;background:linear-gradient(135deg,var(--glass-highlight),transparent 55%);box-shadow:inset 0 1px 0 var(--glass-edge); }
+.platform-orbit::after { content:"";position:absolute;bottom:10px;right:0;width:5px;height:5px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 9%,transparent); }
+.upcoming-platform-copy { min-width:0; }
+.upcoming-platform-status { display:flex;align-items:center;gap:8px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin:0 0 12px; }
+.upcoming-platform-status>span { width:4px;height:4px;border-radius:50%;background:currentColor; }
+.upcoming-platform h3 { font-size:26px;line-height:1.2;margin:0 0 9px;letter-spacing:-.035em; }
+.upcoming-platform-copy>p:last-child { margin:0;font-size:13px;color:var(--text-secondary);line-height:1.7; }
+.upcoming-platform-index { position:absolute;right:22px;top:18px;font-size:9px;letter-spacing:.1em;color:var(--text-muted); }
+.upcoming-platforms-note { margin:18px 0 0;max-width:82ch;color:var(--text-muted);font-size:12px;line-height:1.8; }
+@media(max-width:800px) { .upcoming-platforms-heading { align-items:flex-start;flex-direction:column;gap:16px; }.upcoming-platforms-grid { grid-template-columns:1fr; }.upcoming-platform { min-height:166px; } }
+@media(max-width:500px) { .upcoming-platform { padding:28px 22px;gap:20px; }.upcoming-platform-art { width:62px;height:72px; }.platform-monogram { font-size:36px; }.platform-orbit { border-radius:20px; }.upcoming-platform h3 { font-size:24px; }.upcoming-platform-copy>p:last-child { font-size:12px; }.upcoming-platform-index { right:18px;top:14px;font-size:8px; } }
+@media(forced-colors:active) { .platform-orbit { border-color:CanvasText;background:none;box-shadow:none; }.platform-orbit::after,.upcoming-platform-status>span { background:CanvasText;box-shadow:none; } }

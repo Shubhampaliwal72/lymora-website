@@ -1,4 +1,6 @@
 import Image from "next/image";
+import { BrandSymbol } from "./BrandSymbol";
+import { HeaderFrame } from "./HeaderFrame";
 import Link from "@/components/site/NavigationLink";
 import { ActiveLink } from "./ActiveLink";
 import { MobileMenu } from "./MobileMenu";
@@ -10,11 +12,11 @@ import { DownloadLink } from "./DownloadLink";
 import { messenger } from "@/lib/products";
 
 export function SiteHeader() {
-  return <header className="site-header glass-header"><div className="container header-inner glass-panel">
-    <Link href="/" className="brand brand-lockup" aria-label="Lymora home"><span className="brand-symbol"><Image className="brand-dark" src="/brand/mark-dark.png" width={512} height={512} alt=""/><Image className="brand-light" src="/brand/mark-light.png" width={512} height={512} alt=""/></span><span>Lymora<span className="brand-caption">Technology, closer.</span></span></Link>
+  return <HeaderFrame><div className="container header-inner glass-panel">
+    <Link href="/" className="brand brand-lockup" aria-label="Lymora home"><BrandSymbol><Image className="brand-dark" src="/brand/mark-dark.png" width={512} height={512} alt=""/><Image className="brand-light" src="/brand/mark-light.png" width={512} height={512} alt=""/></BrandSymbol><span className="brand-copy">Lymora<span className="brand-caption">Technology, closer.</span></span></Link>
     <nav className="desktop-nav" aria-label="Main navigation">
       <ActiveLink href="/">Home</ActiveLink>
-      <NavDisclosure label="Products" activePath="/products/">
+      <NavDisclosure label="Products" activePaths={["/products/", messenger.path]}>
         <div className="nav-product">
           <div className="nav-menu-intro"><span className="eyebrow">Made for nearby</span><p>Good things connect.</p></div>
           <NavigationItem href={messenger.path} title="LAN Messenger" description="Messages and files. Directly between Windows PCs." icon="message" className="nav-featured"/>
@@ -23,7 +25,7 @@ export function SiteHeader() {
         </div>
       </NavDisclosure>
       <Link href="/#experience">Inside the app</Link>
-      <NavDisclosure label="Resources">
+      <NavDisclosure label="Resources" activePaths={[messenger.docs, messenger.releases, "/privacy/"]}>
         <div className="nav-menu-intro"><span className="eyebrow">A little guidance</span><p>Make yourself at home.</p></div>
         <div className="nav-resource-list">
           <NavigationItem href={messenger.docs} title="Getting started" description="Install, discover and connect." icon="windows"/>
@@ -37,5 +39,5 @@ export function SiteHeader() {
       <ActiveLink href="/about/">About</ActiveLink>
     </nav>
     <div className="header-actions"><ThemeToggle/><DownloadLink className="header-download" label="Get Lymora"/><MobileMenu/></div>
-  </div></header>;
+  </div></HeaderFrame>;
 }
