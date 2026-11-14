@@ -16,6 +16,7 @@ export function SiteFooter() {
       <div className="footer-brand"><Link href="/" className="footer-brand-link" aria-label="Lymora home"><span className="brand-symbol"><Image className="brand-dark" src="/brand/mark-dark.png" width={512} height={512} alt=""/><Image className="brand-light" src="/brand/mark-light.png" width={512} height={512} alt=""/></span><span>Lymora<span className="footer-brand-dot" aria-hidden="true">.</span></span></Link><p>Useful technology.<br/>Made for the spaces we share.</p></div>
       {columns.map(column => <nav key={column.label} aria-label={"Footer " + column.label}><h3>{column.label}</h3>{column.links.map(link => <Link key={link.href} href={link.href}>{link.label}<Icon name="arrow"/></Link>)}</nav>)}
     </div>
+    <div className="tonal-wordmark" aria-hidden="true">lymora<span>.</span></div>
     <div className="footer-colophon"><span>Lymora &middot; Thoughtfully connected.</span><a href="#main">Back to top <Icon name="down"/></a></div>
   </div></footer>;
 }

@@ -100,8 +100,9 @@ export default function Home() {
           <p>Conversations and files for the places you share.</p>
         </SectionHeading>
         <div className="usecase-list">
-          {uses.map((item) => (
-            <div key={item.name} data-scroll-item>
+          {uses.map((item, index) => (
+            <div key={item.name} data-scroll-item className="gloss-surface usecase-card">
+              <span className="usecase-card-index" aria-hidden="true">0{index + 1}</span>
               <h3>{item.name}</h3>
               <p>{item.body}</p>
             </div>
@@ -128,17 +129,17 @@ export default function Home() {
           <p>Setup, practical help and honest privacy details.</p>
         </SectionHeading>
         <div className="resource-links">
-          <Link data-scroll-item href={messenger.docs}>
+          <Link data-scroll-item className="gloss-surface resource-card" href={messenger.docs}>
             <span>Documentation</span>
             <h3>From installation to your first message.</h3>
             <Icon name="arrow" />
           </Link>
-          <Link data-scroll-item href="/privacy/">
+          <Link data-scroll-item className="gloss-surface resource-card" href="/privacy/">
             <span>Privacy &amp; security</span>
             <h3>What stays local. What travels on your LAN.</h3>
             <Icon name="arrow" />
           </Link>
-          <Link data-scroll-item href={messenger.docs + "#troubleshooting"}>
+          <Link data-scroll-item className="gloss-surface resource-card" href={messenger.docs + "#troubleshooting"}>
             <span>Connection help</span>
             <h3>Find the reason a PC is not reachable.</h3>
             <Icon name="arrow" />
