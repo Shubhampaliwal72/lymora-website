@@ -26,10 +26,9 @@ html[data-motion='full'] [data-edge-surface]:is(.button,.icon-button,.footer-orb
  transition:translate 260ms ease,rotate 350ms ease,box-shadow 260ms ease,border-color 200ms ease,background-color 200ms ease;
 }
 @media(hover:hover) and (pointer:fine) {
- html[data-motion='full'] [data-edge-surface]:is(.button,.icon-button,.footer-orbit,button:not(.screenshot-trigger)):not(:disabled):hover { translate:0 -2px;rotate:x 7deg;box-shadow:inset 0 1px 0 var(--glass-edge),inset 0 -3px 0 #00000024,0 10px 24px var(--scene-glow); }
- html[data-motion='full'] .theme-toggle:hover svg { rotate:-16deg; }
+ html[data-motion='full'] [data-edge-surface]:is(.button,.icon-button,.footer-orbit,button:not(.screenshot-trigger)):not(:disabled):not(.header-actions *):hover { translate:0 -2px;rotate:x 7deg;box-shadow:inset 0 1px 0 var(--glass-edge),inset 0 -3px 0 #00000024,0 10px 24px var(--scene-glow); }
 }
-[data-edge-surface]:is(.button,.icon-button,.footer-orbit,button:not(.screenshot-trigger)):not(:disabled):active { translate:0 1px;rotate:x -3deg; }
+[data-edge-surface]:is(.button,.icon-button,.footer-orbit,button:not(.screenshot-trigger)):not(:disabled):not(.header-actions *):active { translate:0 1px;rotate:x -3deg; }
 .theme-toggle { perspective:300px; }
 .theme-toggle svg { transition:rotate 350ms ease;filter:drop-shadow(0 2px 1px var(--pc-shadow)); }
 /* Consistent inset divider and breathing room after the final page panel. */
@@ -68,3 +67,57 @@ html[data-motion='reduced'] [data-edge-surface]:is(.button,.icon-button,.footer-
 @media(prefers-reduced-transparency:reduce) { [data-edge-surface]::after { display:none; } }
 @media(forced-colors:active) { [data-edge-surface]::after { display:none; }.site-shell .tonal-wordmark { color:CanvasText;background:none; } }
 @media print { [data-edge-surface]::after { display:none; }.site-shell .tonal-wordmark { color:#222;background:none; } }
+/* Rounded glass, with all text above the material rather than made translucent. */
+.site-shell .product-tabs { gap:12px;border:0;padding:4px 2px 10px; }
+.site-shell .product-tabs button {
+ position:relative;isolation:isolate;border:1px solid var(--glass-border);border-radius:999px;
+ min-height:56px;padding:14px 24px;justify-content:center;font-weight:500;letter-spacing:-.015em;
+ background:linear-gradient(140deg,var(--glass-highlight),transparent 48%),var(--glass-fill);
+ box-shadow:inset 0 1px 0 var(--glass-edge),0 5px 16px var(--pc-shadow);
+ -webkit-backdrop-filter:blur(14px) saturate(115%);backdrop-filter:blur(14px) saturate(115%);
+}
+.site-shell .product-tabs button[aria-selected='true'] { color:var(--accent);border-color:color-mix(in srgb,var(--accent) 60%,var(--glass-border));background:linear-gradient(140deg,var(--glass-highlight),transparent 48%),var(--glass-active-fill); }
+.site-shell .footer-directory { border-radius:32px; }
+.glass-header :is(.nav-dropdown,.mobile-panel) {
+ background:linear-gradient(135deg,var(--overlay-reflection),transparent 44%),color-mix(in srgb,var(--overlay-fill) 87%,transparent);
+ border-color:var(--glass-border);border-radius:28px;
+}
+.site-header.glass-header .header-inner::after { padding:2px;opacity:.65; }
+/* The header stays steady. Feedback is a click wave; keyboard focus remains explicit. */
+html[data-motion] .site-shell .site-header.glass-header .header-actions :is(.button,.icon-button,summary),
+html[data-motion] .site-shell .site-header.glass-header .header-actions :is(.button,.icon-button,summary):is(:hover,:active,:focus-visible) {
+ translate:none;rotate:none;transform:none;
+}
+.glass-header .header-actions :is(.button,.icon-button,summary) { position:relative;overflow:hidden;isolation:isolate; }
+html[data-motion] .site-shell .site-header.glass-header .header-actions :is(.button,.icon-button,summary):hover {
+ box-shadow:inset 0 1px 0 var(--glass-edge),0 7px 17px var(--pc-shadow);
+}
+html[data-motion] .site-shell .site-header.glass-header .header-actions :is(.button,.icon-button,summary):is(:hover,:focus-visible) svg { translate:none;rotate:none;transform:none; }
+.header-click-ripple { position:absolute;pointer-events:none;border-radius:50%;transform:translate(-50%,-50%);z-index:3;background:radial-gradient(circle,transparent 40%,color-mix(in srgb,var(--accent) 22%,transparent) 58%,var(--glass-edge) 64%,transparent 72%); }
+/* No rule crosses the opening composition or touches the next section. */
+.cinematic-caption,.network-preview { border-top:0; }
+.site-shell .chapter-number { font-variant-numeric:lining-nums tabular-nums;background:linear-gradient(140deg,color-mix(in srgb,var(--text-primary) 30%,transparent),color-mix(in srgb,var(--accent) 16%,transparent));background-clip:text;-webkit-background-clip:text;color:transparent;text-shadow:none; }
+.site-shell .chapter-heading-copy h2 { font-weight:500;text-wrap:balance; }
+.site-shell .chapter-heading-copy>p { max-width:62ch;line-height:1.85; }
+.site-shell .eyebrow { font-weight:500; }
+/* Reserve a full row for every phrase; the reel never clips the final word. */
+.statement-window { isolation:isolate; }
+.statement-phrase { transform-origin:0 50%;font-weight:500;letter-spacing:-.05em; }
+.statement-progress span { width:38px;height:3px; }
+.site-shell .tonal-wordmark {
+ background-image:linear-gradient(100deg,color-mix(in srgb,var(--accent) 13%,transparent) 0%,color-mix(in srgb,var(--accent) 38%,transparent) 32%,var(--accent) 68%,color-mix(in srgb,var(--accent) 65%,var(--text-primary)) 100%);
+ background-size:145% 100%;
+}
+@media(max-width:600px) {
+ .site-shell .product-tabs { gap:10px;grid-template-columns:1fr 1fr; }
+ .site-shell .product-tabs button { padding:12px 14px;min-height:48px;font-size:13px; }
+ .site-shell .footer-directory { border-radius:26px; }
+}
+@media(prefers-reduced-transparency:reduce) {
+ .site-shell .product-tabs button,.glass-header :is(.nav-dropdown,.mobile-panel) { background:var(--surface);backdrop-filter:none;-webkit-backdrop-filter:none; }
+}
+@media(forced-colors:active) {
+ .site-shell .chapter-number,.site-shell .tonal-wordmark { background:none;color:CanvasText; }
+ .header-click-ripple { display:none; }
+ .site-shell .product-tabs button[aria-selected='true'] { border-color:Highlight;color:Highlight; }
+}

@@ -93,7 +93,7 @@ export function ParticleBackdrop({children}:{children:ReactNode}) {
   },[visible,paused,motion,enabled,pathname]);
   useEffect(()=>{
     if(!capable||!motion)return;
-    const x=gsap.quickTo(runtime.current.pointer,"x",{duration:1.25,ease:"power3.out"}),y=gsap.quickTo(runtime.current.pointer,"y",{duration:1.25,ease:"power3.out"});
+    const x=gsap.quickTo(runtime.current.pointer,"x",{duration:.7,ease:"power3.out"}),y=gsap.quickTo(runtime.current.pointer,"y",{duration:.7,ease:"power3.out"});
     const active=gsap.quickTo(runtime.current.pointer,"active",{duration:.7,ease:"power2.out"});
     const move=(event:PointerEvent)=>{if(event.pointerType!=="mouse"||paused||document.hidden)return;active(1);x((event.clientX/innerWidth-.5)*2);y((event.clientY/innerHeight-.5)*2);};
     const reset=()=>{x(0);y(0);active(0);};window.addEventListener("pointermove",move,{passive:true});document.documentElement.addEventListener("pointerleave",reset);

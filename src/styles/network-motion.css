@@ -53,7 +53,7 @@
 /* Visible, local animation preference and restrained interaction feedback. */
 html[data-motion='full'] :is(.product-link,.resource-links a,.button,.nav-featured,.footer-orbit) { transition:translate 260ms ease,background 200ms ease,border-color 200ms ease,box-shadow 260ms ease; }
 @media(hover:hover) and (pointer:fine){
- html[data-motion='full'] :is(.product-link,.resource-links a,.button,.footer-orbit):hover { translate:0 -3px; }
+ html[data-motion='full'] :is(.product-link,.resource-links a,.button,.footer-orbit):not(.header-actions *):hover { translate:0 -3px; }
  html[data-motion='full'] :is(.text-link,.hero-text-link,.product-link,.resource-links a) svg { transition:translate 260ms ease; }
  html[data-motion='full'] :is(.text-link,.hero-text-link,.product-link,.resource-links a):hover svg { translate:3px 0; }
  html[data-motion='full'] .product-screen .theme-screenshot img { transition:scale 550ms ease; }

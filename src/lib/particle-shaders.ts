@@ -36,9 +36,9 @@ void main() {
   float influence = exp(-dot(delta, delta) * 1.8) * uInteraction * (1.0 - formation);
   p.xy += normalize(delta + vec2(0.001)) * influence * 0.14;
   p.z += influence * (0.24 + sin(angle * 5.0 + uTime) * 0.12);
-  float mist = smoothstep(0.984, 0.992, aSeed.y) * uInteraction * (1.0 - formation);
+  float mist = smoothstep(0.978, 0.991, aSeed.y) * uInteraction * (1.0 - formation);
   vec3 wisp = vec3(uPointer + vec2(cos(angle + uTime * 0.24), sin(angle * 2.0 - uTime * 0.19))
-    * (0.11 + aSeed.x * 0.25), sin(angle * 3.0 + uTime * 0.4) * 0.23);
+    * (0.09 + aSeed.x * 0.30), sin(angle * 3.0 + uTime * 0.4) * 0.23);
   p = mix(p, wisp, mist);
   gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
   gl_PointSize = (1.3 + aSeed.x * 1.8 + influence * 0.3) * uDpr;

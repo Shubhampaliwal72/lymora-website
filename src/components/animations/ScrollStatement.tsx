@@ -18,7 +18,7 @@ export function ScrollStatement() {
     if (!motion || !root.current || !track.current) return;
     const rowHeight = () => track.current?.firstElementChild?.getBoundingClientRect().height ?? 0;
     const timeline = gsap.timeline({
-      scrollTrigger: {trigger: root.current, start: "top 82%", end: "top 26%", scrub: .65, invalidateOnRefresh: true},
+      scrollTrigger: {trigger: root.current, start: "top 82%", end: "top 26%", scrub: .4, invalidateOnRefresh: true},
       onUpdate: () => { if (root.current) root.current.dataset.active = String(timeline.progress() < .3 ? 0 : timeline.progress() < .72 ? 1 : 2); },
     });
     timeline.fromTo(track.current, {y: 0}, {y: 0, duration: .18, ease: "none"})
@@ -26,6 +26,12 @@ export function ScrollStatement() {
       .to(track.current, {y: () => -rowHeight(), duration: .18, ease: "none"})
       .to(track.current, {y: () => -rowHeight() * 2, duration: .24, ease: "power2.inOut"})
       .to(track.current, {y: () => -rowHeight() * 2, duration: .16, ease: "none"});
+    // Shallow depth belongs to each phrase, separate from the track's vertical motion.
+    const rows = gsap.utils.toArray<HTMLElement>(".statement-phrase", root.current);
+    rows.forEach((row, index) => {
+      timeline.fromTo(row, {rotationX: index ? -14 : 0, opacity: index ? .55 : 1, transformPerspective: 1100},
+        {rotationX: 0, opacity: 1, duration: .14, ease: "power2.out"}, index === 0 ? 0 : index === 1 ? .28 : .70);
+    });
     let disposed = false;
     void document.fonts.ready.then(() => { if (!disposed) ScrollTrigger.refresh(); });
     return () => { disposed = true; };
