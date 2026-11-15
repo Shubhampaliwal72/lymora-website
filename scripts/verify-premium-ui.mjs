@@ -42,7 +42,11 @@ export async function verifyPremiumUi({cdp,evaluate,load,viewport,media,waitFor,
     await capture('connection-complete-'+theme);
     assert((await evaluate('getComputedStyle(document.querySelector(".route-wire")).backgroundImage')).includes('repeating-linear-gradient'),'Unfilled route retains a dashed base');
     for(const index of [0,1,2,1,0]) {
+      if(await evaluate('document.querySelector(".setup-connection-story").dataset.storyMode==="cinematic"')) {
+        await evaluate('document.querySelectorAll("[data-story-go]")['+index+'].click()');
+      } else {
       await evaluate('(()=>{const e=document.querySelectorAll(".connection-step")['+index+'],r=e.getBoundingClientRect();window.scrollTo({top:scrollY+r.top+r.height/2-innerHeight*.6,behavior:"instant"})})()');
+      }
       await waitFor('document.querySelector(".setup-connection-story").dataset.activeStep==="'+index+'"','Current setup step follows reading position');
       assert.equal(await evaluate('document.querySelectorAll(".connection-step[aria-current=step]").length'),1,'Exactly one accessible current step');
       assert.equal(await evaluate('document.querySelectorAll(".connection-step[data-state=active]").length'),1,'Exactly one visual highlight');

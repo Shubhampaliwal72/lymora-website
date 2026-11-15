@@ -10,6 +10,7 @@ import "../styles/glossy-theme.css";
 import "../styles/particles.css";
 import "../styles/experience.css";
 import "../styles/immersive-hero.css";
+import "../styles/connection-story.css";
 import { publicLaunch, site } from "@/lib/site";
 import { HeaderRipple } from "@/components/site/HeaderRipple";
 import { SiteHeader } from "@/components/site/SiteHeader";

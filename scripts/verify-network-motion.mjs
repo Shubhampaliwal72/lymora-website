@@ -1,5 +1,6 @@
 /** Homepage motion checks and full-page review PNGs. Loopback only; no uploads. */
 import assert from 'node:assert/strict';
+import { verifyConnectionStory } from './verify-connection-story.mjs';
 import { verifyImmersiveHero } from './verify-immersive-hero.mjs';
 import { verifyDownloadUi } from './verify-download-ui.mjs';
 import { verifyHeaderUi } from './verify-header-ui.mjs';
@@ -128,6 +129,8 @@ try {
 
 
   const checks=[];
+  const connectionOnly=process.argv.includes('--connection-only');
+  if(connectionOnly)await verifyConnectionStory({cdp,evaluate,load,viewport,media,waitFor,pause,url,checks,output});
   const immersiveOnly=process.argv.includes('--immersive-only');
   if(immersiveOnly)await verifyImmersiveHero({cdp,evaluate,load,viewport,media,waitFor,pause,checks,output});
   const experienceOnly=process.argv.includes('--experience-only');
@@ -147,11 +150,11 @@ try {
   const launchOnly=process.argv.includes('--launch-only')||process.env.LYMORA_VERIFY_LAUNCH_ONLY==='1';
   const navigationOnly=process.argv.includes('--navigation-only');
   if(navigationOnly) await verifyNavigationUi({cdp,evaluate,viewport,media,waitFor,pause,url,checks,requests,errors,faults,output});
-  if(!immersiveOnly&&!experienceOnly&&!particlesOnly&&!logoOnly&&!headerOnly&&!downloadsOnly&&!docsOnly&&!glassOnly&&!launchOnly&&!navigationOnly) await verifyPremiumUi({cdp,evaluate,load,viewport,media,waitFor,pause,url,checks,report,output});
-  if(!immersiveOnly&&!experienceOnly&&!particlesOnly&&!logoOnly&&!headerOnly&&!downloadsOnly&&!docsOnly&&!glassOnly&&!navigationOnly) await verifyLaunchUi({cdp,evaluate,load,viewport,media,waitFor,pause,url,checks});
+  if(!connectionOnly&&!immersiveOnly&&!experienceOnly&&!particlesOnly&&!logoOnly&&!headerOnly&&!downloadsOnly&&!docsOnly&&!glassOnly&&!launchOnly&&!navigationOnly) await verifyPremiumUi({cdp,evaluate,load,viewport,media,waitFor,pause,url,checks,report,output});
+  if(!connectionOnly&&!immersiveOnly&&!experienceOnly&&!particlesOnly&&!logoOnly&&!headerOnly&&!downloadsOnly&&!docsOnly&&!glassOnly&&!navigationOnly) await verifyLaunchUi({cdp,evaluate,load,viewport,media,waitFor,pause,url,checks});
   assert.deepEqual(errors,[],'No console/runtime/hydration errors');assert.deepEqual(missing,[],'No missing assets');assert.deepEqual(external,[],'No external requests');
   assert.deepEqual(warnings.filter(message=>/THREE\.Clock:|Reduced Motion enabled/.test(message)),[],'No deprecated Clock or reduced-motion hook warnings');
-  const result={passed:true,browser:version.Browser,warnings,checks,exports:report,scope:process.env.LYMORA_TEST_URL?'Browser verification against the specified local server; software WebGL, not a hardware FPS benchmark.':'Actual static-export browser capture; software WebGL, not a hardware FPS benchmark.'};await fs.writeFile(path.join(output,immersiveOnly?'immersive-ui-results.json':experienceOnly?'experience-ui-results.json':particlesOnly?'particle-ui-results.json':logoOnly?'logo-ui-results.json':headerOnly?'header-ui-results.json':downloadsOnly?'downloads-ui-results.json':docsOnly?'documentation-ui-results.json':glassOnly?'glass-ui-results.json':navigationOnly?'navigation-ui-results.json':launchOnly?'launch-ui-results.json':'network-motion-results.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result,null,2));await send('Target.closeTarget',{targetId:target.targetId});await send('Browser.close');
+  const result={passed:true,browser:version.Browser,warnings,checks,exports:report,scope:process.env.LYMORA_TEST_URL?'Browser verification against the specified local server; software WebGL, not a hardware FPS benchmark.':'Actual static-export browser capture; software WebGL, not a hardware FPS benchmark.'};await fs.writeFile(path.join(output,connectionOnly?'connection-story-results.json':immersiveOnly?'immersive-ui-results.json':experienceOnly?'experience-ui-results.json':particlesOnly?'particle-ui-results.json':logoOnly?'logo-ui-results.json':headerOnly?'header-ui-results.json':downloadsOnly?'downloads-ui-results.json':docsOnly?'documentation-ui-results.json':glassOnly?'glass-ui-results.json':navigationOnly?'navigation-ui-results.json':launchOnly?'launch-ui-results.json':'network-motion-results.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result,null,2));await send('Target.closeTarget',{targetId:target.targetId});await send('Browser.close');
 } finally {
   if(socket)socket.close();for(const promise of pending.values()){clearTimeout(promise.timeout);promise.reject(Error('Browser closed'));}pending.clear();server.close();if(browser.exitCode===null)browser.kill();
 }
