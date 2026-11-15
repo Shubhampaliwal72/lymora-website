@@ -1,30 +1,43 @@
-/* Shared finish: semantic materials, one existing network background, crisp foregrounds. */
+/* One material recipe for every panel, from homepage cards to documentation. */
 :root {
-  --gloss-fill:color-mix(in srgb,var(--surface) 93%,transparent);
-  --gloss-edge:color-mix(in srgb,var(--glass-edge) 65%,var(--border));
-  --gloss-reflection:color-mix(in srgb,var(--glass-highlight) 72%,transparent);
-  --gloss-shadow:0 16px 44px color-mix(in srgb,var(--pc-shadow) 72%,transparent);
-  --gloss-background:radial-gradient(ellipse at 95% 12%,var(--scene-glow),transparent 42%),radial-gradient(ellipse at 5% 82%,color-mix(in srgb,var(--accent) 4%,transparent),transparent 48%);
+ --gloss-fill:var(--glass-fill);--gloss-edge:var(--glass-border);
+ --gloss-reflection:var(--glass-highlight);
+ --gloss-background:radial-gradient(ellipse at 95% 12%,var(--scene-glow),transparent 42%),radial-gradient(ellipse at 5% 82%,color-mix(in srgb,var(--accent) 3%,transparent),transparent 48%);
 }
 body { background-image:var(--gloss-background);background-attachment:fixed; }
-/* Existing panels and new card surfaces share the same reusable material recipe. */
-.site-shell :is(.glass-panel,.gloss-surface) {
- background:linear-gradient(128deg,var(--gloss-reflection),transparent 37%),radial-gradient(ellipse at 100% 0%,color-mix(in srgb,var(--accent) 3%,transparent),transparent 65%),var(--gloss-fill);
- border:1px solid var(--gloss-edge);
- box-shadow:inset 0 1px 0 var(--glass-edge),inset 0 -1px 0 color-mix(in srgb,var(--border) 32%,transparent),var(--gloss-shadow);
+.site-shell :is(.glass-panel,.gloss-surface,.connection-bubble,.product-subnav,.download-integrity),
+.site-shell .messenger-docs :is(.guide-check,.guide-callout,.docs-question,.docs-faq-search),
+.ambience-control.glass-panel {
+ background:linear-gradient(135deg,var(--glass-highlight),transparent 42%),var(--glass-face,var(--bubble-fill,var(--glass-fill)));
+ border-color:var(--bubble-edge,var(--glass-border));
+ box-shadow:inset 0 1px 0 var(--glass-edge),inset 0 -1px 0 color-mix(in srgb,var(--glass-border) 28%,transparent),var(--glass-shadow);
+ -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(115%);
+ backdrop-filter:blur(var(--glass-blur)) saturate(115%);
 }
 .gloss-surface { border-radius:24px; }
-/* Near-opaque navigation prevents the environment from passing through menu labels. */
 .site-header.glass-header .header-inner {
- background:linear-gradient(115deg,var(--gloss-reflection),transparent 40%,transparent 80%,color-mix(in srgb,var(--accent) 4%,transparent)),color-mix(in srgb,var(--surface) 97%,transparent);
- border-color:var(--gloss-edge);
- box-shadow:inset 0 1px 0 var(--glass-edge),inset 0 -1px 0 color-mix(in srgb,var(--glass-edge) 30%,transparent),var(--glass-shadow);
+ position:relative;isolation:isolate;background:transparent;
+ border-color:var(--glass-border);
+ box-shadow:inset 0 1px 0 var(--glass-edge),inset 0 -1px 0 var(--glass-border),var(--glass-shadow);
+ -webkit-backdrop-filter:none;backdrop-filter:none;
 }
-.glass-header .desktop-nav>a,.glass-header .nav-disclosure>summary { color:color-mix(in srgb,var(--text-primary) 85%,var(--text-secondary));letter-spacing:-.01em; }
+/* Put the header frost on its own layer: nested menus can then blur the page too. */
+.site-header.glass-header .header-inner::before {
+ content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;
+ background:linear-gradient(115deg,var(--glass-highlight),transparent 38%),var(--glass-header-fill);
+ -webkit-backdrop-filter:blur(26px) saturate(115%);backdrop-filter:blur(26px) saturate(115%);
+}
+.glass-header .desktop-nav>a,.glass-header .nav-disclosure>summary { color:var(--text-primary);letter-spacing:-.01em; }
 .glass-header .desktop-nav>a:is(:hover,:focus-visible,[aria-current='page']),.glass-header .nav-disclosure:is([open],[data-active='true'])>summary,.glass-header .nav-disclosure>summary:is(:hover,:focus-visible) { color:var(--accent); }
-.glass-header :is(.nav-dropdown,.mobile-panel) { background:linear-gradient(130deg,var(--overlay-reflection),transparent 40%),var(--overlay-fill);border-color:var(--gloss-edge); }
-.site-shell .button-primary { background-image:linear-gradient(165deg,#ffffff15,transparent 48%);box-shadow:inset 0 1px 0 #ffffff40,inset 0 -1px 0 #00000014,0 8px 22px var(--scene-glow); }
-.site-shell .button-secondary { background:linear-gradient(135deg,var(--gloss-reflection),transparent 50%),var(--gloss-fill);box-shadow:inset 0 1px 0 var(--glass-edge); }
+.glass-header :is(.nav-dropdown,.mobile-panel) { border-color:var(--glass-border); }
+.site-shell .button-primary { background-image:linear-gradient(165deg,#ffffff1a,transparent 48%);box-shadow:inset 0 1px 0 #ffffff55,inset 0 -1px 0 #0000001a,0 8px 22px var(--scene-glow); }
+.site-shell .button-secondary { background:linear-gradient(135deg,var(--glass-highlight),transparent 50%),var(--glass-fill);border-color:var(--glass-control-border);box-shadow:inset 0 1px 0 var(--glass-edge); }
+.site-shell :is(.icon-button,.demo-transfer,.docs-question-toggle) { border-color:var(--glass-control-border); }
+.site-shell .connection-bubble { --bubble-edge:var(--glass-border); }
+.site-shell .connection-step[data-state='active'] .connection-bubble { --bubble-edge:color-mix(in srgb,var(--accent) 60%,var(--glass-border));--bubble-fill:var(--glass-active-fill); }
+.site-shell .messenger-docs .guide-callout { border-left-color:var(--accent); }
+.site-shell .messenger-docs .docs-question[open]:not([data-expanded='false']) { --glass-face:var(--glass-active-fill); }
+.site-shell .glass-footer { border-top:1px solid var(--glass-border);background:linear-gradient(180deg,transparent,color-mix(in srgb,var(--canvas) 16%,transparent)); }
 /* Preserve wording and line breaks. Depth comes from restrained materials, not distorted type. */
 .site-shell :is(.page-intro h1,.hero-copy h1) { font-weight:500;letter-spacing:-.055em;line-height:1.1; }
 .site-shell :is(.page-intro h1,.hero-copy h1) em { color:var(--accent);font-style:normal; }
@@ -44,37 +57,40 @@ body { background-image:var(--gloss-background);background-attachment:fixed; }
 .homepage-motion .resource-card h3 { font-size:clamp(21px,2vw,27px);line-height:1.45;letter-spacing:-.035em; }
 .homepage-motion .resource-card>svg { align-self:end;margin-top:6px; }
 .site-shell .product-screen { border-radius:22px;padding:12px; }
-/* Keep the setup storyline's active state; only refine its material. */
-.site-shell .connection-bubble { background:linear-gradient(135deg,var(--gloss-reflection),transparent 40%),var(--bubble-fill);box-shadow:inset 0 1px 0 var(--glass-edge),0 12px 34px color-mix(in srgb,var(--pc-shadow) 45%,transparent); }
-.site-shell .messenger-docs .docs-question { background:linear-gradient(128deg,var(--gloss-reflection),transparent 40%),var(--gloss-fill); }
-.site-shell .messenger-docs .docs-question:not([open]) { border-color:var(--gloss-edge);box-shadow:inset 0 1px 0 var(--glass-edge),var(--glass-shadow); }
-.site-shell .glass-footer { background:linear-gradient(180deg,transparent,color-mix(in srgb,var(--canvas) 88%,transparent)); }
 /* Supplied typographic reference: oversized, quiet, tightly spaced brand lettering. */
 .tonal-wordmark { width:100%;margin:46px 0 0;overflow:hidden;user-select:none;font-family:var(--font-display),Arial,sans-serif;font-size:clamp(84px,22vw,304px);font-weight:600;line-height:1.15;letter-spacing:-.085em;color:color-mix(in srgb,var(--text-primary) 9%,var(--canvas));text-shadow:0 1px 0 color-mix(in srgb,var(--glass-edge) 52%,transparent); }
 .tonal-wordmark>span { color:color-mix(in srgb,var(--accent) 22%,var(--canvas)); }
 .site-shell .footer-colophon { padding-top:20px; }
-@supports(backdrop-filter:blur(12px)) {
- .site-shell :is(.glass-panel,.gloss-surface) { backdrop-filter:blur(14px) saturate(115%); }
- .site-header.glass-header .header-inner { backdrop-filter:blur(16px) saturate(115%); }
-}
+
 @media(max-width:1100px) {
  .homepage-motion .resource-links { grid-template-columns:1fr; }.homepage-motion .resource-links>a.resource-card { grid-template-columns:150px minmax(0,1fr) 20px;align-items:center;gap:24px;padding:24px; }.homepage-motion .resource-card>span { grid-column:auto; }.homepage-motion .resource-card>svg { margin:0;align-self:center; }
 }
 @media(max-width:700px) {
  body { background-attachment:scroll; }
- .site-shell :is(.glass-panel,.gloss-surface) { backdrop-filter:none; }
- .site-header.glass-header .header-inner { backdrop-filter:blur(10px); }
+ :root { --glass-blur:10px; }
+ .site-header.glass-header .header-inner::before { -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px); }
  .homepage-motion .usecase-list { gap:14px; }.homepage-motion .usecase-list>.usecase-card,.homepage-motion .usecase-list>.usecase-card:first-child { padding:24px; }
  .homepage-motion .resource-links>a.resource-card { grid-template-columns:minmax(0,1fr) 20px;gap:18px;padding:24px; }.homepage-motion .resource-card>span { grid-column:1/-1; }
  .tonal-wordmark { margin-top:30px;font-size:23vw; }
  .site-shell :is(.page-intro h1,.hero-copy h1) { letter-spacing:-.045em;line-height:1.12; }
 }
 @media(max-width:500px) { .homepage-motion .usecase-list { grid-template-columns:1fr; }.gloss-surface { border-radius:20px; }.site-shell .product-screen { padding:7px;border-radius:16px; } }
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) {
+ :root { --glass-fill:var(--surface);--glass-header-fill:var(--surface);--glass-active-fill:var(--surface);--overlay-fill:var(--surface); }
+}
 @media(prefers-reduced-transparency:reduce) {
- .site-shell :is(.glass-panel,.gloss-surface),.site-header.glass-header .header-inner,.site-shell .connection-bubble,.site-shell .messenger-docs .docs-question { background:var(--surface);backdrop-filter:none; }
+ .site-header.glass-header .header-inner::before { background:var(--surface);-webkit-backdrop-filter:none;backdrop-filter:none; }
+ :root { --glass-fill:var(--surface);--glass-header-fill:var(--surface);--glass-active-fill:var(--surface);--overlay-fill:var(--surface); }
+ .site-shell :is(.glass-panel,.gloss-surface,.connection-bubble,.product-subnav,.download-integrity),
+ .site-shell .messenger-docs :is(.guide-check,.guide-callout,.docs-question,.docs-faq-search),
+ .site-header.glass-header .header-inner,.ambience-control.glass-panel { background:var(--surface);-webkit-backdrop-filter:none;backdrop-filter:none; }
 }
 @media(forced-colors:active) {
- .tonal-wordmark { display:none; }.site-shell :is(.glass-panel,.gloss-surface),.site-header.glass-header .header-inner,.site-shell .connection-bubble,.site-shell .messenger-docs .docs-question { background:Canvas;border-color:CanvasText;box-shadow:none;backdrop-filter:none; }
+ .site-header.glass-header .header-inner::before { background:Canvas;-webkit-backdrop-filter:none;backdrop-filter:none; }
+ .tonal-wordmark { display:none; }
+ .site-shell :is(.glass-panel,.gloss-surface,.connection-bubble,.product-subnav,.download-integrity),
+ .site-shell .messenger-docs :is(.guide-check,.guide-callout,.docs-question,.docs-faq-search),
+ .site-header.glass-header .header-inner,.ambience-control.glass-panel { background:Canvas;color:CanvasText;border-color:CanvasText;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none; }
  .site-shell :is(.page-intro h1,.hero-copy h1) em { color:CanvasText;background:none; }.glass-header .desktop-nav>a,.glass-header .nav-disclosure>summary { color:LinkText; }
 }
 @media print { .tonal-wordmark { display:none; }.site-shell :is(.glass-panel,.gloss-surface) { background:white;box-shadow:none;backdrop-filter:none; } }

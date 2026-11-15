@@ -2,14 +2,14 @@
   color-scheme: light;
   --chat-preview-image: url("/media/product/chats-light.png");
   --brand-mark-image: url("/brand/mark-light.png");
-  --canvas: #faf9f7; --rail: #f5f3f0; --sidebar: #fff; --header: #fff;
+  --canvas: #f3f2ef; --rail: #f5f3f0; --sidebar: #fff; --header: #fff;
   --surface: #fff; --surface-raised: #f2f0ed; --surface-hover: #ebe8e4;
-  --text-primary: #252321; --text-secondary: #625d58; --text-muted: #746e68;
-  --border: #e5e1dc; --accent: #c7470b; --accent-hover: #a93605;
+  --text-primary: #202631; --text-secondary: #46515f; --text-muted: #596574;
+  --border: #c4cad1; --accent: #b9410e; --accent-hover: #a93605;
   --accent-subtle: #fff0e5; --button-primary: #b8430d; --button-primary-hover: #a93605; --button-primary-text: #fff;
   --message-incoming: #f0eeeb; --message-outgoing: #b8430d; --text-on-outgoing: #fff;
   --focus-ring: #b8430d; --success: #267347; --diagram-line: #b4aaa0;
-  --scene-glow: #c7470b14; --pc-bezel: #dedbd6; --pc-edge: #b4aaa0; --pc-shadow: #30271c14;
+  --scene-glow: #c7470b14; --pc-bezel: #9aa3af; --pc-edge: #596574; --pc-shadow: #30271c14;
   --shadow: 0 24px 80px #30271c0a; --grid-dot: #625d581c;
   --space-page: clamp(24px, 5.55vw, 80px); --content-width: 1280px;
 }

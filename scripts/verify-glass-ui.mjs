@@ -71,7 +71,7 @@ export async function verifyGlassUi({cdp,evaluate,load,viewport,media,waitFor,pa
   }
   checks.push('dark desktop/light mobile native screenshot dialogs: frosted frame and backdrop, opaque original image canvas, focus/scroll restoration');
   await viewport(1440,1000);await media('dark');await load();
-  await cdp('Emulation.setEmulatedMedia',{features:[{name:'prefers-color-scheme',value:'dark'},{name:'prefers-reduced-transparency',value:'reduce'}]});
+  await cdp('Emulation.setEmulatedMedia',{features:[{name:'prefers-color-scheme',value:'dark'},{name:'prefers-reduced-motion',value:'no-preference'},{name:'prefers-reduced-transparency',value:'reduce'}]});
   await evaluate('document.querySelector(".nav-disclosure summary").click()');await pause(250);
   assert.equal(await evaluate('getComputedStyle(document.querySelector(".nav-disclosure[open] .nav-dropdown")).backdropFilter'),'none','Reduced transparency uses solid readable surfaces');
   assert.equal(await evaluate('document.documentElement.dataset.motion'),'full','Glass styling does not disable brand motion');
@@ -82,4 +82,60 @@ export async function verifyGlassUi({cdp,evaluate,load,viewport,media,waitFor,pa
   await evaluate('document.querySelectorAll(".nav-disclosure summary")[1].click()');await pause(250);
   assert(await inside('.nav-disclosure[open] .nav-dropdown'),'The same polished navigation works on nested pages');
   checks.push('shared glossy navigation on nested documentation routes');
+  await key('Escape',27);
+  await verifyGlassMaterials({cdp,evaluate,load,viewport,media,waitFor,pause,url,checks,capture});
+}
+
+/** Verify translucent materials and resting text contrast on the actual rendered routes. */
+async function verifyGlassMaterials({cdp,evaluate,load,viewport,media,waitFor,pause,url,checks,capture}){
+ const routes=['/','/products/','/products/lan-messenger/','/products/lan-messenger/docs/','/downloads/','/privacy/','/about/','/products/lan-messenger/releases/'];
+ const summaries=[];
+ for(const theme of ['light','dark']){
+  await viewport(1440,1000);await media(theme);
+  for(const route of routes){
+   await evaluate("document.documentElement.dataset.qaDeparting='true'");
+   await cdp('Page.navigate',{url:url+route});
+   await waitFor("document.readyState==='complete'&&!document.documentElement.dataset.qaDeparting&&!!document.querySelector('main')&&location.pathname==="+JSON.stringify(route),'Surface route '+route);
+   await evaluate('document.fonts.ready');await pause(350);
+   const material=await evaluate(`(()=>{
+    const probe=document.createElement('canvas');probe.width=probe.height=1;
+    const context=probe.getContext('2d',{willReadFrequently:true});
+    const rgba=color=>{context.clearRect(0,0,1,1);context.fillStyle=color;context.fillRect(0,0,1,1);return [...context.getImageData(0,0,1,1).data].map((v,i)=>i===3?v/255:v);};
+    const lum=rgb=>rgb.slice(0,3).map(v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4;}).reduce((sum,v,i)=>sum+v*[.2126,.7152,.0722][i],0);
+    const composite=(color,base)=>color.slice(0,3).map((v,i)=>v*color[3]+base[i]*(1-color[3]));
+    const background=rgba(getComputedStyle(document.body).backgroundColor);
+    const panels=[...document.querySelectorAll('.site-shell :is(.glass-panel,.gloss-surface,.connection-bubble,.product-subnav,.download-integrity),.messenger-docs :is(.guide-check,.guide-callout,.docs-question,.docs-faq-search)')].filter(e=>!e.closest('.site-header')&&getComputedStyle(e).display!=='none');
+    const cards=panels.map(panel=>{const style=getComputedStyle(panel),color=rgba(style.backgroundColor),base=composite(color,background);const copy=[...panel.querySelectorAll('p')].filter(p=>getComputedStyle(p).display!=='none').map(p=>{const ink=rgba(getComputedStyle(p).color);return (Math.max(lum(ink),lum(base))+.05)/(Math.min(lum(ink),lum(base))+.05);});return{alpha:color[3],blur:style.backdropFilter,copy};});
+    const header=document.querySelector('.header-inner');const frost=getComputedStyle(header,'::before');
+    return{cards,headerAlpha:rgba(frost.backgroundColor)[3],headerBlur:frost.backdropFilter,foregroundFilter:getComputedStyle(document.querySelector('.page-reveal-content')).filter,overflow:document.documentElement.scrollWidth>innerWidth};
+   })()`);
+   assert(!material.overflow,'No overflow on '+route+' '+theme);
+   assert(material.headerAlpha>.5&&material.headerAlpha<.85,'Header is translucent with readable tint');
+   assert(material.headerBlur.includes('blur'),'Header frost stays on its separate layer');
+   assert.equal(material.foregroundFilter,'none','Content is never blurred');
+   assert(material.cards.length>0,'Shared footer/card material is present');
+   for(const card of material.cards){
+    assert(card.alpha>.3&&card.alpha<.85,'Panels are translucent: '+route+' '+theme+' alpha '+card.alpha);
+    assert(card.blur.includes('blur'),'Panels have a frosted backdrop');
+    for(const ratio of card.copy)assert(ratio>=4.5,'Resting copy contrast against the composited base material: '+route+' '+theme+' '+ratio);
+   }
+   summaries.push({route,theme,panels:material.cards.length,minCopyContrast:Math.min(...material.cards.flatMap(c=>c.copy)).toFixed(2)});
+   if(route==='/'){
+    await waitFor("document.querySelector('.particle-backdrop').dataset.renderer==='webgl'",'Hero uses the real renderer');
+    assert.equal(await evaluate("getComputedStyle(document.querySelector('.particle-reading-veil')).display"),'none','No tint lies over the original 3D app preview');
+    await capture('homepage-'+theme);
+    await evaluate("document.querySelector('.usecase-card').scrollIntoView({block:'center',behavior:'instant'})");await pause(1100);await capture('cards-'+theme);
+    await evaluate("document.querySelector('.footer-directory').scrollIntoView({block:'center',behavior:'instant'})");await pause(800);await capture('footer-'+theme);
+   }else if(route==='/downloads/'){
+    await evaluate("document.querySelector('.windows-download').scrollIntoView({block:'start',behavior:'instant'})");await pause(700);await capture('downloads-'+theme);
+   }else if(route.includes('/docs/')){
+    await evaluate("document.querySelector('.guide-conversations').scrollIntoView({block:'center',behavior:'instant'})");await pause(700);await capture('documentation-'+theme);
+   }
+  }
+ }
+ await viewport(375,900);await media('light');await load();
+ await evaluate("document.querySelector('.usecase-card').scrollIntoView({block:'center',behavior:'instant'})");await pause(1100);
+ assert(await evaluate("getComputedStyle(document.querySelector('.usecase-card')).backdropFilter.includes('blur')"),'Mobile cards keep lightweight frost');
+ await capture('cards-mobile-light');
+ checks.push({label:'shared glass materials across all eight routes and both themes; light/dark base text contrast; header frost isolation; no preview tint; mobile frost',surfaces:summaries});
 }

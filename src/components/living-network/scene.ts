@@ -90,5 +90,5 @@ export function svgRoute(points: [Point, Point, Point, Point]) {
 }
 export const sceneMaterials = {
   dark: {bezel: "#383c44", screen: "#101114", neck: "#42464e", foot: "#343841", status: "#9ccbac", keyLight: "#e5e6ed", accent: "#f06423", signal: "#ffb07c"},
-  light: {bezel: "#e5e1dc", screen: "#faf9f7", neck: "#dad6d0", foot: "#dedbd6", status: "#277246", keyLight: "#fff5eb", accent: "#c7470b", signal: "#b8430d"},
+  light: {bezel: "#8b96a5", screen: "#faf9f7", neck: "#737f8e", foot: "#7d8897", status: "#277246", keyLight: "#fff5eb", accent: "#c7470b", signal: "#b8430d"},
 } as const;

@@ -1,45 +1,31 @@
-/* Polished glass: reflections on the surface, crisp text on top, quiet content behind. */
+/* Shared translucent materials. Text remains fully opaque above these fills. */
 :root {
-  --glass-fill: #ffffffeb;
-  --glass-highlight: #ffffffb8;
-  --glass-edge: #ffffffd9;
-  --glass-shadow: 0 12px 40px #30271c0a, 0 2px 8px #30271c04;
-  --overlay-fill: #faf9f7;
-  --overlay-reflection: #ffffffd9;
-  --overlay-shadow: 0 30px 90px #30271c24, 0 5px 16px #30271c0a;
-  --overlay-scrim: #faf9f778;
-  --overlay-backdrop: #1b171257;
-  --menu-ink: #494541;
+ --glass-fill:#ffffff7a;--glass-highlight:#ffffff70;--glass-edge:#ffffffde;
+ --glass-border:#65758b55;--glass-header-fill:#ffffffb8;
+ --glass-active-fill:#fff0e5b3;--glass-control-border:#75808d;--glass-blur:18px;
+ --glass-shadow:0 16px 44px #34445d12,0 3px 12px #34445d0a;
+ --overlay-fill:#fffdfbe0;--overlay-reflection:#ffffff70;
+ --overlay-shadow:0 28px 72px #25334d2b,0 4px 14px #25334d12;
+ --overlay-scrim:#e8ecf16b;--overlay-backdrop:#1e293b70;--menu-ink:#34404e;
 }
 [data-theme='dark'] {
-  --glass-fill: #1a1c22eb;
-  --glass-highlight: #ffffff0d;
-  --glass-edge: #ffffff24;
-  --glass-shadow: 0 16px 48px #00000024, 0 2px 8px #00000014;
-  --overlay-fill: #1c1e24;
-  --overlay-reflection: #ffffff0f;
-  --overlay-shadow: 0 30px 90px #00000070, 0 5px 16px #00000030;
-  --overlay-scrim: #10111470;
-  --overlay-backdrop: #08090bb3;
-  --menu-ink: #d6d7dc;
+ --glass-fill:#18212b73;--glass-highlight:#ecf3ff14;--glass-edge:#f1f7ff2e;
+ --glass-border:#c8d8ef3d;--glass-header-fill:#141c28c2;
+ --glass-active-fill:#3c2a21b3;--glass-control-border:#6b7b92;
+ --glass-shadow:0 18px 48px #0000003d,0 3px 12px #00000024;
+ --overlay-fill:#151d29e0;--overlay-reflection:#ecf3ff14;
+ --overlay-shadow:0 28px 80px #00000070,0 4px 16px #00000036;
+ --overlay-scrim:#0b111970;--overlay-backdrop:#080d17ad;--menu-ink:#dce3ee;
 }
-@media(prefers-color-scheme:dark) {
-  :root:not([data-theme='light']) {
-    --glass-fill:#1a1c22eb;--glass-highlight:#ffffff0d;--glass-edge:#ffffff24;
-    --glass-shadow:0 16px 48px #00000024,0 2px 8px #00000014;
-    --overlay-fill:#1c1e24;--overlay-reflection:#ffffff0f;
-    --overlay-shadow:0 30px 90px #00000070,0 5px 16px #00000030;
-    --overlay-scrim:#10111470;--overlay-backdrop:#08090bb3;--menu-ink:#d6d7dc;
-  }
-}
-.glass-panel {
-  background:linear-gradient(145deg,var(--glass-highlight),transparent 38%),var(--glass-fill);
-  border-color:color-mix(in srgb,var(--border) 82%,var(--glass-edge));
-  box-shadow:inset 0 1px 0 var(--glass-edge),inset 0 -1px 0 color-mix(in srgb,var(--border) 18%,transparent),var(--glass-shadow);
-}
-@supports(backdrop-filter:blur(12px)) {
-  .glass-panel { backdrop-filter:blur(18px) saturate(125%); }
-}
+@media(prefers-color-scheme:dark){:root:not([data-theme='light']){
+ --glass-fill:#18212b73;--glass-highlight:#ecf3ff14;--glass-edge:#f1f7ff2e;
+ --glass-border:#c8d8ef3d;--glass-header-fill:#141c28c2;
+ --glass-active-fill:#3c2a21b3;--glass-control-border:#6b7b92;
+ --glass-shadow:0 18px 48px #0000003d,0 3px 12px #00000024;
+ --overlay-fill:#151d29e0;--overlay-reflection:#ecf3ff14;
+ --overlay-shadow:0 28px 80px #00000070,0 4px 16px #00000036;
+ --overlay-scrim:#0b111970;--overlay-backdrop:#080d17ad;--menu-ink:#dce3ee;
+}}
 /* The floating ambience control sits outside the site-shell stacking context.
    Hide it while a navigation overlay is open so it cannot cover a menu entry. */
 body:has(.nav-disclosure[open],.mobile-menu[open]) .ambience-control { visibility:hidden;pointer-events:none; }
@@ -55,11 +41,7 @@ body:has(.nav-disclosure[open],.mobile-menu[open]) .ambience-control { visibilit
 @media(max-width:900px) {
   .site-header.glass-header:has(.mobile-menu[open])::before { opacity:1;pointer-events:auto; }
 }
-.site-header.glass-header .header-inner {
-  background:linear-gradient(112deg,var(--glass-highlight),transparent 30%,transparent 76%,color-mix(in srgb,var(--accent) 4%,transparent)),var(--glass-fill);
-  box-shadow:inset 0 1px 0 var(--glass-edge),inset 0 -1px 0 color-mix(in srgb,var(--glass-edge) 30%,transparent),var(--glass-shadow);
-  overflow:visible;
-}
+.site-header.glass-header .header-inner { overflow:visible; }
 .glass-header .nav-dropdown,.glass-header .mobile-panel,.screenshot-dialog {
   color:var(--text-primary);
   background:linear-gradient(145deg,var(--overlay-reflection),transparent 34%),var(--overlay-fill);

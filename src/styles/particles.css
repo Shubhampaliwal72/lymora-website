@@ -9,9 +9,8 @@
 @keyframes particle-breathe { from {transform:rotate(-4deg) scale(.96);} to {transform:rotate(4deg) scale(1.025);} }
 .particle-backdrop[data-hidden='true'] .particle-fallback-cloud,.particle-backdrop[data-paused='true'] .particle-fallback-cloud,.particle-backdrop[data-motion='static'] .particle-fallback-cloud { animation-play-state:paused; }
 .particle-backdrop .shared-particle-canvas { position:absolute!important;inset:0;width:100%!important;height:100%!important;pointer-events:none; }
+.particle-backdrop[data-renderer='webgl'] .particle-reading-veil { display:none; }
 .particle-reading-veil { position:absolute;inset:0;background:radial-gradient(ellipse at center,color-mix(in srgb,var(--canvas) 20%,transparent),transparent 62%);pointer-events:none; }
-/* The glass header stays nearly opaque, so moving points never weaken menu contrast. */
-.site-header.glass-header .header-inner { background:linear-gradient(115deg,var(--gloss-reflection),transparent 42%),color-mix(in srgb,var(--surface) 97%,transparent); }
 @media(max-width:700px) { .particle-fallback { width:125vw;height:125vw;opacity:calc(var(--particle-intensity,.7) * .8); } }
 /* Follow the resolved site choice: explicit Play must work even if the OS requests reduce. */
 html[data-motion='reduced'] .particle-fallback-cloud { animation:none; }
