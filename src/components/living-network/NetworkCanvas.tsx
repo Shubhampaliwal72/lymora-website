@@ -1,7 +1,8 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useRef } from "react";
-import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
+import { useEffect, useMemo, useRef } from "react";
+import { useParticleRenderer } from "@/components/animations/ParticleRenderContext";
+import { useFrame, useLoader, useThree } from "@react-three/fiber";
 import { BufferGeometry, CubicBezierCurve3, Float32BufferAttribute, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, SRGBColorSpace, TextureLoader, TubeGeometry, Vector3 } from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { devices, connections, routeBetween, arrivalPulse, sceneMaterials, smooth, storyAt, type Endpoint, type NetworkCanvasProps } from "./scene";
@@ -52,7 +53,7 @@ function Connection({pair, ...props}: NetworkCanvasProps & {pair: [Endpoint,Endp
   useFrame(()=>{if(material.current)material.current.opacity=((props.source===a&&props.endpoint===b)||(props.source===b&&props.endpoint===a)) ? .72 : .23;});
   return <mesh geometry={geometry}><meshBasicMaterial ref={material} color={sceneMaterials[props.theme].accent} transparent opacity={.23} toneMapped={false} depthWrite={false}/></mesh>;
 }
-function World(props: NetworkCanvasProps) {
+export function HeroWorld(props: NetworkCanvasProps) {
   const { theme, endpoint, source, transfer, clock, pointer, invalidateRef, onReady, onUnavailable } = props;
   const { invalidate, gl } = useThree();
   const materials = sceneMaterials[theme];
@@ -101,8 +102,8 @@ function World(props: NetworkCanvasProps) {
     </group>
   </>;
 }
-export default function NetworkCanvas(props: NetworkCanvasProps) {
-  return <Canvas className="network-canvas" frameloop="demand" dpr={[1, 1.5]} camera={{position: [.35, .35, 10.8], fov: 35.5}} gl={{alpha: true, antialias: true, powerPreference: "low-power"}} fallback={null} aria-hidden="true">
-    <Suspense fallback={null}><World {...props} /></Suspense>
-  </Canvas>;
+export default function NetworkCanvas(props:NetworkCanvasProps){
+ const renderer=useParticleRenderer(),key=useRef(Symbol("hero"));
+ const {theme,clock,pointer,invalidateRef,source,endpoint,transfer,onSelect,onReady,onUnavailable}=props;
+ useEffect(()=>{if(!renderer?.enabled)return;return renderer.register(key.current,{theme,clock,pointer,invalidateRef,source,endpoint,transfer,onSelect,onReady,onUnavailable});},[renderer,theme,clock,pointer,invalidateRef,source,endpoint,transfer,onSelect,onReady,onUnavailable]);return null;
 }

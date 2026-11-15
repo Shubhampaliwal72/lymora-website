@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { sceneMotionSnapshot, subscribeSceneMotion } from "@/lib/scene-motion";
 
 type NetworkHints = EventTarget & { saveData?: boolean; effectiveType?: string };
 type NavigatorHints = Navigator & { connection?: NetworkHints; deviceMemory?: number };
@@ -43,9 +44,8 @@ function subscribeVisibility(callback: () => void) {
 export function useScenePreferences() {
   return {
     capable: useSyncExternalStore(subscribePreferences, isCapable, () => false),
-    // Owner-approved brand motion stays enabled, including after hydration/refresh.
-    // Navigation-only reduced-motion rules live in navigation.css; do not gate scenes here.
-    motion: true,
+    // Device preference is the default. An explicit, saved site choice can override it.
+    motion: useSyncExternalStore(subscribeSceneMotion, sceneMotionSnapshot, () => false),
     theme: useSyncExternalStore(subscribeTheme, themeSnapshot, () => "light" as const),
     visible: useSyncExternalStore(subscribeVisibility, () => !document.hidden, () => true),
   };

@@ -5,6 +5,7 @@ import { Component, useCallback, useEffect, useRef, useState, type ReactNode } f
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { MotionConfig, motion } from "motion/react";
+import { useParticleRenderer } from "@/components/animations/ParticleRenderContext";
 import { Icon } from "@/components/site/Icons";
 import { NetworkFallback } from "./NetworkFallback";
 import { useScenePreferences } from "./useScenePreferences";
@@ -36,10 +37,11 @@ export function LivingNetwork() {
   const [transfer, setTransfer] = useState<Transfer>("message");
   const [phase, setPhase] = useState(0);
   const preferences = useScenePreferences();
+  const renderer = useParticleRenderer();
   const reduce = !preferences.motion;
   const onReady = useCallback(() => setReady(preferences.theme), [preferences.theme]);
   const onUnavailable = useCallback(() => { setUnavailable(true); setReady(null); }, []);
-  const canvas = preferences.motion && preferences.capable && load && !unavailable;
+  const canvas = preferences.motion && preferences.capable && load && !unavailable && Boolean(renderer?.enabled);
   const active = playing && preferences.visible && intersecting && preferences.motion;
   const destination = endpoints.find(peer => peer.id === endpoint)!.name;
   const select = useCallback((peer: Endpoint) => {setPair([peer === "you" ? "studio" : "you", peer]); setPlaying(true); setRun(value => value + 1);}, []);
@@ -70,7 +72,7 @@ export function LivingNetwork() {
   };
   const status = ["Finding nearby computers", "Connecting directly to " + destination, (transfer === "file" ? "File" : "Message") + " on its way to " + destination, (transfer === "file" ? "File" : "Message") + " arrives at " + destination, (transfer === "file" ? "File" : "Message") + " received by " + destination][phase];
   return <MotionConfig reducedMotion="never"><figure ref={root} className="living-network" data-mode={canvas && ready === preferences.theme ? "3d" : "illustrated"} data-endpoint={endpoint} data-source={source} data-automatic="true" data-topology="peer-mesh" data-transfer={transfer} data-phase={phase} onPointerMove={move} onPointerLeave={() => {pointer.current.x = 0; pointer.current.y = 0; invalidate.current?.();}} aria-labelledby="network-caption">
-    <div className="network-world">
+    <div className="network-world" onClick={event=>{if((event.target as HTMLElement).closest("button"))return;const r=event.currentTarget.getBoundingClientRect(),x=(event.clientX-r.left)/r.width*1000,y=(event.clientY-r.top)/r.height*780;const peer=illustratedDevices.find(device=>x>=device.x-device.width/2&&x<=device.x+device.width/2&&y>=device.y-device.height/2&&y<=device.y+device.height/2);if(peer)select(peer.id);}}>
       <NetworkFallback clock={clock} invalidateRef={fallbackDraw} source={source} endpoint={endpoint} transfer={transfer} />
       {canvas && <SceneBoundary onUnavailable={onUnavailable}><NetworkCanvas theme={preferences.theme} clock={clock} pointer={pointer} invalidateRef={invalidate} source={source} endpoint={endpoint} transfer={transfer} onSelect={select} onReady={onReady} onUnavailable={onUnavailable} /></SceneBoundary>}
       {illustratedDevices.map(peer=><button key={peer.id} type="button" className="network-device-label" style={{left:peer.label[0]/10+"%",top:"clamp(22px, "+peer.label[1]/7.8+"%, calc(100% - 22px))"}} aria-label={"Send preview to "+endpoints.find(item=>item.id===peer.id)!.name} aria-pressed={endpoint===peer.id} onClick={()=>select(peer.id)}>{endpoints.find(item=>item.id===peer.id)!.name}<span aria-hidden="true"/></button>)}

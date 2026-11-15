@@ -62,17 +62,10 @@ export async function verifyPremiumUi({cdp,evaluate,load,viewport,media,waitFor,
     assert.deepEqual(await evaluate('[...document.querySelectorAll("main .chapter-number")].map(e=>e.textContent)'),['01','02','03','04','05'],'Five continuous homepage chapters');
     assert.equal(await evaluate('document.querySelectorAll(".chapter-index").length'),5,'All five chapters use the restored editorial number layout');
     assert(await evaluate('parseFloat(getComputedStyle(document.querySelector(".chapter-number")).fontSize)>=150'),'Desktop chapter numbers retain the large original style');
-    assert.equal(await evaluate('document.querySelectorAll(".ambient-routes path").length'),6,'Only perimeter ring paths are drawn');
-    assert.equal(await evaluate('document.querySelector(".network-wallpaper").dataset.topology'),'perimeter-ring','Background is structured around the reading area');
+    assert.equal(await evaluate('document.querySelectorAll(".particle-backdrop").length'),1,'One shared particle background');
     assert(await evaluate('[...document.querySelectorAll(".chapter-navigation a")].every(a=>!!document.querySelector(a.getAttribute("href")))'),'Every chapter navigates to a real section');
     assert.equal(await evaluate('document.querySelectorAll("#experience [role=tab]").length'),4,'Four real product views');
     await verifyDownloadNavigation(evaluate, "#download");
-    const before=await evaluate('JSON.stringify([...document.querySelectorAll(".ambient-streaks path")].map(p=>p.getAttribute("stroke-dashoffset")))');
-    await waitFor('JSON.stringify([...document.querySelectorAll(".ambient-streaks path")].map(p=>p.getAttribute("stroke-dashoffset")))!=='+JSON.stringify(before),'Packet paths animate independently of scroll');
-    await evaluate('document.querySelector(".ambience-control").click()');await pause(200);
-    const held=await evaluate('JSON.stringify([...document.querySelectorAll(".ambient-streaks path")].map(p=>p.getAttribute("stroke-dashoffset")))');
-    await pause(250);assert.equal(await evaluate('JSON.stringify([...document.querySelectorAll(".ambient-streaks path")].map(p=>p.getAttribute("stroke-dashoffset")))'),held,'Background can pause');
-    await evaluate('document.querySelector(".ambience-control").click()');
     const nav=await evaluate('(()=>{const b=document.querySelector(".desktop-nav>a").getBoundingClientRect();return{x:b.x+b.width/2,y:b.y+b.height/2}})()');
     const background=await evaluate('getComputedStyle(document.querySelector(".desktop-nav>a")).backgroundColor');
     await cdp('Input.dispatchMouseEvent',{type:'mouseMoved',...nav});await pause(250);
@@ -108,7 +101,7 @@ export async function verifyPremiumUi({cdp,evaluate,load,viewport,media,waitFor,
     const full=await cdp('Page.captureScreenshot',{format:'png',captureBeyondViewport:true,clip:{x:0,y:0,width:metrics.cssContentSize.width,height:metrics.cssContentSize.height,scale:1}});
     await fs.writeFile(path.join(output,'premium-home-'+theme+'-full.png'),Buffer.from(full.data,'base64'));
   }
-  checks.push('five linked chapters; clear availability; live packets and pause; text-only hover; smooth headings and selective paragraph line reveals; anchors clear header; full dark/light captures');
+  checks.push('five linked chapters; clear availability; shared particle backdrop; text-only hover; smooth headings and selective paragraph line reveals; anchors clear header; full dark/light captures');
   for(const width of [320,375,768,901,1024,1440,1920,3840]) {
     await viewport(width,1000);await media(width%2?'light':'dark');await load();
     assert(await evaluate('document.documentElement.scrollWidth<=innerWidth'),'No horizontal page overflow at '+width);
@@ -116,7 +109,7 @@ export async function verifyPremiumUi({cdp,evaluate,load,viewport,media,waitFor,
     if(width===320||width===375){await verifyConnection('mobile-'+width);await statementAt(0);await statementAt(1);await statementAt(2);}
     assert(await evaluate('(()=>{const b=document.querySelector(".network-world").getBoundingClientRect();return [...document.querySelectorAll(".network-device-label")].every(e=>{const r=e.getBoundingClientRect();return r.left>=b.left-.5&&r.right<=b.right+.5&&r.top>=b.top-.5&&r.bottom<=b.bottom+.5})})()'),'PC labels remain inside scene at '+width);
     if(width>1100)assert(await evaluate('(()=>{const n=document.querySelector(".desktop-nav").getBoundingClientRect(),b=document.querySelector(".brand-lockup").getBoundingClientRect(),a=document.querySelector(".header-actions").getBoundingClientRect();return b.right+4<=n.left&&n.right+4<=a.left})()'),'Header navigation does not collide at '+width);
-    else assert.equal(await evaluate('!!document.querySelector("canvas")'),false,'Small screens avoid WebGL');
+    else if(width<=900)assert.equal(await evaluate('!!document.querySelector("canvas")'),false,'Small screens avoid WebGL');
     if(width===375){
       await evaluate('document.querySelector(".mobile-menu summary").click()');
       assert(await evaluate('document.querySelector(".mobile-menu").open'),'Mobile menu opens');
@@ -127,22 +120,16 @@ export async function verifyPremiumUi({cdp,evaluate,load,viewport,media,waitFor,
   }
   checks.push('320-3840px layout containment; vertical slider holds and complete text; header collision checks; lightweight mobile scene; keyboard mobile menu');
   await viewport(1440,1000);await media('dark',true);await load();
-  assert.equal(await evaluate('document.documentElement.dataset.motion'),'full','Brand motion remains enabled independently of OS preference');
-  assert.equal(await evaluate('document.querySelector(".network-wallpaper").dataset.animated'),'true','Background is live with OS reduced motion');
-  assert(await evaluate('document.querySelectorAll(".reveal-word").length>0'),'Marketing word reveals stay enabled');
-  const reducedBefore=await evaluate('JSON.stringify([...document.querySelectorAll(".ambient-streaks path")].map(p=>p.getAttribute("stroke-dashoffset")))');
-  await waitFor('JSON.stringify([...document.querySelectorAll(".ambient-streaks path")].map(p=>p.getAttribute("stroke-dashoffset")))!=='+JSON.stringify(reducedBefore),'Brand packets keep moving with OS reduced motion');
-  assert.equal(await evaluate('getComputedStyle(document.querySelector(".route-arrival")).animationName'),'none','Reduced motion disables route arrival animation');
-  for(let index=0;index<3;index++)await statementAt(index);
-  await verifyConnection('os-reduced');
-  assert.equal(await evaluate('getComputedStyle(document.querySelector(".statement-window")).overflow'),'hidden','Slider retains its single-phrase mask');
+  assert.equal(await evaluate('document.documentElement.dataset.motion'),'reduced','Reduced motion stays static');
+  assert.equal(await evaluate('!!document.querySelector("canvas")'),false,'Reduced motion skips GPU');
+  assert.equal(await evaluate('document.querySelector(".particle-backdrop").dataset.motion'),'static');
+  assert.equal(await evaluate('document.querySelectorAll(".reveal-word").length'),0,'Reduced motion keeps copy immediately readable');
+  assert.equal(await evaluate('getComputedStyle(document.querySelector(".statement-window")).overflow'),'visible','All three phrases stay readable');
   await capture('reduced-motion');
-  await media('dark');
-  await viewport(375,1000);await load();
-  assert.equal(await evaluate('!!document.querySelector("canvas")'),false,'Mobile still skips WebGL');
-  const mobileBefore=await evaluate('JSON.stringify([...document.querySelectorAll(".ambient-streaks path")].map(p=>p.getAttribute("stroke-dashoffset")))');
-  await waitFor('JSON.stringify([...document.querySelectorAll(".ambient-streaks path")].map(p=>p.getAttribute("stroke-dashoffset")))!=='+JSON.stringify(mobileBefore),'Lightweight background keeps moving on mobile');
-  checks.push('continuous brand motion under both OS preferences; reduced navigation effects; live mobile SVG background without WebGL when motion is enabled');
+  await media('dark');await viewport(375,1000);await load();
+  assert.equal(await evaluate('!!document.querySelector("canvas")'),false,'Mobile skips WebGL');
+  assert.equal(await evaluate('getComputedStyle(document.querySelector(".particle-fallback-cloud")).animationName'),'particle-breathe','Mobile uses a lightweight breathing SVG');
+  checks.push('static reduced-motion copy and scenes; lightweight breathing mobile SVG without WebGL');
   const routes=['/products/','/products/lan-messenger/','/products/lan-messenger/docs/','/privacy/','/downloads/','/products/lan-messenger/releases/','/about/'];
   for(const width of [375,1440]) {
     await viewport(width,1000);await media(width===375?'light':'dark');
@@ -153,7 +140,7 @@ export async function verifyPremiumUi({cdp,evaluate,load,viewport,media,waitFor,
       assert.equal(await evaluate('document.querySelectorAll(".breadcrumb [aria-current=page]").length'),1,'Menu page has a clear current breadcrumb');
       if(route.includes('/docs/')||route==='/privacy/') {
         assert.equal(await evaluate('document.querySelectorAll(".reveal-word").length'),0,'Reading pages stay still');
-        assert(Number(await evaluate('getComputedStyle(document.querySelector(".network-wallpaper")).opacity'))<=.2,'Reading background is quiet');
+        assert(Number(await evaluate('getComputedStyle(document.querySelector(".particle-backdrop")).getPropertyValue("--particle-intensity")'))<=.35,'Reading background is quiet');
       }
       if(route==='/products/lan-messenger/')assert.equal(await evaluate('document.querySelectorAll("main .screenshot-trigger").length'),1,'Product page has one reusable screenshot showcase');
       if(route==='/downloads/')await verifyWindowsDownload(evaluate);

@@ -1,0 +1,26 @@
+/* Primary atmosphere: one centered particle scene, below all existing content. */
+:root { --particle-cool:#5269bd;--particle-warm-haze:color-mix(in srgb,var(--accent) 6%,transparent);--particle-cool-haze:#5269bd08; }
+[data-theme='dark'] { --particle-cool:#7295ff;--particle-warm-haze:color-mix(in srgb,var(--accent) 9%,transparent);--particle-cool-haze:#7295ff0c; }
+@media(prefers-color-scheme:dark){:root:not([data-theme='light']){--particle-cool:#7295ff;--particle-warm-haze:color-mix(in srgb,var(--accent) 9%,transparent);--particle-cool-haze:#7295ff0c;}}
+.particle-backdrop { position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;contain:strict;background:radial-gradient(ellipse at 65% 15%,var(--particle-warm-haze),transparent 60%),radial-gradient(ellipse at 30% 85%,var(--particle-cool-haze),transparent 60%); }
+.particle-fallback { position:absolute;width:min(109.7222vw,106.25vh);height:min(109.7222vw,106.25vh);left:50%;top:50%;translate:-50% -50%;opacity:var(--particle-intensity,.7);transition:opacity 220ms ease; }
+.particle-backdrop[data-renderer='webgl'] .particle-fallback { opacity:0; }
+.particle-fallback-cloud { transform-origin:500px 500px;animation:particle-breathe 13s ease-in-out infinite alternate; }
+@keyframes particle-breathe { from {transform:rotate(-4deg) scale(.96);} to {transform:rotate(4deg) scale(1.025);} }
+.particle-backdrop[data-hidden='true'] .particle-fallback-cloud,.particle-backdrop[data-paused='true'] .particle-fallback-cloud,.particle-backdrop[data-motion='static'] .particle-fallback-cloud { animation-play-state:paused; }
+.particle-backdrop .shared-particle-canvas { position:absolute!important;inset:0;width:100%!important;height:100%!important;pointer-events:none; }
+.particle-reading-veil { position:absolute;inset:0;background:radial-gradient(ellipse at center,color-mix(in srgb,var(--canvas) 20%,transparent),transparent 62%);pointer-events:none; }
+/* The glass header stays nearly opaque, so moving points never weaken menu contrast. */
+.site-header.glass-header .header-inner { background:linear-gradient(115deg,var(--gloss-reflection),transparent 42%),color-mix(in srgb,var(--surface) 97%,transparent); }
+@media(max-width:700px) { .particle-fallback { width:125vw;height:125vw;opacity:calc(var(--particle-intensity,.7) * .8); } }
+/* Follow the resolved site choice: explicit Play must work even if the OS requests reduce. */
+html[data-motion='reduced'] .particle-fallback-cloud { animation:none; }
+html[data-motion='reduced'] .particle-fallback { transition:none; }
+html[data-motion='reduced'] .glass-header .brand-symbol[data-live='true'],html[data-motion='reduced'] .glass-header .brand-symbol[data-live='true']::after { animation:none;transform:none; }
+html[data-motion='reduced'] .scroll-statement .statement-window { height:auto;overflow:visible; }
+html[data-motion='reduced'] .scroll-statement .statement-track { transform:none!important; }
+html[data-motion='reduced'] .scroll-statement .statement-progress { display:none; }
+@media(forced-colors:active),print { .particle-backdrop { display:none; } }
+
+/* Next development tools occupy the same corner; keep the actual scene control usable. */
+body:has(nextjs-portal) .ambience-control { left:68px; }

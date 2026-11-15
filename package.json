@@ -13,7 +13,8 @@
     "verify:export": "node scripts/verify-static-links.mjs && node scripts/verify-cloudflare-export.mjs",
     "verify:launch": "node scripts/verify-network-motion.mjs --launch-only",
     "verify:navigation": "node scripts/verify-navigation-state.mjs && node scripts/verify-network-motion.mjs --navigation-only",
-    "postinstall": "node scripts/r3f-timer-compat.mjs"
+    "postinstall": "node scripts/r3f-timer-compat.mjs",
+    "verify:particles": "node scripts/verify-network-motion.mjs --particles-only"
   },
   "dependencies": {
     "@gsap/react": "2.1.2",
