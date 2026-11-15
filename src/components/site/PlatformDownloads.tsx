@@ -4,7 +4,7 @@ import { Icon } from "./Icons";
 
 export function PlatformDownloads() {
   const release = publicLinks.release;
-  return <section className="platform-downloads download-release windows-download glass-panel" data-platform="windows" aria-labelledby="windows-download-title">
+  return <section id="windows" className="platform-downloads download-release windows-download glass-panel" data-platform="windows" aria-labelledby="windows-download-title">
     <div className="download-overview">
       <div className="platform-download-heading"><span className="platform-mark"><Icon name="windows"/></span><span>Windows</span><span className="status-pill">{release ? "Available now" : "Not available yet"}</span></div>
       <h2 id="windows-download-title">Your next local<br/>connection.</h2>

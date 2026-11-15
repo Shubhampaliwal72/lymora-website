@@ -1,6 +1,6 @@
 /** Owner-approved roadmap information; no download controls or release promises. */
 export function UpcomingPlatforms() {
-  return <section className="upcoming-platforms" aria-labelledby="upcoming-platforms-title">
+  return <section id="platforms" className="upcoming-platforms" aria-labelledby="upcoming-platforms-title">
     <div className="upcoming-platforms-heading"><div><p className="eyebrow">A wider circle</p><h2 id="upcoming-platforms-title">More places to connect.</h2></div><p>Available on Windows today.<br/>macOS and Linux are coming soon.</p></div>
     <div className="upcoming-platforms-grid">
       <article className="upcoming-platform glass-panel" data-upcoming-platform="macos" aria-labelledby="macos-platform-title">

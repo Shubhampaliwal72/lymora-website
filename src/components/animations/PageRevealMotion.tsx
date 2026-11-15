@@ -75,6 +75,15 @@ export function PageRevealMotion({children}: {children: ReactNode}) {
         });
         splits.push(split);
       });
+      // Secondary pages share a light reading rhythm, without animating long paragraphs.
+      select(".editorial-page .feature-definitions > div, .editorial-page .setup-timeline > li, .privacy-sections > section, .download-release-columns > div, .catalog-product, .editorial-page .editorial-note").forEach((element: Element) => {
+        gsap.fromTo(element, {y: capable ? 16 : 7, opacity: .78}, {y: 0, opacity: 1, ease: "power2.out",
+          scrollTrigger: {trigger: element, start: "top 96%", end: "top 76%", scrub: .35, invalidateOnRefresh: true}});
+      });
+      select(".setup-timeline > li, .guide-steps > li").forEach((element: Element) => {
+        gsap.fromTo(element, {"--flow-progress": "0%"}, {"--flow-progress": "100%", ease: "none",
+          scrollTrigger: {trigger: element, start: "top 78%", end: "bottom 52%", scrub: .35, invalidateOnRefresh: true}});
+      });
       select(".tonal-wordmark").forEach((element: Element) => {
         gsap.fromTo(element, {"--wordmark-sweep": "0%", rotationX: capable ? 9 : 0, transformPerspective: 1200},
           {"--wordmark-sweep": "100%", rotationX: 0, ease: "none", scrollTrigger: {trigger: element, start: "top 100%", end: "bottom 90%", scrub: .65, invalidateOnRefresh: true}});

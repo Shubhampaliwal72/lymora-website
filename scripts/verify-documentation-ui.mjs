@@ -1,9 +1,11 @@
 /** Documentation-only browser checks; retain native reading and disclosure behavior. */
 import assert from 'node:assert/strict';
+import { verifySectionMenus } from './verify-section-menus.mjs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
 export async function verifyDocumentationUi({cdp,evaluate,viewport,media,waitFor,pause,url,checks,output}) {
+  await verifySectionMenus({cdp,evaluate,viewport,media,waitFor,pause,url,checks,output});
   const route='/products/lan-messenger/docs/';
   const open=async()=>{await cdp('Page.navigate',{url:url+route});await waitFor('location.pathname==='+JSON.stringify(route)+'&&document.readyState==="complete"&&!!document.querySelector(".docs-faq-search")','Hydrated documentation');await evaluate('document.fonts.ready');await evaluate('window.scrollTo({top:0,behavior:"instant"})');};
   const key=async(name,code)=>{await cdp('Input.dispatchKeyEvent',{type:'keyDown',key:name,code:name,windowsVirtualKeyCode:code,...(name==='Enter'?{text:'\r',unmodifiedText:'\r'}:{})});await cdp('Input.dispatchKeyEvent',{type:'keyUp',key:name,code:name,windowsVirtualKeyCode:code});};
@@ -18,7 +20,7 @@ export async function verifyDocumentationUi({cdp,evaluate,viewport,media,waitFor
     assert.equal(await evaluate('document.querySelectorAll(".docs-question").length'),7,'All original questions preserved');
     assert.equal(await evaluate('document.querySelectorAll(".documentation-content p .reveal-word,.docs-question .reveal-word").length'),0,'Reading copy and interactive FAQ retain unsplit markup');
     await capture('guide-'+width+'-'+theme);
-    await evaluate('[...document.querySelectorAll(".docs-nav a")].find(a=>a.hash==="#files").click()');
+    await evaluate('[...document.querySelectorAll(".docs-nav a")].find(a=>a.hash==="#files").focus()');await key('Enter',13);
     await waitFor('document.querySelector(".docs-nav a[aria-current=location]")?.hash==="#files"','Section navigation still tracks files');
     await pause(800);
     assert(await evaluate('(()=>{const r=document.querySelector("#files").getBoundingClientRect(),h=document.querySelector(".header-inner").getBoundingClientRect();return r.top>=h.bottom&&r.top<innerHeight*.5})()'),'Anchor clears header');

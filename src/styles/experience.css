@@ -121,3 +121,67 @@ html[data-motion] .site-shell .site-header.glass-header .header-actions :is(.but
  .header-click-ripple { display:none; }
  .site-shell .product-tabs button[aria-selected='true'] { border-color:Highlight;color:Highlight; }
 }
+/* Shared secondary-page reading rhythm and measured, native-anchor wayfinding. */
+.section-nav-indicator { position:absolute;inset:0 auto auto 0;pointer-events:none;opacity:0;border:1px solid color-mix(in srgb,var(--accent) 30%,var(--glass-border));border-radius:12px;background:linear-gradient(130deg,var(--glass-highlight),transparent 70%),var(--accent-subtle);box-shadow:inset 2px 0 var(--accent);transition:transform 280ms cubic-bezier(.22,1,.36,1),width 280ms ease,height 280ms ease; }
+.section-navigation[data-nav-ready]>.section-nav-indicator { opacity:1; }
+.section-navigation>a { position:relative;z-index:1; }
+.site-shell .section-navigation.docs-nav { position:relative;top:auto; }
+.site-shell .section-navigation[data-nav-ready] a[aria-current],.site-shell .section-navigation[data-nav-ready] a[aria-current]:hover { background:transparent;box-shadow:none; }
+.site-shell .section-navigation.product-subnav { gap:8px;padding:8px; }
+.section-navigation.product-subnav a { padding:9px 17px;min-height:42px; }
+.section-navigation.product-subnav .section-nav-indicator { border-radius:999px;box-shadow:inset 0 1px var(--glass-edge); }
+.section-navigation.product-subnav a::after { display:none; }
+.site-shell .editorial-page .page-intro { position:relative;max-width:1100px; }
+.site-shell .editorial-page .page-intro h1 { text-wrap:balance; }
+.site-shell .editorial-page .page-lead { max-width:58ch;line-height:1.85; }
+.site-shell .editorial-page :is(.editorial-split,.principles,.privacy-sections) h2 { font-weight:500;text-wrap:balance; }
+.site-shell .editorial-page :is(.feature-definitions,.setup-timeline) { counter-reset:reading-step; }
+.site-shell .editorial-page .feature-definitions>div { position:relative;padding:28px 0 28px 52px;counter-increment:reading-step;border-top:1px solid var(--glass-border); }
+.site-shell .editorial-page .feature-definitions>div::before { content:counter(reading-step,decimal-leading-zero);position:absolute;top:32px;left:0;font-size:12px;color:var(--accent);font-variant-numeric:tabular-nums; }
+.site-shell .editorial-page .feature-definitions dt { font-size:clamp(21px,2vw,28px);font-weight:500;letter-spacing:-.035em;margin-bottom:12px; }
+.site-shell .editorial-page .feature-definitions dd { max-width:59ch;line-height:1.85; }
+.site-shell .setup-timeline li { position:relative;gap:24px;border:0;margin:0;padding:0 0 34px; }
+.site-shell .setup-timeline li>span { position:relative;z-index:1;display:grid;place-items:center;flex:0 0 38px;height:38px;padding:0;border-radius:50%;background:var(--canvas);border:1px solid var(--glass-border);color:var(--accent);font-size:12px; }
+.site-shell .setup-timeline li:not(:last-child)::after { content:"";position:absolute;top:44px;left:18px;bottom:6px;width:1px;background:linear-gradient(to bottom,var(--accent) var(--flow-progress,100%),var(--glass-border) 0); }
+.site-shell .setup-timeline h3 { font-size:clamp(21px,2vw,27px);line-height:1.35;letter-spacing:-.035em; }
+.site-shell .setup-timeline p { font-size:var(--reading-size);line-height:1.85;max-width:58ch; }
+.site-shell .privacy-sections { gap:48px 64px; }
+.site-shell .privacy-sections .prose { border-top-color:var(--glass-border);position:relative; }
+.site-shell .privacy-sections .prose>.eyebrow { display:inline-flex;align-items:center;gap:10px;line-height:1.7;font-size:11px;letter-spacing:.08em; }
+.site-shell .privacy-sections .prose>.eyebrow::before { content:"";height:5px;width:5px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 5px var(--scene-glow); }
+.site-shell .privacy-sections .prose h2 { max-width:23ch;margin:20px 0;font-weight:500;font-size:clamp(25px,2.6vw,35px); }
+.site-shell .privacy-sections p { line-height:1.9;max-width:61ch; }
+.site-shell .about-manifesto .manifesto-mark { position:relative;border-radius:50%;background:radial-gradient(circle,var(--scene-glow),transparent 64%); }
+.site-shell .about-manifesto .large-copy { font-size:clamp(29px,3.2vw,44px);line-height:1.35;font-weight:500; }
+.site-shell .catalog-product { padding:clamp(24px,4vw,52px);border-radius:32px;gap:40px; }
+.site-shell .catalog-product>div>h2 { font-weight:500; }
+.site-shell .editorial-note { position:relative;border-radius:0;padding:24px 0 24px 26px;border:0;border-left:2px solid var(--accent);background:linear-gradient(90deg,color-mix(in srgb,var(--glass-fill) 50%,transparent),transparent); }
+.site-shell .editorial-note p { max-width:78ch;line-height:1.85; }
+.site-shell .messenger-docs .guide-steps>li:not(:last-child)::after { background:linear-gradient(to bottom,var(--accent) var(--flow-progress,100%),var(--guide-line) 0); }
+.site-shell .messenger-docs .guide-network { padding:30px 24px; }
+.site-shell .messenger-docs .guide-network-wire { height:2px;background:linear-gradient(90deg,var(--glass-border),var(--accent),var(--glass-border)); }
+@media(max-width:700px) {
+ .section-navigation.product-subnav { justify-content:flex-start; }
+ .section-navigation.product-subnav a { padding:8px 12px;font-size:12px; }
+ .site-shell .editorial-page .feature-definitions>div { padding-left:38px; }
+ .site-shell .privacy-sections { gap:36px; }
+ .site-shell .setup-timeline li { gap:16px; }
+ .site-shell .messenger-docs .guide-network { padding:22px 16px; }
+}
+@media(prefers-reduced-motion:reduce) { .section-nav-indicator { transition:none; } }
+@media(prefers-reduced-transparency:reduce) { .section-nav-indicator { background:var(--accent-subtle); } }
+@media(forced-colors:active) { .section-nav-indicator { background:Canvas;border-color:Highlight;box-shadow:none; }.section-navigation a[aria-current] { color:Highlight; } }
+@media print { .section-nav-indicator { display:none; } }
+
+.availability-page .downloads-nav { margin:0 auto 38px; }
+/* Keep anchor headings below the floating page menu as well as the header. */
+.availability-page>section[id] { scroll-margin-top:72px; }
+@media(max-width:1100px) { .availability-page>section[id] { scroll-margin-top:16px; } }
+
+.site-shell .windows-release-facts>div { padding-bottom:14px;border-bottom:1px solid var(--glass-border); }
+.site-shell .windows-release-facts dt { font-size:10px;text-transform:uppercase;letter-spacing:.1em; }
+.site-shell .windows-release-facts dd { font-size:15px;line-height:1.7; }
+.site-shell .download-integrity { border-radius:20px; }
+.site-shell .download-integrity code { font-size:12px; }
+.site-shell :is(.windows-download,.download-release-notes,.support-section) h2 { font-weight:500;line-height:1.2; }
+.download-release-columns li::marker { color:var(--accent); }
