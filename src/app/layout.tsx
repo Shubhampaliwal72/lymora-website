@@ -8,6 +8,7 @@ import "../styles/downloads.css";
 import "../styles/header.css";
 import "../styles/glossy-theme.css";
 import "../styles/particles.css";
+import "../styles/experience.css";
 import { publicLaunch, site } from "@/lib/site";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";

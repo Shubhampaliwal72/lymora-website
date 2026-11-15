@@ -135,7 +135,7 @@ async function verifyGlassMaterials({cdp,evaluate,load,viewport,media,waitFor,pa
  }
  await viewport(375,900);await media('light');await load();
  await evaluate("document.querySelector('.usecase-card').scrollIntoView({block:'center',behavior:'instant'})");await pause(1100);
- assert(await evaluate("getComputedStyle(document.querySelector('.usecase-card')).backdropFilter.includes('blur')"),'Mobile cards keep lightweight frost');
+ assert(await evaluate("getComputedStyle(document.querySelector('.connection-bubble')).backdropFilter.includes('blur')"),'Remaining mobile story panels keep lightweight frost');
  await capture('cards-mobile-light');
  checks.push({label:'shared glass materials across all eight routes and both themes; light/dark base text contrast; header frost isolation; no preview tint; mobile frost',surfaces:summaries});
 }

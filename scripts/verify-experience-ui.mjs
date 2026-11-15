@@ -1,0 +1,66 @@
+/** Visible behavior checks for the shared cinematic finish, against the real export. */
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+export async function verifyExperienceUi({cdp,evaluate,load,viewport,media,waitFor,pause,url,checks,output}) {
+ const shot=async name=>{const image=await cdp('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});await fs.writeFile(path.join(output,'experience-'+name+'.png'),Buffer.from(image.data,'base64'));};
+ await viewport(1440,1000);await media('dark');await load();
+ await evaluate("localStorage.setItem('lymora-website-motion','full');localStorage.setItem('lymora-website-theme','dark')");await load();
+ await waitFor("document.querySelector('.particle-backdrop').dataset.renderer==='webgl'",'Live shared renderer starts');
+ await waitFor("document.querySelector('.header-inner').dataset.edgeVisible==='true'",'Header edge is observed');
+ const angle=()=>evaluate("parseFloat(getComputedStyle(document.querySelector('.header-inner'),'::after').getPropertyValue('--edge-angle'))");
+ const before=await angle();await pause(400);const after=await angle();assert(after<before,'Header beam travels anticlockwise');
+ assert.equal(await evaluate("getComputedStyle(document.querySelector('.header-inner'),'::after').pointerEvents"),'none','Border beam cannot intercept links');
+ const button=await evaluate("(()=>{const r=document.querySelector('.theme-toggle').getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2}})()");
+ await cdp('Input.dispatchMouseEvent',{type:'mouseMoved',...button});await pause(450);
+ assert.notEqual(await evaluate("getComputedStyle(document.querySelector('.theme-toggle')).rotate"),'none','Theme button has dimensional hover feedback');
+ await evaluate("document.querySelector('.theme-toggle').click()");await pause(400);assert.equal(await evaluate('document.documentElement.dataset.theme'),'light','3D theme control still works');
+ await shot('hero-light');await evaluate("document.querySelector('.theme-toggle').click()");await pause(400);await shot('hero-dark');
+ const heroX=await evaluate("parseFloat(document.querySelector('.particle-backdrop').style.getPropertyValue('--particle-x'))");
+ assert(heroX>55,'Hero atmosphere is composed toward the product scene');
+ assert(await evaluate("document.querySelector('.ambience-control').hasAttribute('data-edge-surface')"),'Floating motion control uses the same material');
+ checks.push('anticlockwise masked header/control beams; pointer-transparent borders; 3D theme control and both palettes');
+ const headingTop=await evaluate("document.querySelector('#connect-title').getBoundingClientRect().top+scrollY");
+ const scroll=async top=>{await evaluate('window.scrollTo({top:'+top+',behavior:"instant"})');await pause(1000);};
+ await scroll(headingTop-900);
+ const entry=await evaluate("({opacity:Number(getComputedStyle(document.querySelector('#connect-title .reveal-word')).opacity),transform:getComputedStyle(document.querySelector('#connect-title .reveal-word')).transform})");
+ assert(entry.opacity<.95&&entry.opacity>.35,'Title has a visible depth entrance instead of disappearing');
+ await scroll(headingTop-580);
+ const resting=await evaluate("Number(getComputedStyle(document.querySelector('#connect-title .reveal-word')).opacity)");assert(resting>.99,'Whole title is readable before viewport center');
+ await shot('story-dark');
+ await scroll(headingTop-900);
+ const reversed=await evaluate("Number(getComputedStyle(document.querySelector('#connect-title .reveal-word')).opacity)");assert(reversed<resting,'Scrolling upward reverses the reveal');
+ await scroll(headingTop-580);
+ const storyX=await evaluate("parseFloat(document.querySelector('.particle-backdrop').style.getPropertyValue('--particle-x'))");assert(storyX<45,'Particles move into editorial whitespace as the section changes');
+ assert(await evaluate("[...document.querySelectorAll('.usecase-card,.resource-card')].every(e=>!e.classList.contains('gloss-surface')&&getComputedStyle(e).backgroundColor==='rgba(0, 0, 0, 0)')"),'Seven supporting blocks use open rows rather than more cards');
+ await evaluate("document.querySelector('.usecase-card').scrollIntoView({block:'center',behavior:'instant'})");await pause(1000);await shot('editorial-dark');
+ await cdp('Input.dispatchMouseEvent',{type:'mouseMoved',x:430,y:650});await pause(1000);await shot('cursor-cloud');
+ checks.push('reversible shallow 3D headings and complete resting copy; measured section-aware background; open editorial rows and cursor interaction');
+ await evaluate("document.querySelector('#download').scrollIntoView({block:'start',behavior:'instant'})");await pause(1000);
+ const spacing=await evaluate("(()=>{const panel=document.querySelector('#download').getBoundingClientRect(),footer=document.querySelector('.glass-footer').getBoundingClientRect(),inner=document.querySelector('.glass-footer>.container').getBoundingClientRect();return{gap:footer.top-panel.bottom,border:getComputedStyle(document.querySelector('.glass-footer')).borderTopWidth,inset:inner.left}})()");
+ assert(spacing.gap>=63,'Footer divider is separated from the download panel');assert.equal(spacing.border,'0px','No viewport-wide footer rule');assert(spacing.inset>=20,'Divider follows content margins');await shot('footer-divider');
+ const wordTop=await evaluate("document.querySelector('.tonal-wordmark').getBoundingClientRect().top+scrollY");
+ await scroll(wordTop-990);const firstSweep=await evaluate("getComputedStyle(document.querySelector('.tonal-wordmark')).backgroundPositionX");
+ await scroll(await evaluate('document.documentElement.scrollHeight'));const lastSweep=await evaluate("getComputedStyle(document.querySelector('.tonal-wordmark')).backgroundPositionX");assert.notEqual(firstSweep,lastSweep,'Footer lettering highlights as it scrolls into view');
+ assert(await evaluate("getComputedStyle(document.querySelector('.tonal-wordmark')).backgroundImage.includes('gradient')"),'Wordmark fades from left to highlighted right');await shot('footer-dark');
+ await evaluate("document.querySelector('.theme-toggle').click()");await pause(400);await shot('footer-light');
+ checks.push('inset spaced footer divider; reversible left-to-right wordmark lighting; original logo particle formation');
+ for(const route of ['/downloads/','/products/lan-messenger/docs/','/privacy/','/about/','/products/','/products/lan-messenger/','/products/lan-messenger/releases/']){
+  await cdp('Page.navigate',{url:url+route});await waitFor("document.readyState==='complete'&&document.querySelector('.particle-backdrop')?.dataset.route==="+JSON.stringify(route),'Nested route initializes shared effects');
+  await pause(600);assert(await evaluate('document.documentElement.scrollWidth<=innerWidth'),'Nested route fits '+route);
+  assert(await evaluate("getComputedStyle(document.querySelector('.page-reveal-content')).filter==='none'"),'Page copy is never globally blurred');
+ }
+ for(const width of [320,375,768,1024,3840]){
+  await viewport(width,900);await load();await evaluate("document.querySelector('.usecase-card').scrollIntoView({block:'center',behavior:'instant'})");await pause(700);
+  assert(await evaluate('document.documentElement.scrollWidth<=innerWidth'),'No overflow at '+width);
+  if(width===375)await shot('mobile-light');
+  if(width===3840){await scroll(0);assert(await evaluate("(()=>{const x=parseFloat(document.querySelector('.particle-backdrop').style.getPropertyValue('--particle-x'))/100*innerWidth,r=document.querySelector('.living-network').getBoundingClientRect();return x>=r.left&&x<=r.right})()"),'4K background aligns with the bounded product column');await shot('4k-composition');}
+ }
+ await viewport(1440,1000);await evaluate("localStorage.setItem('lymora-website-motion','reduced')");await load();
+ await waitFor("document.documentElement.dataset.motion==='reduced'",'Static preference is retained');
+ assert.equal(await evaluate("document.querySelectorAll('.reveal-word').length"),0,'Reduced motion leaves original text intact');
+ assert.equal(await evaluate("getComputedStyle(document.querySelector('.header-inner'),'::after').animationName"),'none','Reduced motion stops edge beams');
+ assert.equal(await evaluate("!!document.querySelector('canvas')"),false,'Reduced motion avoids WebGL');
+ await shot('reduced-motion');
+ checks.push('all nested routes; 320/375/768/1024/3840px layouts; reduced-motion text, edges and static renderer');
+}

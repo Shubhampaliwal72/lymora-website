@@ -3,7 +3,7 @@
 [data-theme='dark'] { --particle-cool:#7295ff;--particle-warm-haze:color-mix(in srgb,var(--accent) 9%,transparent);--particle-cool-haze:#7295ff0c; }
 @media(prefers-color-scheme:dark){:root:not([data-theme='light']){--particle-cool:#7295ff;--particle-warm-haze:color-mix(in srgb,var(--accent) 9%,transparent);--particle-cool-haze:#7295ff0c;}}
 .particle-backdrop { position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;contain:strict;background:radial-gradient(ellipse at 65% 15%,var(--particle-warm-haze),transparent 60%),radial-gradient(ellipse at 30% 85%,var(--particle-cool-haze),transparent 60%); }
-.particle-fallback { position:absolute;width:min(109.7222vw,106.25vh);height:min(109.7222vw,106.25vh);left:50%;top:50%;translate:-50% -50%;opacity:var(--particle-intensity,.7);transition:opacity 220ms ease; }
+.particle-fallback { position:absolute;width:min(109.7222vw,106.25vh);height:min(109.7222vw,106.25vh);left:var(--particle-x,70%);top:var(--particle-y,43%);translate:-50% -50%;scale:var(--particle-scale,.72);opacity:var(--particle-intensity,.7);transition:opacity 220ms ease; }
 .particle-backdrop[data-renderer='webgl'] .particle-fallback { opacity:0; }
 .particle-fallback-cloud { transform-origin:500px 500px;animation:particle-breathe 13s ease-in-out infinite alternate; }
 @keyframes particle-breathe { from {transform:rotate(-4deg) scale(.96);} to {transform:rotate(4deg) scale(1.025);} }

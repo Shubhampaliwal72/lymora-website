@@ -33,5 +33,5 @@ export function ThemeToggle() {
     describe(next);
     try { localStorage.setItem(THEME_KEY, next); } catch { /* Theme still works if storage is blocked. */ }
   };
-  return <button ref={button} className="icon-button enhanced-control" type="button" aria-label="Switch color theme" title="Switch color theme" onClick={toggle}><Icon name="sun" className="theme-sun"/><Icon name="moon" className="theme-moon"/></button>;
+  return <button ref={button} className="icon-button enhanced-control theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme" onClick={toggle}><Icon name="sun" className="theme-sun"/><Icon name="moon" className="theme-moon"/></button>;
 }

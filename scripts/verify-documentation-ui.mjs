@@ -16,7 +16,7 @@ export async function verifyDocumentationUi({cdp,evaluate,viewport,media,waitFor
     assert.equal(await evaluate('document.querySelectorAll(".guide-steps>li").length'),5,'Five source-verified setup steps');
     assert.equal(await evaluate('document.querySelectorAll(".docs-nav a").length'),6,'All guide anchors preserved');
     assert.equal(await evaluate('document.querySelectorAll(".docs-question").length'),7,'All original questions preserved');
-    assert.equal(await evaluate('document.querySelectorAll(".reveal-word").length'),0,'No global heading animation interferes with reading');
+    assert.equal(await evaluate('document.querySelectorAll(".documentation-content p .reveal-word,.docs-question .reveal-word").length'),0,'Reading copy and interactive FAQ retain unsplit markup');
     await capture('guide-'+width+'-'+theme);
     await evaluate('[...document.querySelectorAll(".docs-nav a")].find(a=>a.hash==="#files").click()');
     await waitFor('document.querySelector(".docs-nav a[aria-current=location]")?.hash==="#files"','Section navigation still tracks files');

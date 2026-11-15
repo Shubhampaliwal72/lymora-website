@@ -1,7 +1,7 @@
 "use client";
 import {createContext,useContext,type MutableRefObject} from "react";
 import type {NetworkCanvasProps} from "@/components/living-network/scene";
-export type ParticleRuntime={time:number;progress:number;pointer:{x:number;y:number};visible:boolean};
+export type ParticleRuntime={time:number;progress:number;pointer:{x:number;y:number;active:number};layout:import("@/lib/particle-composition").ParticleComposition;visible:boolean};
 export type HeroRegistration={key:symbol;props:NetworkCanvasProps};
 export const ParticleRenderContext=createContext<{enabled:boolean;register:(key:symbol,props:NetworkCanvasProps)=>()=>void}|null>(null);
 export function useParticleRenderer(){return useContext(ParticleRenderContext);}

@@ -23,7 +23,7 @@ export async function verifyPremiumUi({cdp,evaluate,load,viewport,media,waitFor,
   };
   const verifyConnection = async theme => {
     const bounds = await evaluate('(()=>{const e=document.querySelector(".connection-diagram"),r=e.getBoundingClientRect();return {start:r.top+scrollY-innerHeight*.82,end:r.top+scrollY-innerHeight*.42}})()');
-    assert.equal(await evaluate('getComputedStyle(document.querySelector(".connection-route")).position'),'static','Connection bar stays in normal document flow');
+    assert(['static','relative'].includes(await evaluate('getComputedStyle(document.querySelector(".connection-route")).position')),'Connection bar stays in normal document flow');
     await evaluate('window.scrollTo({top:'+bounds.start+',behavior:"instant"})');await pause(100);
     const beforeScroll=await evaluate('({y:document.querySelector(".connection-route").getBoundingClientRect().top,scroll:scrollY})');
     await evaluate('window.scrollBy({top:160,behavior:"instant"})');await pause(150);
@@ -71,7 +71,7 @@ export async function verifyPremiumUi({cdp,evaluate,load,viewport,media,waitFor,
     await cdp('Input.dispatchMouseEvent',{type:'mouseMoved',...nav});await pause(250);
     assert.equal(await evaluate('getComputedStyle(document.querySelector(".desktop-nav>a")).backgroundColor'),background,'Text-only navigation hover');
     await cdp('Input.dispatchMouseEvent',{type:'mouseMoved',x:2,y:110});
-    assert.equal(await evaluate('document.querySelector(".header-edge")'),null,'Header beam is removed');
+    assert.equal(await evaluate('document.querySelector(".header-edge")'),null,'No separate header beam overlay is inserted');
     await evaluate('document.querySelector(".nav-disclosure summary").click()');
     assert(await evaluate('(()=>{const e=document.querySelector(".nav-disclosure[open] .nav-dropdown"),r=e.getBoundingClientRect();return e.contains(document.elementFromPoint(r.left+r.width/2,r.top+32))})()'),'Navigation dropdown remains unclipped');
     await cdp('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
@@ -139,7 +139,7 @@ export async function verifyPremiumUi({cdp,evaluate,load,viewport,media,waitFor,
       assert.equal(await evaluate('document.querySelectorAll("main h1").length'),1,'One page title: '+route);
       assert.equal(await evaluate('document.querySelectorAll(".breadcrumb [aria-current=page]").length'),1,'Menu page has a clear current breadcrumb');
       if(route.includes('/docs/')||route==='/privacy/') {
-        assert.equal(await evaluate('document.querySelectorAll(".reveal-word").length'),0,'Reading pages stay still');
+        assert.equal(await evaluate('document.querySelectorAll(".reading-page .prose p:not(.large-copy) .reveal-word").length'),0,'Long reading copy stays still while landmark titles can reveal');
         assert(Number(await evaluate('getComputedStyle(document.querySelector(".particle-backdrop")).getPropertyValue("--particle-intensity")'))<=.35,'Reading background is quiet');
       }
       if(route==='/products/lan-messenger/')assert.equal(await evaluate('document.querySelectorAll("main .screenshot-trigger").length'),1,'Product page has one reusable screenshot showcase');
@@ -155,6 +155,6 @@ export async function verifyPremiumUi({cdp,evaluate,load,viewport,media,waitFor,
   await evaluate('document.querySelectorAll(".product-subnav a")[1].click()');await pause(1500);
   await waitFor('document.querySelector(".product-subnav a[aria-current=location]")?.hash==="#everyday"','Product navigation tracks the current section');
   await scrollTo('.footer-directory');await capture('footer-dark');
-  checks.push('reversible dashed-to-orange route; sequential forward/reverse setup highlights in both themes and 320/375px; non-sticky connection bar; wires complete while fully visible; separated setup walkthrough; header beam removed; unclipped keyboard dropdown; branded footer; shared breadcrumbs and current-section navigation');
+  checks.push('reversible dashed-to-orange route; sequential forward/reverse setup highlights in both themes and 320/375px; non-sticky connection bar; wires complete while fully visible; separated setup walkthrough; thin CSS header edge without a separate overlay; unclipped keyboard dropdown; branded footer; shared breadcrumbs and current-section navigation');
   checks.push('all seven secondary routes at mobile/desktop; quiet documentation/privacy; one product showcase; documentation anchors');
 }

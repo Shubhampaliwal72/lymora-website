@@ -57,7 +57,7 @@ export async function verifyParticlesUi({cdp,evaluate,load,viewport,media,waitFo
  const middle=await evaluate("Number(document.querySelector('.particle-backdrop').dataset.progress)");assert(middle>.45&&middle<.65,'Scroll morph reaches orb');
  await shot('particles-home-orb');
  await evaluate("window.scrollTo({top:document.documentElement.scrollHeight,behavior:'instant'})");await pause(1500);
- await waitFor("Number(document.querySelector('.particle-backdrop').dataset.progress)>.97",'Scroll morph reaches galaxy');await shot('particles-home-galaxy');
+ await waitFor("Number(document.querySelector('.particle-backdrop').dataset.progress)>.97",'Scroll morph reaches footer logo formation');await shot('particles-footer-logo');
  await evaluate("window.scrollTo({top:0,behavior:'instant'})");await pause(1500);
  assert(await evaluate("Number(document.querySelector('.particle-backdrop').dataset.progress)")<.03,'Morph reverses to ring');
  await evaluate("document.querySelector('.ambience-control').click()");
@@ -65,7 +65,7 @@ export async function verifyParticlesUi({cdp,evaluate,load,viewport,media,waitFo
  assert.equal(await evaluate("getComputedStyle(document.querySelector('.particle-fallback-cloud')).animationName"),'none','Paused fallback is static');
  await evaluate("document.querySelector('[aria-label=\"Play animations\"]').click()");
  await waitFor("document.querySelector('.particle-backdrop').dataset.renderer==='webgl'",'Play restarts the live background');
- checks.push('one shared canvas; live movement at rest; scroll ring/orb/galaxy and reverse; manual pause/resume');
+ checks.push('one shared canvas; live movement at rest; scroll ring/orb/galaxy/logo and reverse; manual pause/resume');
  await evaluate("localStorage.removeItem('lymora-website-motion');window.dispatchEvent(new StorageEvent('storage',{key:'lymora-website-motion'}))");
  await media('dark',true);await waitFor("!document.querySelector('canvas')",'Reduced motion skips WebGL');
  assert.equal(await evaluate("document.querySelector('.particle-backdrop').dataset.motion"),'static');

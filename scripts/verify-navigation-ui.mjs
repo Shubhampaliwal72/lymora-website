@@ -13,14 +13,19 @@ export async function verifyNavigationUi({cdp,evaluate,viewport,media,waitFor,pa
  const settled=route=>waitFor('location.pathname==='+JSON.stringify(route)+'&&document.querySelector(".navigation-progress")?.dataset.state==="idle"','Settled route '+route,250);
  const probe=()=>evaluate('(()=>{window.__navEvents=[];window.__navObserver?.disconnect();window.__navObserver=new MutationObserver(()=>{const e=document.querySelector(".navigation-progress");window.__navEvents.push({visible:e.dataset.visible,state:e.dataset.state,at:performance.now()})});window.__navObserver.observe(document.querySelector(".navigation-progress"),{attributes:true})})()');
  const liveBackground=async()=>{
-  assert.equal(await evaluate('document.documentElement.dataset.motion'),'full','Route changes preserve brand motion');
-  const frame=await evaluate('JSON.stringify([...document.querySelectorAll(".ambient-streaks path")].map(p=>p.getAttribute("stroke-dashoffset")))');
-  await waitFor('JSON.stringify([...document.querySelectorAll(".ambient-streaks path")].map(p=>p.getAttribute("stroke-dashoffset")))!=='+JSON.stringify(frame),'Background clock keeps running across navigation');
+  const motion=await evaluate('document.documentElement.dataset.motion');
+  if(motion==='reduced'){
+   assert.equal(await evaluate('!!document.querySelector("canvas")'),false,'Reduced preference keeps the shared scene static');
+   assert.equal(await evaluate('getComputedStyle(document.querySelector(".particle-fallback-cloud")).animationName'),'none');
+   return;
+  }
+  const sample='(()=>{const canvas=document.querySelector("canvas");return canvas?canvas.dataset.frames:getComputedStyle(document.querySelector(".particle-fallback-cloud")).transform})()';
+  const before=await evaluate(sample);await waitFor(sample+'!=='+JSON.stringify(before),'Current particle renderer or mobile SVG continues across navigation');
  };
  const capture=async name=>{const png=await cdp('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});await fs.writeFile(path.join(output,'navigation-'+name+'.png'),Buffer.from(png.data,'base64'));};
  await viewport(375,900);await media('light');await direct('/about/');
  assert.equal(await evaluate('document.querySelector(".navigation-progress").dataset.visible'),'false','No initial-load route overlay');
- assert.equal(await evaluate('document.querySelectorAll("main h1 .reveal-word").length'),0,'Page title is immediately readable');
+ assert(await evaluate('(()=>{const title=document.querySelector("main h1");return title.getBoundingClientRect().height>0&&[...title.querySelectorAll(".reveal-word")].every(e=>Number(getComputedStyle(e).opacity)>.55)})()'),'Page title remains immediately readable during its depth entrance');
  assert.equal(await evaluate('getComputedStyle(document.querySelector(".route-arrival")).animationDuration'),'0.18s','Arrival stays within 150-250ms');
  await evaluate('document.documentElement.dataset.navigationDocument="preserved"');
  for(const route of ['/products/','/products/lan-messenger/','/products/lan-messenger/docs/','/downloads/','/privacy/','/about/','/']) {
@@ -74,24 +79,28 @@ export async function verifyNavigationUi({cdp,evaluate,viewport,media,waitFor,pa
  await liveBackground();
  await evaluate('history.back()');await settled('/');await liveBackground();
  await evaluate('history.forward()');await settled('/privacy/');await liveBackground();
- checks.push('desktop/mobile feedback; reduced-motion static navigation bar/arrival; brand motion survives all routes and browser history');
+ checks.push('desktop/mobile feedback; reduced-motion static navigation bar/arrival; shared scene preference survives all routes and browser history');
  // Viewport prefetch remains enabled on real Next links.
  await media('dark');await direct('/about/');await pause(800);
  assert(requests.some(u=>u.includes('/downloads/')&&u.includes('_rsc=')),'Next route payload requests/prefetch remain active');
  const chunks=await fs.readdir(path.join(process.cwd(),'out/_next/static/chunks'));
  const sizes=await Promise.all(chunks.filter(n=>n.endsWith('.js')).map(async name=>({name,size:(await fs.stat(path.join(process.cwd(),'out/_next/static/chunks',name))).size})));
  const heavy=sizes.sort((a,b)=>b.size-a.size)[0].name;
- const before=requests.length;await direct('/#getting-started');await pause(700);
- assert.equal(requests.slice(before).some(u=>u.includes(heavy)),false,'Offscreen hero avoids the heavy scene chunk');
- faults.route='/_next/static/chunks/'+heavy;faults.delay=1200;
- await evaluate('window.scrollTo({top:0,behavior:"instant"})');
- await waitFor('document.querySelector(".living-network").dataset.mode==="illustrated"&&document.querySelector(".network-fallback").getBoundingClientRect().height>0','Useful SVG preview remains while 3D initializes');
+ faults.route='/_next/static/chunks/'+heavy;faults.delay=1800;faults.hits=0;
+ await cdp('Network.setCacheDisabled',{cacheDisabled:true});
+ await evaluate('document.documentElement.dataset.qaDeparting="true"');
+ await cdp('Page.navigate',{url:url+'/#getting-started'});
+ await waitFor('!document.documentElement.dataset.qaDeparting&&!!document.querySelector("main h1")&&!!document.querySelector(".network-world")','Static copy and SVG are available before the delayed scene');
+ assert(await evaluate('document.querySelector("main h1").getBoundingClientRect().height>0'),'Primary copy is independent of the shared WebGL chunk');
  const height=await evaluate('document.querySelector(".network-world").getBoundingClientRect().height');
  await capture('scene-fallback');
- await waitFor('document.querySelector(".living-network").dataset.mode==="3d"','3D becomes ready without blocking page navigation',350);
+ await evaluate('window.scrollTo({top:0,behavior:"instant"})');
+ await waitFor('document.querySelector(".living-network").dataset.mode==="3d"','Shared 3D becomes ready without blocking page navigation',350);
+ assert(faults.hits>0,'The shared renderer chunk was genuinely delayed');
  assert(Math.abs(await evaluate('document.querySelector(".network-world").getBoundingClientRect().height')-height)<.5,'Scene upgrade preserves layout dimensions');
- faults.route='';faults.delay=0;
- checks.push('prefetch retained; offscreen Three.js chunk deferred; useful SVG fallback during initialization; no scene layout shift');
+ assert.equal(await evaluate('document.querySelectorAll("canvas").length'),1,'Backdrop and product use one renderer');
+ faults.route='';faults.delay=0;await cdp('Network.setCacheDisabled',{cacheDisabled:false});
+ checks.push('prefetch retained; shared Three.js loads asynchronously; useful static content and SVG during initialization; one canvas and no scene layout shift');
  // Inject a single measurement failure in text animation setup, not in routing.
  const injection=await cdp('Page.addScriptToEvaluateOnNewDocument',{source:'const originalBounds=Element.prototype.getBoundingClientRect;Element.prototype.getBoundingClientRect=function(...args){if(!window.__animationFailure&&this.matches?.("main h2")){window.__animationFailure=true;throw new Error("Intentional text animation initialization failure")}return originalBounds.call(this,...args)}'});
  await direct('/about/');await cdp('Page.removeScriptToEvaluateOnNewDocument',{identifier:injection.identifier});

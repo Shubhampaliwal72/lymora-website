@@ -16,8 +16,8 @@ export function HomeScrollMotion({children}: {children: ReactNode}) {
   useGSAP(() => {
     if (!motion || !root.current) return;
     const select = gsap.utils.selector(root);
-    select("[data-scroll-heading], [data-scroll-item]").forEach((element: Element) => {
-      gsap.from(element, {y: capable ? 20 : 10, duration: .7, ease: "power3.out", clearProps: "transform", scrollTrigger: {trigger: element, start: "top 92%", once: true}});
+    select("[data-scroll-item]").forEach((element: Element) => {
+      gsap.fromTo(element, {y: capable ? 24 : 10, rotationX: capable ? 5 : 0, transformPerspective: 1100}, {y: 0, rotationX: 0, ease: "power2.out", scrollTrigger: {trigger: element, start: "top 96%", end: "top 70%", scrub: .55, invalidateOnRefresh: true}});
     });
     select("[data-scroll-index]").forEach((element: Element) => {
       gsap.fromTo(element, {y: capable ? 24 : 8}, {y: capable ? -20 : -8, ease: "none", scrollTrigger: {trigger: element.closest("section"), start: "top bottom", end: "bottom top", scrub: 1.1, invalidateOnRefresh: true}});

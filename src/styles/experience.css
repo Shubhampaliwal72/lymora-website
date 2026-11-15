@@ -1,0 +1,70 @@
+/* Shared illuminated edges. Only the thin masked border paints; copy stays crisp. */
+@property --edge-angle { syntax:"<angle>";initial-value:0deg;inherits:false; }
+:root { --edge-light:color-mix(in srgb,var(--accent) 72%,var(--text-primary));--edge-soft:color-mix(in srgb,var(--accent) 25%,transparent); }
+html { scrollbar-color:color-mix(in srgb,var(--accent) 62%,var(--text-secondary)) var(--canvas);scrollbar-width:thin; }
+::-webkit-scrollbar { width:10px;height:8px; }
+::-webkit-scrollbar-track { background:var(--canvas); }
+::-webkit-scrollbar-thumb { background:color-mix(in srgb,var(--accent) 62%,var(--text-secondary));border:3px solid var(--canvas);border-radius:20px; }
+[data-edge-position] { position:relative; }
+[data-edge-surface]::after {
+ content:"";position:absolute;inset:-1px;padding:1px;border-radius:inherit;pointer-events:none;z-index:2;
+ background:conic-gradient(from var(--edge-angle),transparent 0deg 265deg,var(--edge-soft) 302deg,var(--edge-light) 330deg,transparent 355deg);
+ -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;
+ mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask-composite:exclude;
+ opacity:.48;animation:edge-orbit 12s linear infinite;animation-play-state:paused;
+}
+/* Decreasing the angle sends the light anticlockwise around the real boundary. */
+@keyframes edge-orbit { to { --edge-angle:-360deg; } }
+html[data-motion='full'] [data-edge-visible='true']:is(.button,.icon-button,.footer-orbit,.header-inner,.ambience-control)::after,
+html[data-motion='full'] [data-edge-visible='true']:is(:hover,:focus-visible,:focus-within)::after,
+html[data-motion='full'] .connection-step[data-state='active'] [data-edge-visible='true']::after { animation-play-state:running; }
+[data-edge-surface]:is(:hover,:focus-visible)::after { opacity:.9; }
+[data-edge-surface]:is(:disabled,[aria-disabled='true'])::after { display:none; }
+[data-edge-surface].header-inner::after { opacity:.32;animation-duration:18s; }
+html[data-motion='full'] [data-edge-surface]:is(.button,.icon-button,.footer-orbit,button:not(.screenshot-trigger)) {
+ box-shadow:inset 0 1px 0 var(--glass-edge),inset 0 -3px 0 #00000020,0 7px 17px var(--pc-shadow);
+ transition:translate 260ms ease,rotate 350ms ease,box-shadow 260ms ease,border-color 200ms ease,background-color 200ms ease;
+}
+@media(hover:hover) and (pointer:fine) {
+ html[data-motion='full'] [data-edge-surface]:is(.button,.icon-button,.footer-orbit,button:not(.screenshot-trigger)):not(:disabled):hover { translate:0 -2px;rotate:x 7deg;box-shadow:inset 0 1px 0 var(--glass-edge),inset 0 -3px 0 #00000024,0 10px 24px var(--scene-glow); }
+ html[data-motion='full'] .theme-toggle:hover svg { rotate:-16deg; }
+}
+[data-edge-surface]:is(.button,.icon-button,.footer-orbit,button:not(.screenshot-trigger)):not(:disabled):active { translate:0 1px;rotate:x -3deg; }
+.theme-toggle { perspective:300px; }
+.theme-toggle svg { transition:rotate 350ms ease;filter:drop-shadow(0 2px 1px var(--pc-shadow)); }
+/* Consistent inset divider and breathing room after the final page panel. */
+.site-shell .glass-footer { border-top:0;margin-top:clamp(64px,8vw,112px);padding-top:0; }
+.glass-footer>.container { position:relative;padding-top:clamp(58px,7vw,96px); }
+.glass-footer>.container::before { content:"";position:absolute;top:0;left:0;right:0;height:1px;background:var(--border); }
+/* Editorial rows replace seven redundant homepage card frames. */
+.homepage-motion .usecase-list { display:block;padding-left:0; }
+.homepage-motion .usecase-list>.usecase-card,.homepage-motion .usecase-list>.usecase-card:first-child {
+ display:grid;grid-template-columns:52px minmax(0,.8fr) minmax(0,1fr);gap:24px;align-items:start;
+ padding:clamp(30px,4vw,48px) 0;border:0;border-top:1px solid var(--border);border-radius:0;background:none;box-shadow:none;
+}
+.homepage-motion .usecase-card h3 { font-size:clamp(26px,3.2vw,42px);line-height:1.2; }
+.homepage-motion .usecase-card-index { padding-top:8px; }
+.homepage-motion .usecase-card p { font-size:var(--reading-size);line-height:1.8;max-width:46ch; }
+.homepage-motion .resource-links { display:block; }
+.homepage-motion .resource-links>a.resource-card { display:grid;grid-template-columns:180px minmax(0,1fr) 24px;align-items:center;gap:30px;padding:30px 0;border:0;border-bottom:1px solid var(--border);border-radius:0;background:none;box-shadow:none; }
+.homepage-motion .resource-card>span { grid-column:auto;font-size:12px; }
+.homepage-motion .resource-card h3 { margin:0;font-size:clamp(22px,2.7vw,34px);line-height:1.4; }
+.homepage-motion .resource-card>svg { margin:0;align-self:center; }
+/* Perspective is owned by GSAP on these inner words, never by a second engine. */
+.reveal-word { display:inline-block;transform-origin:50% 85%;backface-visibility:hidden; }
+.reveal-copy-line { transform-origin:50% 100%; }
+.site-shell .tonal-wordmark { --wordmark-sweep:100%;width:fit-content;max-width:100%;color:transparent;background:linear-gradient(100deg,color-mix(in srgb,var(--text-primary) 9%,transparent) 5%,color-mix(in srgb,var(--text-primary) 28%,transparent) 38%,color-mix(in srgb,var(--text-primary) 82%,transparent) 68%,var(--text-primary) 100%);background-size:125% 100%;background-position:var(--wordmark-sweep) center;background-clip:text;-webkit-background-clip:text;text-shadow:none; }
+.site-shell .tonal-wordmark>span { color:var(--accent); }
+@media(max-width:700px) {
+ .homepage-motion .usecase-list>.usecase-card,.homepage-motion .usecase-list>.usecase-card:first-child { grid-template-columns:30px minmax(0,1fr);gap:12px 16px;padding-block:28px; }
+ .homepage-motion .usecase-card p { grid-column:2; }
+ .homepage-motion .resource-links>a.resource-card { grid-template-columns:minmax(0,1fr) 20px;gap:14px;padding-block:26px; }
+ .homepage-motion .resource-card>span { grid-column:1/-1; }
+ [data-edge-surface]::after { opacity:.35; }
+}
+html[data-scene-visible='false'] [data-edge-surface]::after { animation-play-state:paused!important; }
+html[data-motion='reduced'] [data-edge-surface]::after { animation:none; }
+html[data-motion='reduced'] [data-edge-surface]:is(.button,.icon-button,.footer-orbit,button:not(.screenshot-trigger)):active { translate:none;rotate:none; }
+@media(prefers-reduced-transparency:reduce) { [data-edge-surface]::after { display:none; } }
+@media(forced-colors:active) { [data-edge-surface]::after { display:none; }.site-shell .tonal-wordmark { color:CanvasText;background:none; } }
+@media print { [data-edge-surface]::after { display:none; }.site-shell .tonal-wordmark { color:#222;background:none; } }

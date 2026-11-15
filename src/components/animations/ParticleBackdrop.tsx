@@ -8,6 +8,7 @@ import {setSceneMotion} from "@/lib/scene-motion";
 import {Icon} from "@/components/site/Icons";
 import {useScenePreferences} from "@/components/living-network/useScenePreferences";
 import type {NetworkCanvasProps} from "@/components/living-network/scene";
+import {measureParticleComposition,particleCompositionAt} from "@/lib/particle-composition";
 import {createParticlePreview,particleIntensity} from "@/lib/particle-field";
 import {ParticleRenderContext,type HeroRegistration,type ParticleRuntime} from "./ParticleRenderContext";
 
@@ -22,7 +23,7 @@ class ParticleBoundary extends Component<{children:ReactNode;onUnavailable:()=>v
 /** One shared particle scene. The 3D product preview registers with the same renderer. */
 export function ParticleBackdrop({children}:{children:ReactNode}) {
   const root=useRef<HTMLDivElement>(null),invalidateRef=useRef<(()=>void)|null>(null);
-  const runtime=useRef<ParticleRuntime>({time:0,progress:0,pointer:{x:0,y:0},visible:true});
+  const runtime=useRef<ParticleRuntime>({time:0,progress:0,pointer:{x:0,y:0,active:0},layout:{x:.70,y:.43,scale:.72,quiet:.86},visible:true});
   const syncScroll=useRef<(()=>void)|null>(null),scrollEase=useRef<gsap.core.Tween|null>(null);
   const [hero,setHero]=useState<HeroRegistration|null>(null),[ready,setReady]=useState(false),[failed,setFailed]=useState(false);
   const {capable,motion,visible,theme}=useScenePreferences();
@@ -35,6 +36,9 @@ export function ParticleBackdrop({children}:{children:ReactNode}) {
   const context=useMemo(()=>({enabled,register}),[enabled,register]);
   useGSAP(()=>{
     const progress={value:0};
+    let stops=measureParticleComposition(pathname);
+    const layout=runtime.current.layout;
+    const layoutEase={y:gsap.quickTo(layout,"y",{duration:.95,ease:"power2.out"}),x:gsap.quickTo(layout,"x",{duration:.95,ease:"power2.out"}),scale:gsap.quickTo(layout,"scale",{duration:.95,ease:"power2.out"}),quiet:gsap.quickTo(layout,"quiet",{duration:.95,ease:"power2.out"})};
     const draw=()=>{
       runtime.current.progress=progress.value;
       root.current?.setAttribute("data-progress",progress.value.toFixed(4));
@@ -45,6 +49,12 @@ export function ParticleBackdrop({children}:{children:ReactNode}) {
     const ease=gsap.quickTo(progress,"value",{duration:.85,ease:"power2.out",onUpdate:draw});
     scrollEase.current=ease.tween;
     const sample=(immediate=false)=>{
+      const composition=particleCompositionAt(stops,scrollY);
+      if(immediate||!motion)Object.assign(layout,composition);
+      else {layoutEase.y(composition.y);layoutEase.x(composition.x);layoutEase.scale(composition.scale);layoutEase.quiet(composition.quiet);}
+      root.current?.style.setProperty("--particle-x",(composition.x*100).toFixed(2)+"%");
+      root.current?.style.setProperty("--particle-y",(composition.y*100).toFixed(2)+"%");
+      root.current?.style.setProperty("--particle-scale",String(composition.scale));
       if(!motion){progress.value=0;draw();return;}
       const max=Math.max(1,document.documentElement.scrollHeight-innerHeight);
       const value=Math.max(0,Math.min(1,scrollY/max));
@@ -53,7 +63,7 @@ export function ParticleBackdrop({children}:{children:ReactNode}) {
     const move=()=>{if(!document.hidden&&root.current?.dataset.paused!=="true")sample();};
     syncScroll.current=move;
     let raf=0;
-    const refresh=()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>sample(true));};
+    const refresh=()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>{stops=measureParticleComposition(pathname);sample(true);});};
     const observer=new ResizeObserver(refresh);
     const shell=document.querySelector(".site-shell");if(shell)observer.observe(shell);
     window.addEventListener("scroll",move,{passive:true});
@@ -61,7 +71,7 @@ export function ParticleBackdrop({children}:{children:ReactNode}) {
     window.addEventListener("pageshow",refresh);window.addEventListener("popstate",refresh);
     refresh();
     return()=>{
-      cancelAnimationFrame(raf);observer.disconnect();ease.tween.kill();syncScroll.current=null;scrollEase.current=null;
+      cancelAnimationFrame(raf);observer.disconnect();Object.values(layoutEase).forEach(easing=>easing.tween.kill());ease.tween.kill();syncScroll.current=null;scrollEase.current=null;
       window.removeEventListener("scroll",move);window.removeEventListener("resize",refresh);
       window.removeEventListener("pageshow",refresh);window.removeEventListener("popstate",refresh);
     };
@@ -83,9 +93,10 @@ export function ParticleBackdrop({children}:{children:ReactNode}) {
   useEffect(()=>{
     if(!capable||!motion)return;
     const x=gsap.quickTo(runtime.current.pointer,"x",{duration:1.25,ease:"power3.out"}),y=gsap.quickTo(runtime.current.pointer,"y",{duration:1.25,ease:"power3.out"});
-    const move=(event:PointerEvent)=>{if(event.pointerType!=="mouse"||paused||document.hidden)return;x((event.clientX/innerWidth-.5)*2);y((event.clientY/innerHeight-.5)*2);};
-    const reset=()=>{x(0);y(0);};window.addEventListener("pointermove",move,{passive:true});document.documentElement.addEventListener("pointerleave",reset);
-    return()=>{window.removeEventListener("pointermove",move);document.documentElement.removeEventListener("pointerleave",reset);x.tween.kill();y.tween.kill();};
+    const active=gsap.quickTo(runtime.current.pointer,"active",{duration:.7,ease:"power2.out"});
+    const move=(event:PointerEvent)=>{if(event.pointerType!=="mouse"||paused||document.hidden)return;active(1);x((event.clientX/innerWidth-.5)*2);y((event.clientY/innerHeight-.5)*2);};
+    const reset=()=>{x(0);y(0);active(0);};window.addEventListener("pointermove",move,{passive:true});document.documentElement.addEventListener("pointerleave",reset);
+    return()=>{window.removeEventListener("pointermove",move);document.documentElement.removeEventListener("pointerleave",reset);x.tween.kill();y.tween.kill();active.tween.kill();};
   },[capable,motion,paused]);
   return <ParticleRenderContext.Provider value={context}>
     <div ref={root} className="particle-backdrop" data-renderer={enabled&&ready?"webgl":"svg"} data-motion={motion?"full":"static"} data-paused={paused} data-hidden={!visible} data-route={pathname} aria-hidden="true" style={{"--particle-intensity":intensity} as CSSProperties}>
