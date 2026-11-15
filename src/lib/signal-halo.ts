@@ -1,3 +1,4 @@
+import { networkDepthGLSL } from "./network-depth";
 import { BufferGeometry, Float32BufferAttribute, DoubleSide, ShaderMaterial } from "three";
 
 /** Two closed ribbon surfaces share one geometry and material. */
@@ -26,6 +27,9 @@ export function createSignalHaloGeometry() {
 const vertexShader = /* glsl */ `
 attribute vec3 aCoord;
 uniform float uTime;
+uniform float uMorph;
+varying float vDepth;
+${networkDepthGLSL}
 varying vec3 vNormal;
 varying vec3 vCoord;
 varying float vPalette;
@@ -37,6 +41,8 @@ void main() {
   vec3 p = vec3(cos(angle)*radius*1.12, sin(angle)*radius,
     sin(angle*2.0 + uTime*0.18 + phase)*0.45 + aCoord.y*cos(twist)*0.24);
   vNormal = normalize(normalMatrix * vec3(cos(angle)*sin(twist),sin(angle)*sin(twist),cos(twist)));
+  vDepth = networkDepth(p);
+  p = networkProjection(p,uMorph);
   vCoord = aCoord;
   vPalette = smoothstep(-1.3, 1.3, p.y);
   gl_Position = projectionMatrix * modelViewMatrix * vec4(p,1.0);
@@ -45,6 +51,7 @@ void main() {
 const fragmentShader = /* glsl */ `
 uniform float uTime;
 uniform float uMorph;
+varying float vDepth;
 uniform float uHalo;
 uniform float uIntensity;
 uniform float uQuiet;
@@ -65,7 +72,7 @@ void main() {
   float packet = exp(-distance*distance*14000.0) * (0.4+edge*0.6);
   vec3 color = mix(uCool,uWarm,vPalette);
   color = mix(color,vec3(1.0,0.93,0.84),reflection*0.42+packet*0.35);
-  float alpha = (0.07+edge*0.28+reflection*0.12+packet*0.32)*presence*uIntensity*uQuiet;
+  float alpha = (0.07+edge*0.28+reflection*0.12+packet*0.32)*presence*uIntensity*uQuiet*mix(0.75,1.0,vDepth);
   gl_FragColor = vec4(color,alpha);
   #include <tonemapping_fragment>
   #include <colorspace_fragment>

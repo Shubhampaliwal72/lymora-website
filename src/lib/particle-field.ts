@@ -10,9 +10,15 @@ export function createParticleField(count: number) {
     const radius=2.65+Math.cos(layer)*.24+Math.sin(angle*5+layer*2)*.15;
     ring.set([Math.cos(angle)*radius,Math.sin(angle)*radius,Math.sin(layer)*.42],i*3);
     const z=1-random()*2,phi=random()*Math.PI*2,span=Math.sqrt(1-z*z)*2.55;
-    orb.set([Math.cos(phi)*span,z*2.55,Math.sin(phi)*span],i*3);
+    // Ordered latitude strands and a smaller interior population reveal volume.
+    // Keep random sampling order unchanged so the accepted opening ring stays identical.
+    const latitude=(Math.floor(i/220)+.5)/Math.ceil(count/220)*Math.PI;
+    const longitude=(i%220)/220*Math.PI*2+Math.sin(latitude*3)*.12;
+    const shell=2.45+Math.sin(longitude*3+latitude*4)*.09;
+    if(i%7===0){const core=.18+Math.abs(z)*1.55;orb.set([Math.cos(phi)*span/2.55*core,z*core,Math.sin(phi)*span/2.55*core],i*3);}
+    else orb.set([Math.cos(longitude)*Math.sin(latitude)*shell,Math.cos(latitude)*shell,Math.sin(longitude)*Math.sin(latitude)*shell],i*3);
     const distance=Math.pow(random(),.68)*3.65,arm=i%3,spin=distance*1.48+arm*Math.PI*2/3+(random()-.5)*.5;
-    galaxy.set([Math.cos(spin)*distance,Math.sin(spin)*distance*.63+(random()-.5)*.15,Math.sin(spin)*distance*.25+(random()-.5)*.14],i*3);
+    galaxy.set([Math.cos(spin)*distance,Math.sin(spin)*distance*.63+(random()-.5)*.15,Math.sin(spin)*distance*.42+(random()-.5)*.18],i*3);
     seeds.set([random(),random(),angle/(Math.PI*2)],i*3);
   }
   return {ring,orb,galaxy,seeds};

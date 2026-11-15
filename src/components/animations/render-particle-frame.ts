@@ -1,3 +1,4 @@
+import type {ParticleTransmission} from "@/lib/particle-network";
 import type {Camera,Group,PerspectiveCamera,Scene,ShaderMaterial,WebGLRenderer} from "three";
 /** Renderer mutation belongs to the imperative frame boundary, never React render. */
 export function renderParticleFrame(gl:WebGLRenderer,scene:Scene,camera:Camera,heroScene:Scene,heroCamera:PerspectiveCamera,width:number,height:number,bounds:DOMRect|null,frame:number){
@@ -9,8 +10,17 @@ export function renderParticleFrame(gl:WebGLRenderer,scene:Scene,camera:Camera,h
   gl.domElement.dataset.frames=String(frame);
 }
 
-export function updateParticleCloud(material:ShaderMaterial,group:Group|null,runtime:import("./ParticleRenderContext").ParticleRuntime,width:number,height:number,dpr:number,logoReady=false){
+export function updateParticleCloud(material:ShaderMaterial,group:Group|null,runtime:import("./ParticleRenderContext").ParticleRuntime,width:number,height:number,dpr:number,logoReady=false,transmissions:readonly ParticleTransmission[]=[]){
  material.uniforms.uLogoReady.value=logoReady?1:0;
+ // The continuous graph walk sends one packet at a time, with source/arrival holds.
+ const cycle=runtime.time*.20+runtime.progress*4;
+ const route=transmissions[Math.floor(cycle)%transmissions.length];
+ if(route){
+   const phase=cycle-Math.floor(cycle);
+   const t=Math.max(0,Math.min(1,(phase-.10)/.78));
+   const travel=t*t*(3-2*t);
+   material.uniforms.uRouting.value.set(route.edge,route.from<route.to?travel:1-travel,route.from,route.to);
+ }
  const layout=runtime.layout;
  const scale=Math.min(width*.158,height*.153)*layout.scale;
  const x=(layout.x-.5)*width,y=(.5-layout.y)*height;

@@ -21,6 +21,7 @@ export async function verifyImmersiveHero({cdp,evaluate,load,viewport,media,wait
   await evaluate('localStorage.setItem("lymora-website-motion","full");localStorage.setItem("lymora-website-theme","dark")');
   await media('dark');await load();await live();await top();
   assert.equal(await evaluate('document.querySelectorAll("canvas").length'),1,'Ribbons and particles share one canvas');
+  await waitFor('document.querySelector("canvas").dataset.networkNodes==="14"','Fourteen real network nodes share the renderer');
   assert.equal(await evaluate('document.querySelectorAll("#the-app .living-network").length'),0,'PCs do not crowd the opening');
   assert(await evaluate('(()=>{const hero=document.querySelector("#the-app").getBoundingClientRect(),copy=document.querySelector(".cinematic-copy").getBoundingClientRect(),next=document.querySelector("#network-preview").getBoundingClientRect();return Math.abs(copy.left+copy.width/2-innerWidth/2)<1&&next.top>=hero.bottom-1&&getComputedStyle(document.querySelector("#hero-title")).textAlign==="center"})()'),'Centered brand opening precedes the complete product demo');
   const composition=await evaluate('(()=>{const s=document.querySelector(".particle-backdrop").style;return {x:parseFloat(s.getPropertyValue("--particle-x")),diameter:5.8*Math.min(innerWidth*.158,innerHeight*.153)*Number(s.getPropertyValue("--particle-scale"))/innerHeight,halo:Number(s.getPropertyValue("--halo-presence"))}})()');
@@ -43,6 +44,7 @@ export async function verifyImmersiveHero({cdp,evaluate,load,viewport,media,wait
   await shot('product-dark');
   await evaluate('document.querySelector("#together").scrollIntoView({block:"center",behavior:"instant"})');await pause(1000);
   const middle=await evaluate('Number(document.querySelector(".particle-backdrop").dataset.progress)');
+  await evaluate('window.scrollTo({top:(document.documentElement.scrollHeight-innerHeight)*.8,behavior:"instant"})');await pause(1400);await shot('depth-galaxy');
   await top();assert(await evaluate('Number(document.querySelector(".particle-backdrop").dataset.progress)')<middle,'Scrolling upward reverses the morph and restores the centered opening');
   checks.push('centered large 3D opening; actual moving surface pixels; orange-text rounded glass CTAs; anticlockwise edge; preserved below-fold PC interactions; one shared renderer; reverse morph');
   await evaluate('document.querySelector(".theme-toggle").click()');await pause(400);await shot('hero-light');
