@@ -1,6 +1,26 @@
 import Link from "@/components/site/NavigationLink";
 import { HeroMotion } from "@/components/animations/HeroMotion";
 import { Icon } from "@/components/site/Icons";
-import { LivingNetwork } from "./LivingNetwork";
 import { messenger } from "@/lib/products";
-export function LivingHero(){return <section className="living-hero brand-hero" id="the-app" aria-labelledby="hero-title"><div className="container living-layout"><HeroMotion><p className="eyebrow" data-hero-reveal><span className="signal-dot"/>Welcome to the Lymora network</p><h1 id="hero-title" data-hero-reveal><span>Technology.</span><span>A little <em>closer.</em></span></h1><p className="hero-description" data-hero-reveal>Messages and files between nearby Windows PCs.<br/>No internet connection or cloud account required for LAN messaging.</p><div className="hero-actions" data-hero-reveal><Link href={messenger.path} className="button button-primary">Meet LAN Messenger<Icon name="arrow"/></Link><a href="#experience" className="hero-text-link">See it in action<Icon name="down"/></a></div><Link href={messenger.path} className="hero-product-note" data-hero-reveal><span className="product-platform" aria-hidden="true"><Icon name="windows"/></span><span><strong>Lymora LAN Messenger</strong><small>Windows &middot; Direct LAN communication</small></span><Icon name="arrow"/></Link></HeroMotion><LivingNetwork/></div><div className="container hero-bottom"><p><span className="signal-dot"/>No internet. No cloud account. Just your network.</p><a href="#experience">Explore the actual app<Icon name="down"/></a></div></section>;}
+
+/** Brand first: one generous scene with real HTML in its quiet central opening. */
+export function LivingHero() {
+  return <section className="cinematic-hero" id="the-app" aria-labelledby="hero-title">
+    <div className="hero-stage" aria-hidden="true"/>
+    <div className="container cinematic-copy">
+      <HeroMotion>
+        <p className="eyebrow" data-hero-reveal><span className="signal-dot"/>Welcome to the Lymora network</p>
+        <h1 id="hero-title" data-hero-reveal><span>Technology.</span><span>A little <em>closer.</em></span></h1>
+        <p className="hero-description" data-hero-reveal>Messages and files between nearby Windows PCs.<br/>No internet connection or cloud account required for LAN messaging.</p>
+        <div className="hero-actions" data-hero-reveal>
+          <Link href={messenger.path} className="button button-primary">Meet LAN Messenger<Icon name="arrow"/></Link>
+          <a href="#network-preview" className="hero-text-link">See the connection<Icon name="down"/></a>
+        </div>
+      </HeroMotion>
+    </div>
+    <div className="container cinematic-caption">
+      <p><span className="signal-dot"/>No internet. No cloud account. Just your network.</p>
+      <a href="#network-preview">Scroll to connect<Icon name="down"/></a>
+    </div>
+  </section>;
+}

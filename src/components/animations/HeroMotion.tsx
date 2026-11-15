@@ -7,10 +7,10 @@ import { motionTiming } from "@/lib/motion";
 gsap.registerPlugin(useGSAP);
 export function HeroMotion({children}: {children: ReactNode}) {
   const root = useRef<HTMLDivElement>(null);
-  const {motion}=useScenePreferences();
+  const {motion,capable}=useScenePreferences();
   useGSAP(() => {
     if(!motion)return;
-      gsap.from("[data-hero-reveal]", {y: 16, opacity: .65, duration: motionTiming.entrance, stagger: motionTiming.stagger, ease: "power3.out", clearProps: "transform,opacity"});
-  }, {scope: root,dependencies:[motion],revertOnUpdate:true});
+      gsap.from("[data-hero-reveal]", {y: capable?24:12, rotationX: capable?14:0, z: capable?-18:0, transformPerspective:1100, opacity: .8, duration: motionTiming.entrance, stagger: motionTiming.stagger, ease: "power3.out", clearProps: "transform,opacity"});
+  }, {scope: root,dependencies:[motion,capable],revertOnUpdate:true});
   return <div ref={root} className="hero-copy">{children}</div>;
 }

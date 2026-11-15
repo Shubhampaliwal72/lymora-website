@@ -34,7 +34,7 @@ export async function verifyParticlesUi({cdp,evaluate,load,viewport,media,waitFo
    const original=await fs.readFile(file,'utf8'),probe=original+'\n// Local development refresh verification.\n';
    try {
      await fs.writeFile(file,probe);await pause(1800);
-     await waitFor("document.querySelector('.particle-backdrop')?.dataset.renderer==='webgl'&&document.querySelector('.living-network')?.dataset.mode==='3d'",'Live scene survives Fast Refresh');
+     await waitFor("document.querySelector('.particle-backdrop')?.dataset.renderer==='webgl'",'Live scene survives Fast Refresh');
      const frame=await evaluate("Number(document.querySelector('canvas').dataset.frames)");await pause(600);
      assert(await evaluate("Number(document.querySelector('canvas').dataset.frames)")>frame,'Animation continues after a source edit');
    } finally {
@@ -48,7 +48,9 @@ export async function verifyParticlesUi({cdp,evaluate,load,viewport,media,waitFo
  await viewport(1440,1000);await media('dark');await load();
  await evaluate("document.documentElement.dataset.theme='dark'");
  await waitFor("document.querySelector('.particle-backdrop').dataset.renderer==='webgl'",'Shared particle renderer starts');
- await waitFor("document.querySelector('.living-network').dataset.mode==='3d'",'Existing hero shares renderer');
+ await evaluate('document.querySelector("#network-preview").scrollIntoView({block:"center",behavior:"instant"})');
+ await waitFor("document.querySelector('.living-network').dataset.mode==='3d'",'Below-fold product demo shares renderer');
+ await evaluate('window.scrollTo({top:0,behavior:"instant"})');await pause(1000);
  assert.equal(await evaluate("document.querySelectorAll('canvas').length"),1,'Only one WebGL canvas');
  const frames=()=>evaluate("Number(document.querySelector('canvas')?.dataset.frames||0)");
  const first=await frames();await pause(450);assert(await frames()>first,'Particles remain alive at rest');
@@ -90,7 +92,7 @@ export async function verifyParticlesUi({cdp,evaluate,load,viewport,media,waitFo
  await evaluate("document.querySelector('.header-download').click()");
  await waitFor("location.pathname==='/downloads/'&&document.querySelector('.particle-backdrop').dataset.route==='/downloads/'",'Downloads client navigation updates shared background');
  await evaluate("history.back()");
- await waitFor("location.pathname==='/'&&document.querySelector('.living-network')?.dataset.mode==='3d'",'History restores hero');
+ await waitFor("location.pathname==='/'&&document.querySelector('.particle-backdrop')?.dataset.renderer==='webgl'",'History restores hero');
  await waitFor("document.querySelectorAll('canvas').length===1",'History preserves one renderer');
  checks.push('client navigation and browser history preserve the shared renderer and restore the product scene');
  await evaluate("document.querySelector('canvas').getContext('webgl2').getExtension('WEBGL_lose_context').loseContext()");

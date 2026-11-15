@@ -4,6 +4,7 @@ import { HomeScrollMotion } from "@/components/animations/HomeScrollMotion";
 import { ConnectionStory } from "@/components/animations/ConnectionStory";
 import { ScrollStatement } from "@/components/animations/ScrollStatement";
 import { LivingHero } from "@/components/living-network/LivingHero";
+import { NetworkPreview } from "@/components/sections/NetworkPreview";
 import { ProductExplorer } from "@/components/sections/ProductExplorer";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { DownloadLink } from "@/components/site/DownloadLink";
@@ -40,6 +41,7 @@ export default function Home() {
   return (
     <HomeScrollMotion>
       <LivingHero />
+      <NetworkPreview/>
       <div id="products" className="container product-journey">
         <nav className="chapter-navigation" aria-label="On this page">
           {chapters.map((chapter) => (

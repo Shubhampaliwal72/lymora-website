@@ -5,7 +5,7 @@ export async function verifyTopologyUi({cdp,evaluate,load,viewport,media,waitFor
   const output=path.resolve('.verification');
   for(const [width,theme] of [[1440,'dark'],[1440,'light'],[375,'dark'],[375,'light'],[901,'dark']]){
     await viewport(width,1000);await media(theme);await load();
-    await evaluate('window.scrollTo({top:0,behavior:"instant"})');
+    await evaluate('document.querySelector("#network-preview").scrollIntoView({block:"center",behavior:"instant"})');
     if(width>900)await waitFor(`document.querySelector('.living-network').dataset.mode==='3d'`,'Desktop peer mesh loads');
     assert.equal(await evaluate(`document.querySelectorAll('.network-device-label').length`),3,'Three selectable PCs');
     assert.equal(await evaluate(`document.querySelectorAll('.topology-wire').length`),3,'Three direct mesh connections');
@@ -24,7 +24,7 @@ export async function verifyTopologyUi({cdp,evaluate,load,viewport,media,waitFor
     await evaluate(`document.querySelector('[aria-label="Send a message in the preview"]').click()`);
     await waitFor(`document.querySelector('.living-network').dataset.phase==='4'`,'Packet arrives at receiving PC');
     await evaluate(`document.querySelector('[aria-label="Pause network preview"]').click()`);
-    await evaluate('window.scrollTo({top:0,behavior:"instant"})');await pause(200);
+    await evaluate('document.querySelector("#network-preview").scrollIntoView({block:"center",behavior:"instant"})');await pause(200);
     const shot=await cdp('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
     await fs.writeFile(path.join(output,'peer-mesh-'+width+'-'+theme+'.png'),Buffer.from(shot.data,'base64'));
     if(width<=900)assert.equal(await evaluate('!!document.querySelector("canvas")'),false,'Mobile uses aligned SVG, not WebGL');

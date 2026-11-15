@@ -95,7 +95,9 @@ export async function verifyNavigationUi({cdp,evaluate,viewport,media,waitFor,pa
  const height=await evaluate('document.querySelector(".network-world").getBoundingClientRect().height');
  await capture('scene-fallback');
  await evaluate('window.scrollTo({top:0,behavior:"instant"})');
- await waitFor('document.querySelector(".living-network").dataset.mode==="3d"','Shared 3D becomes ready without blocking page navigation',350);
+ await waitFor('document.querySelector(".particle-backdrop").dataset.renderer==="webgl"','Shared 3D becomes ready without blocking page navigation',350);
+ await evaluate('document.querySelector("#network-preview").scrollIntoView({block:"center",behavior:"instant"})');
+ await waitFor('document.querySelector(".living-network").dataset.mode==="3d"','Product scene loads when its new section is visible',350);
  assert(faults.hits>0,'The shared renderer chunk was genuinely delayed');
  assert(Math.abs(await evaluate('document.querySelector(".network-world").getBoundingClientRect().height')-height)<.5,'Scene upgrade preserves layout dimensions');
  assert.equal(await evaluate('document.querySelectorAll("canvas").length'),1,'Backdrop and product use one renderer');

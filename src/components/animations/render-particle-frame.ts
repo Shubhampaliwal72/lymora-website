@@ -15,7 +15,7 @@ export function updateParticleCloud(material:ShaderMaterial,group:Group|null,run
  const scale=Math.min(width*.158,height*.153)*layout.scale;
  const x=(layout.x-.5)*width,y=(.5-layout.y)*height;
  material.uniforms.uTime.value=runtime.time;material.uniforms.uMorph.value=runtime.progress*2;material.uniforms.uDpr.value=dpr;
- material.uniforms.uQuiet.value=layout.quiet;
+ material.uniforms.uQuiet.value=layout.quiet;material.uniforms.uHalo.value=layout.halo;
  material.uniforms.uInteraction.value=runtime.pointer.active;
  material.uniforms.uPointer.value.set((runtime.pointer.x*width*.5-x)/scale,(-runtime.pointer.y*height*.5-y)/scale);
  if(group){group.position.set(x,y,0);group.scale.setScalar(scale);group.rotation.x=runtime.pointer.y*.07+Math.sin(runtime.time*.14)*.035;group.rotation.y=runtime.pointer.x*.10+Math.sin(runtime.time*.1)*.06;group.rotation.z=runtime.pointer.x*.018;}

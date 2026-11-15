@@ -17,7 +17,7 @@ export async function verifyExperienceUi({cdp,evaluate,load,viewport,media,waitF
  await evaluate("document.querySelector('.theme-toggle').click()");await pause(400);assert.equal(await evaluate('document.documentElement.dataset.theme'),'light','3D theme control still works');
  await shot('hero-light');await evaluate("document.querySelector('.theme-toggle').click()");await pause(400);await shot('hero-dark');
  const heroX=await evaluate("parseFloat(document.querySelector('.particle-backdrop').style.getPropertyValue('--particle-x'))");
- assert(heroX>55,'Hero atmosphere is composed toward the product scene');
+ assert(Math.abs(heroX-50)<.5,'The opening scene is centered around the headline');
  assert(await evaluate("document.querySelector('.ambience-control').hasAttribute('data-edge-surface')"),'Floating motion control uses the same material');
  checks.push('anticlockwise masked header/control beams; pointer-transparent borders; 3D theme control and both palettes');
  const headingTop=await evaluate("document.querySelector('#connect-title').getBoundingClientRect().top+scrollY");
@@ -54,7 +54,7 @@ export async function verifyExperienceUi({cdp,evaluate,load,viewport,media,waitF
   await viewport(width,900);await load();await evaluate("document.querySelector('.usecase-card').scrollIntoView({block:'center',behavior:'instant'})");await pause(700);
   assert(await evaluate('document.documentElement.scrollWidth<=innerWidth'),'No overflow at '+width);
   if(width===375)await shot('mobile-light');
-  if(width===3840){await scroll(0);assert(await evaluate("(()=>{const x=parseFloat(document.querySelector('.particle-backdrop').style.getPropertyValue('--particle-x'))/100*innerWidth,r=document.querySelector('.living-network').getBoundingClientRect();return x>=r.left&&x<=r.right})()"),'4K background aligns with the bounded product column');await shot('4k-composition');}
+  if(width===3840){await scroll(0);assert(await evaluate("(()=>{const x=parseFloat(document.querySelector('.particle-backdrop').style.getPropertyValue('--particle-x'))/100*innerWidth,r=document.querySelector('.hero-stage').getBoundingClientRect();return Math.abs(x-r.left-r.width/2)<1})()"),'4K background aligns with the bounded product column');await shot('4k-composition');}
  }
  await viewport(1440,1000);await evaluate("localStorage.setItem('lymora-website-motion','reduced')");await load();
  await waitFor("document.documentElement.dataset.motion==='reduced'",'Static preference is retained');

@@ -8,6 +8,7 @@ uniform float uTime;
 uniform float uMorph;
 uniform float uDpr;
 uniform float uLogoReady;
+uniform float uHalo;
 uniform vec2 uPointer;
 uniform float uInteraction;
 uniform vec3 uWarm;
@@ -28,6 +29,7 @@ void main() {
   vec3 p = mix(ring, orb, smoothstep(0.0, 1.0, uMorph));
   p = mix(p, galaxy, smoothstep(1.0, 1.8, uMorph));
   float formation = smoothstep(1.82, 2.0, uMorph) * uLogoReady;
+  p.x *= 1.0 + uHalo*0.12*(1.0-formation);
   p = mix(p, aLogo, formation);
   // A small subset drifts near the pointer; the main field bends gently around it.
   vec2 delta = p.xy - uPointer;
