@@ -13,3 +13,9 @@ https://:project.pages.dev/*
 
 https://:version.:project.pages.dev/*
   X-Robots-Tag: noindex
+
+/opengraph-image
+  Content-Type: image/png
+
+/media/particle-fallback.svg
+  Content-Type: image/svg+xml

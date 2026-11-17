@@ -4,16 +4,18 @@
   "private": true,
   "scripts": {
     "dev": "next dev --hostname 127.0.0.1 --port 3100",
+    "prebuild": "node scripts/generate-particle-preview.mjs",
     "build": "next build",
     "lint": "eslint . --max-warnings=0",
     "typecheck": "next typegen && tsc --noEmit",
     "verify:browser": "node scripts/verify-browser.mjs",
     "postbuild": "node scripts/normalize-static-segments.mjs",
     "verify:motion": "node scripts/verify-network-motion.mjs",
-    "verify:export": "node --test scripts/indexing-policy.test.mjs && node scripts/verify-static-links.mjs && node scripts/verify-cloudflare-export.mjs",
+    "verify:export": "node --test scripts/indexing-policy.test.mjs scripts/seo.test.mjs && node scripts/verify-static-links.mjs && node scripts/verify-cloudflare-export.mjs",
     "verify:launch": "node scripts/verify-network-motion.mjs --launch-only",
     "verify:navigation": "node scripts/verify-navigation-state.mjs && node scripts/verify-network-motion.mjs --navigation-only",
     "postinstall": "node scripts/r3f-timer-compat.mjs",
+    "verify:seo": "node scripts/verify-network-motion.mjs --seo-only",
     "verify:particles": "node scripts/verify-network-motion.mjs --particles-only"
   },
   "dependencies": {

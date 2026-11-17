@@ -1,5 +1,5 @@
 /* The opening is a scene, not a small illustration beside a feature grid. */
-.particle-backdrop[data-route="/"] .particle-fallback { left:var(--particle-x,50%);top:var(--particle-y,51%);scale:var(--particle-scale,1); }
+.particle-backdrop[data-route="/"] .particle-fallback { --particle-default-x:50vw;--particle-default-y:51vh;--particle-default-scale:1; }
 .cinematic-hero { position:relative;isolation:isolate;min-height:calc(100svh - 94px);display:grid;place-items:center;padding:52px 0 112px; }
 .hero-stage { position:absolute;inset:14px 0 84px;pointer-events:none; }
 .cinematic-hero::before { content:"";position:absolute;inset:8% 12%;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at center,color-mix(in srgb,var(--canvas) 68%,transparent),transparent 67%); }
@@ -57,7 +57,7 @@ html[data-motion='reduced'] .signal-halo-fallback { animation:none;transition:no
  .cinematic-caption { bottom:72px;align-items:flex-start;flex-direction:column;gap:6px;padding-top:14px;font-size:10px; }
  .cinematic-caption a { position:static;min-height:36px; }.cinematic-hero .button{font-size:13px;padding:13px 22px;}
  .network-preview-copy .eyebrow{font-size:10px;}.signal-halo-fallback path{stroke-width:8;}
- .particle-fallback-cloud path{stroke-width:2.8;}
+ .particle-fallback-cloud :is(path,use){stroke-width:2.8;}
 }
 @media(max-height:740px) and (min-width:901px) {
  .cinematic-hero { min-height:calc(100svh - 94px);padding:30px 0 86px; }.hero-stage { inset:0 0 60px; }

@@ -20,7 +20,8 @@ for(const route of routes){
   assert(html.includes('name="robots" content="'+indexing+'"'),'Correct indexing policy: '+route);
   assert(html.includes('property="og:image"'),'Sharing image: '+route);
   assert(html.includes('name="twitter:card" content="summary_large_image"'),'Sharing card: '+route);
-  assert(/<title>[^<]+<\/title>/.test(html),'Nonempty page title: '+route);
+  assert(/<title>[^<]*Lymora[^<]*<\/title>/.test(html),'Descriptive branded page title: '+route);
+  assert.equal((html.match(/<h1\b/g)||[]).length,1,'Exactly one H1: '+route);
   assert(/<meta name="description" content="[^"]+"/.test(html),'Nonempty description: '+route);
 }
 const robots=await fs.readFile(path.join(root,'robots.txt'),'utf8'),sitemap=await fs.readFile(path.join(root,'sitemap.xml'),'utf8');
@@ -42,7 +43,9 @@ for(const location of locations){
 const indexableUrls=[],titles=new Set(),descriptions=new Set();
 for(const file of htmlFiles){
   const html=await fs.readFile(file,'utf8');
-  const directive=html.match(/<meta name="robots" content="([^"]+)"/);
+  const directives=[...html.matchAll(/<meta name="robots" content="([^"]+)"/g)];
+  assert.equal(directives.length,1,'One unambiguous robots directive: '+path.relative(root,file));
+  const directive=directives[0];
   assert(directive,'Explicit robots metadata: '+path.relative(root,file));
   if(/\bnoindex\b/.test(directive[1]))continue;
   assert(publicLaunch,'Preview must not contain indexable HTML: '+file);
@@ -59,6 +62,29 @@ for(const file of htmlFiles){
   titles.add(title);descriptions.add(description);
 }
 assert.deepEqual(indexableUrls.sort(),[...locations].sort(),'Every indexable exported page appears in sitemap');
+// Validate the shipped JSON-LD, not an unrelated example object.
+const release=JSON.parse(await fs.readFile('src/lib/releases/windows.json','utf8'));
+for(const route of ['/','/downloads/','/products/lan-messenger/']){
+  const html=await fs.readFile(path.join(root,route.slice(1),'index.html'),'utf8');
+  const scripts=[...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)];
+  assert.equal(scripts.length,1,'One structured-data entity: '+route);
+  const schema=JSON.parse(scripts[0][1]);
+  assert.equal(schema['@context'],'https://schema.org');
+  assert.equal(schema['@type'],route==='/'?'WebSite':'SoftwareApplication');
+  assert(!('offers' in schema)&&!('aggregateRating' in schema)&&!('review' in schema),'No invented commercial data');
+  if(route==='/'){assert.equal(schema.name,'Lymora');assert.equal(schema.url,origin+'/');}
+  else{assert.equal(schema.softwareVersion,release.version);assert.equal(schema.downloadUrl,release.downloadUrl);assert.equal(schema.operatingSystem,release.windowsRequirement);assert.equal(schema.applicationCategory,'CommunicationApplication');}
+}
+const preview=await fs.readFile(path.join(root,'media/particle-fallback.svg'),'utf8');
+for(let i=0;i<3;i++)assert(preview.includes('id="particles-'+i+'"'),'Original SVG fallback geometry present');
+const homeHtml=await fs.readFile(path.join(root,'index.html'),'utf8');
+assert(homeHtml.includes('/media/particle-fallback.svg#particles-0'),'Shared SVG referenced');
+assert(Buffer.byteLength(homeHtml)<180000,'Avoid repeating the large fallback geometry in page HTML');
+const errorHtml=await fs.readFile(path.join(root,'404.html'),'utf8');
+assert(errorHtml.includes('name="robots" content="noindex"'),'Error page stays noindex');
+const headers=await fs.readFile(path.join(root,'_headers'),'utf8');
+assert(/\/opengraph-image\r?\n\s+Content-Type: image\/png/.test(headers),'Correct social image MIME configuration');
+
 const png=await fs.readFile(path.join(root,'opengraph-image'));assert.equal(png.subarray(0,8).toString('hex'),'89504e470d0a1a0a','Sharing image is PNG');assert.equal(png.readUInt32BE(16),1200);assert.equal(png.readUInt32BE(20),630);
 assert.equal(await fs.readFile(path.join(root,'_headers'),'utf8'),await fs.readFile('public/_headers','utf8'),'Cloudflare headers copied unchanged');
 assert(!(await fs.readdir(root)).includes('_redirects'),'Production redirects stay inactive until domain approval');

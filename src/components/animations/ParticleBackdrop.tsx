@@ -9,12 +9,12 @@ import {Icon} from "@/components/site/Icons";
 import {useScenePreferences} from "@/components/living-network/useScenePreferences";
 import type {NetworkCanvasProps} from "@/components/living-network/scene";
 import {measureParticleComposition,particleCompositionAt} from "@/lib/particle-composition";
-import {createParticlePreview,particleIntensity} from "@/lib/particle-field";
+import {particleIntensity} from "@/lib/particle-field";
 import {ParticleRenderContext,type HeroRegistration,type ParticleRuntime} from "./ParticleRenderContext";
 
 gsap.registerPlugin(useGSAP);
 const ParticleCanvas=dynamic(()=>import("./ParticleCanvas"),{ssr:false});
-const preview=createParticlePreview();
+const previewLayers=[0,1,2] as const;
 class ParticleBoundary extends Component<{children:ReactNode;onUnavailable:()=>void},{failed:boolean}> {
   state={failed:false};static getDerivedStateFromError(){return{failed:true};}
   componentDidCatch(){this.props.onUnavailable();}
@@ -52,8 +52,8 @@ export function ParticleBackdrop({children}:{children:ReactNode}) {
       const composition=particleCompositionAt(stops,scrollY);
       if(immediate||!motion)Object.assign(layout,composition);
       else {layoutEase.y(composition.y);layoutEase.x(composition.x);layoutEase.scale(composition.scale);layoutEase.quiet(composition.quiet);layoutEase.halo(composition.halo);}
-      root.current?.style.setProperty("--particle-x",(composition.x*100).toFixed(2)+"%");
-      root.current?.style.setProperty("--particle-y",(composition.y*100).toFixed(2)+"%");
+      root.current?.style.setProperty("--particle-x",(composition.x*100).toFixed(2)+"vw");
+      root.current?.style.setProperty("--particle-y",(composition.y*100).toFixed(2)+"vh");
       root.current?.style.setProperty("--particle-scale",String(composition.scale));
       root.current?.style.setProperty("--halo-presence",String(composition.halo));
       if(!motion){progress.value=0;draw();return;}
@@ -104,7 +104,7 @@ export function ParticleBackdrop({children}:{children:ReactNode}) {
       <svg className="particle-fallback" viewBox="0 0 1000 1000" fill="none">
         <defs><linearGradient id={gradient} x1="0" y1="0" x2="0" y2="1"><stop offset="38%" stopColor="var(--accent)"/><stop offset="62%" stopColor="var(--particle-cool)"/></linearGradient></defs>
         <g className="signal-halo-fallback" stroke={"url(#"+gradient+")"}><path d="M115 500C100 240 350 85 515 110C790 85 918 340 885 530C910 790 650 918 470 888C210 914 85 660 115 500Z"/><path d="M135 480C85 255 325 95 535 130C795 100 900 325 865 520C915 765 675 905 465 870C220 910 105 685 135 480Z"/></g>
-        <g className="particle-fallback-cloud" stroke={"url(#"+gradient+")"} strokeLinecap="round">{preview.map((path,index)=><path key={index} d={path} strokeWidth={.9+index*.35} opacity={.32+index*.2}/>)}</g>
+        <g className="particle-fallback-cloud" stroke={"url(#"+gradient+")"} strokeLinecap="round">{previewLayers.map(index=><use key={index} href={"/media/particle-fallback.svg#particles-"+index} strokeWidth={.9+index*.35} opacity={.32+index*.2}/>)}</g>
       </svg>
       {enabled&&<ParticleBoundary onUnavailable={onUnavailable}><ParticleCanvas runtime={runtime} invalidateRef={invalidateRef} hero={hero} theme={theme} intensity={intensity} onReady={onReady} onUnavailable={onUnavailable}/></ParticleBoundary>}
       <div className="particle-reading-veil"/>

@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, type MutableRefObject } from "react";
+import { ThemeScreenshot } from "@/components/site/ThemeScreenshot";
 import { connections, illustratedDevices, routeBetween, arrivalPulse, pointOnRoute, storyAt, svgRoute, type Endpoint, type SceneClock, type Transfer } from "./scene";
 
 export function NetworkFallback({clock,invalidateRef,endpoint,source,transfer}:{clock:MutableRefObject<SceneClock>;invalidateRef:MutableRefObject<(()=>void)|null>;endpoint:Endpoint;source:Endpoint;transfer:Transfer}) {
@@ -23,7 +24,7 @@ export function NetworkFallback({clock,invalidateRef,endpoint,source,transfer}:{
         <rect className="topology-stand" x={device.x-w*.19} y={y+h*1.19} width={w*.38} height={h*.035} rx="4"/>
         <rect className="topology-bezel" x={x} y={y} width={w} height={h} rx="10"/>
         <rect className="topology-screen" x={x+6} y={y+6} width={w-12} height={h-12} rx="6"/>
-        {device.app?<><image className="theme-image-dark" href="/media/product/chats-dark.png" x={x+8} y={y+8} width={w-16} height={h-16} preserveAspectRatio="xMidYMid meet"/><image className="theme-image-light" href="/media/product/chats-light.png" x={x+8} y={y+8} width={w-16} height={h-16} preserveAspectRatio="xMidYMid meet"/></>:<><image className="theme-image-dark" href="/brand/mark-dark.png" x={device.x-w*.18} y={device.y-w*.18} width={w*.36} height={w*.36}/><image className="theme-image-light" href="/brand/mark-light.png" x={device.x-w*.18} y={device.y-w*.18} width={w*.36} height={w*.36}/></>}
+        {device.app?<foreignObject x={x+8} y={y+8} width={w-16} height={h-16}><div style={{display:"grid",alignItems:"center",width:"100%",height:"100%"}}><ThemeScreenshot view="chats" alt="" sizes="(max-width: 900px) 60vw, 450px"/></div></foreignObject>:<><image className="theme-image-dark" href="/brand/mark-dark.png" x={device.x-w*.18} y={device.y-w*.18} width={w*.36} height={w*.36}/><image className="theme-image-light" href="/brand/mark-light.png" x={device.x-w*.18} y={device.y-w*.18} width={w*.36} height={w*.36}/></>}
         <rect className="topology-arrival" x={x+.5} y={y+.5} width={w-1} height={h-1} rx="10"/>
         <circle className="topology-led" cx={x+w-12} cy={y+h-8} r="2"/>
       </g>;

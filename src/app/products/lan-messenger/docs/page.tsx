@@ -8,7 +8,7 @@ import { DocumentationMotion } from "@/components/documentation/DocumentationMot
 import { DocumentationFaq } from "@/components/documentation/DocumentationFaq";
 import "./documentation.css";
 
-export const metadata = pageMetadata("/products/lan-messenger/docs/", "LAN Messenger documentation", "Install Lymora, discover nearby PCs, share messages and files, and troubleshoot your LAN connection.");
+export const metadata = pageMetadata("/products/lan-messenger/docs/", "Lymora Setup and LAN Troubleshooting Guide", "Install Lymora, discover nearby PCs, share messages and files, and troubleshoot your LAN connection.");
 const sections = [
   {href: "#setup", label: "First-time setup"},
   {href: "#network", label: "Your network"},
@@ -41,7 +41,7 @@ const checks = [
 
 export default function Docs() {
   return <main id="main" tabIndex={-1} className="container editorial-page reading-page messenger-docs">
-    <PageIntro eyebrow="LAN Messenger / Documentation" title={<>A good connection<br/><em>starts here.</em></>} description="A practical guide to getting Lymora running and keeping conversations moving."/>
+    <PageIntro eyebrow="LAN Messenger / Documentation" title={<>Set up Lymora.<br/><em>Stay connected.</em></>} description="Install Lymora on your Windows PCs, connect them over a reachable local network, and troubleshoot messages and file sharing."/>
     <div className="guide-overview" aria-label="Guide essentials"><span><Icon name="windows"/>Windows PCs</span><span><span className="signal-dot"/>Direct local connection</span><span>No cloud account</span></div>
     <div className="documentation-layout">
       <aside className="docs-sidebar"><p className="docs-sidebar-label">In this guide</p><SectionNavigation className="docs-nav glass-panel" label="Documentation contents" items={sections}/><div className="docs-sidebar-note"><p>Something getting in the way?</p><a href="#troubleshooting">Start with the simple checks<Icon name="arrow"/></a></div></aside>

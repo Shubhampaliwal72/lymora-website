@@ -15,11 +15,13 @@ export const publicLaunch = isPublicBuild({
 });
 
 export function pageMetadata(path: string, title: string, description: string = site.description): Metadata {
+  const brandedTitle = title.includes(site.name) ? title : title + " | " + site.name;
   return {
-    title, description,
+    title: { absolute: brandedTitle }, description,
+    robots: { index: publicLaunch, follow: publicLaunch },
     alternates: { canonical: path },
-    openGraph: { type: "website", siteName: site.name, title, description, url: path,
+    openGraph: { type: "website", siteName: site.name, title: brandedTitle, description, url: path,
       images: [{url: "/opengraph-image", width: 1200, height: 630, alt: "Lymora. Technology, closer. Messages and files between nearby Windows PCs."}] },
-    twitter: { card: "summary_large_image", title, description, images: ["/opengraph-image"] },
+    twitter: { card: "summary_large_image", title: brandedTitle, description, images: ["/opengraph-image"] },
   };
 }

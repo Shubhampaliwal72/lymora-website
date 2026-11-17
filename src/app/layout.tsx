@@ -11,7 +11,7 @@ import "../styles/particles.css";
 import "../styles/experience.css";
 import "../styles/immersive-hero.css";
 import "../styles/connection-story.css";
-import { publicLaunch, site } from "@/lib/site";
+import { site } from "@/lib/site";
 import { HeaderRipple } from "@/components/site/HeaderRipple";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
@@ -24,7 +24,6 @@ export const metadata: Metadata = {
   title: {default: "Lymora | Technology, closer.", template: "%s | Lymora"},
   description: "Useful technology for the spaces we share. Discover Lymora LAN Messenger: direct messages, groups and files between nearby Windows PCs.",
   metadataBase: new URL(site.origin),
-  robots: {index: publicLaunch, follow: publicLaunch},
   icons: {icon: [{url: "/brand/mark-dark.png", type: "image/png", sizes: "512x512"}], apple: "/brand/mark-light.png"},
 };
 // Runs before paint; only this root attribute differs during hydration. No external requests.

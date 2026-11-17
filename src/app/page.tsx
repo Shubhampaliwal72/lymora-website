@@ -10,8 +10,10 @@ import { SectionHeading } from "@/components/site/SectionHeading";
 import { DownloadLink } from "@/components/site/DownloadLink";
 import { Icon } from "@/components/site/Icons";
 import { messenger } from "@/lib/products";
+import { StructuredData } from "@/components/site/StructuredData";
+import { siteStructuredData } from "@/lib/structured-data";
 
-export const metadata = pageMetadata("/", "Technology, closer.");
+export const metadata = pageMetadata("/", "Lymora | Messages and Files on Your Local Network");
 const chapters = [
   { number: "01", href: "#experience", label: "Inside Lymora" },
   { number: "02", href: "#how-it-works", label: "Get connected" },
@@ -40,6 +42,7 @@ const uses = [
 export default function Home() {
   return (
     <HomeScrollMotion>
+      <StructuredData data={siteStructuredData()}/>
       <LivingHero />
       <NetworkPreview/>
       <div id="products" className="container product-journey">
