@@ -10,7 +10,7 @@
     "verify:browser": "node scripts/verify-browser.mjs",
     "postbuild": "node scripts/normalize-static-segments.mjs",
     "verify:motion": "node scripts/verify-network-motion.mjs",
-    "verify:export": "node scripts/verify-static-links.mjs && node scripts/verify-cloudflare-export.mjs",
+    "verify:export": "node --test scripts/indexing-policy.test.mjs && node scripts/verify-static-links.mjs && node scripts/verify-cloudflare-export.mjs",
     "verify:launch": "node scripts/verify-network-motion.mjs --launch-only",
     "verify:navigation": "node scripts/verify-navigation-state.mjs && node scripts/verify-network-motion.mjs --navigation-only",
     "postinstall": "node scripts/r3f-timer-compat.mjs",

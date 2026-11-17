@@ -29,7 +29,7 @@ Use **Workers & Pages > Create application > Pages > Import an existing Git repo
 | Node.js | 22, selected by `.node-version` |
 | Additional environment variables | None required for the static build |
 
-Pages publishes the build output itself; there is no separate `wrangler deploy` command. Keep `LYMORA_PUBLIC_LAUNCH` unset until public indexing is approved. Review the deployment before starting it; this guide does not authorize a deployment or domain change.
+Pages publishes the build output itself; there is no separate `wrangler deploy` command. Production exports now include public search metadata by default. Set `LYMORA_PUBLIC_LAUNCH=false` only for an intentionally non-indexable build. Review the deployment before starting it; this guide does not authorize a deployment or domain change.
 
 ## Troubleshooting: build succeeds, Workers deployment fails
 
@@ -45,14 +45,20 @@ Official reference: [Deploy a static Next.js site on Cloudflare Pages](https://d
 
 ## Public search visibility
 
-Development builds remain noindex. When YOU are ready for a public launch, build in PowerShell with:
+The public website uses https://lymora.in as its canonical origin. A normal `npm run build` (manual export or Cloudflare `main`) generates indexable pages, an allow-all robots.txt and seven sitemap URLs. No launch flag is required. The former opt-in default generated an empty sitemap, `Disallow: /` and noindex page metadata when the flag was absent.
 
-    $env:LYMORA_PUBLIC_LAUNCH = 'true'
+`next dev` and named Cloudflare preview branches other than `main` remain noindex. An explicit `LYMORA_PUBLIC_LAUNCH=true` does not override preview protection. For an intentionally non-indexable manual/staging export, use the following environment for both build and verification:
+
+    $env:LYMORA_PUBLIC_LAUNCH = 'false'
     npm.cmd run build
     npm.cmd run verify:export
     Remove-Item Env:LYMORA_PUBLIC_LAUNCH
 
-This enables the robots metadata and sitemap for manual builds. A named Cloudflare preview branch still stays noindex; the Cloudflare main branch can opt in through the same flag. Removing the variable restores the development default for the next build; it does not alter an already-uploaded artifact. Noindex is not access control.
+Build and verification must use matching environment values. Removing a variable does not alter an already-generated or uploaded artifact. Preview uploads without a named branch must explicitly opt out. Noindex is not access control. The indexing policy is shared in src/lib/indexing.mjs and covered by regression tests in verify:export.
+
+The sitemap contains /, /downloads/, /products/, /products/lan-messenger/, /products/lan-messenger/docs/, /about/ and /privacy/. The legacy release-notes handoff is explicitly noindex, points its canonical at /downloads/ and stays out of the sitemap. Error pages also remain excluded. All seven public pages have their own canonical, title and description.
+
+After reviewing and deploying the new out/ through your existing hosting workflow, open https://lymora.in/sitemap.xml and confirm seven real loc URLs, then open https://lymora.in/robots.txt and confirm Allow: / plus Sitemap: https://lymora.in/sitemap.xml. Check the public pages for index, follow and the canonical origin. If an existing production environment sets LYMORA_PUBLIC_LAUNCH=false, remove that opt-out before rebuilding. Runtime environment changes alone cannot update these static files. Submit the sitemap in Google Search Console if you use it; search indexing is not immediate. No commit, push, deployment or hosting setting change is performed by these checks.
 
 Canonical address: https://lymora.in . Connect your domain and www, check certificates, and configure www -> apex plus HTTP -> HTTPS redirects through your hosting dashboard when ready. DNS and certificate setup are managed separately from this repository; no hard-coded guessed hosting target is published.
 

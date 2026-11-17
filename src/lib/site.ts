@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { isPublicBuild } from "./indexing.mjs";
 
 export const site = {
   name: "Lymora",
@@ -6,8 +7,12 @@ export const site = {
   description: "Messages, groups and files between nearby Windows PCs. Discover Lymora LAN Messenger, without a cloud account.",
 } as const;
 
-// Explicit opt-in supports manual exports; named Cloudflare preview branches stay noindex.
-export const publicLaunch = process.env.LYMORA_PUBLIC_LAUNCH === "true" && (!process.env.CF_PAGES_BRANCH || process.env.CF_PAGES_BRANCH === "main");
+// Index production exports by default; development, previews and explicit opt-outs stay noindex.
+export const publicLaunch = isPublicBuild({
+  NODE_ENV: process.env.NODE_ENV,
+  LYMORA_PUBLIC_LAUNCH: process.env.LYMORA_PUBLIC_LAUNCH,
+  CF_PAGES_BRANCH: process.env.CF_PAGES_BRANCH,
+});
 
 export function pageMetadata(path: string, title: string, description: string = site.description): Metadata {
   return {
