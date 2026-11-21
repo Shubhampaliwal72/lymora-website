@@ -1,0 +1,12 @@
+export const PRODUCT: string;
+export function normalizeCode(value: unknown): string;
+export function validCode(value: string): boolean;
+export function validDeviceId(value: unknown): value is string;
+export function safeText(value: unknown, max: number): value is string;
+export function sha256(value: string): Promise<string>;
+export function issueToken(claims: Record<string, unknown>, pem: string): Promise<string>;
+export function readJson<T = Record<string, unknown>>(request: Request, limit?: number): Promise<T>;
+export function response(body: unknown, status?: number): Response;
+export function sameSecret(actual: string, expected: string): boolean;
+export function newCode(): string;
+export function createLicense(db: D1Database, request: { organizationName: string; maxDevices: number; expiresAt: number | null; requestId?: string | null }): Promise<{ code: string; licenseId: string; maxDevices: number; expiresAt: number | null }>;

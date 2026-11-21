@@ -50,3 +50,5 @@ next-env.d.ts
 
 # Full-size local website review captures
 /design/glass-network/captures/
+
+/functions/.secrets/

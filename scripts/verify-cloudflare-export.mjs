@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { isPublicBuild } from '../src/lib/indexing.mjs';
 const root=path.resolve('out');
 const origin='https://lymora.in';
-const routes=['/','/products/','/products/lan-messenger/','/products/lan-messenger/docs/','/products/lan-messenger/releases/','/downloads/','/about/','/privacy/'];
+const routes=['/','/products/','/products/lan-messenger/','/products/lan-messenger/docs/','/products/lan-messenger/releases/','/downloads/','/license/','/about/','/privacy/'];
 const publicLaunch=isPublicBuild(process.env);
 let assets=0,totalBytes=0,largest={path:'',bytes:0};
 const htmlFiles=[];

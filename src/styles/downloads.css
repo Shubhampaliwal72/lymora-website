@@ -56,3 +56,25 @@
 @media(max-width:800px) { .upcoming-platforms-heading { align-items:flex-start;flex-direction:column;gap:16px; }.upcoming-platforms-grid { grid-template-columns:1fr; }.upcoming-platform { min-height:166px; } }
 @media(max-width:500px) { .upcoming-platform { padding:28px 22px;gap:20px; }.upcoming-platform-art { width:62px;height:72px; }.platform-monogram { font-size:36px; }.platform-orbit { border-radius:20px; }.upcoming-platform h3 { font-size:24px; }.upcoming-platform-copy>p:last-child { font-size:12px; }.upcoming-platform-index { right:18px;top:14px;font-size:8px; } }
 @media(forced-colors:active) { .platform-orbit { border-color:CanvasText;background:none;box-shadow:none; }.platform-orbit::after,.upcoming-platform-status>span { background:CanvasText;box-shadow:none; } }
+
+.license-request-panel { display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,.8fr);gap:clamp(30px,6vw,88px);align-items:start;padding:clamp(26px,5vw,56px);border-radius:28px; }
+.license-request-copy { max-width:58ch; }
+.license-request-copy h2 { margin:12px 0 20px;font-size:clamp(30px,3.4vw,44px);letter-spacing:-.045em;font-weight:400; }
+.license-request-copy>p:not(.eyebrow) { color:var(--text-secondary);font-size:14px;line-height:1.85; }
+.license-request-copy .license-request-footnote { margin-top:24px;padding-top:18px;border-top:1px solid var(--border);font-size:12px!important;color:var(--text-muted)!important; }
+.license-request-form { display:grid;gap:18px; }
+.license-request-form>label:not(.license-request-consent) { display:grid;gap:8px;color:var(--text-secondary);font-size:12px; }
+.license-request-form input:not([type=checkbox]) { width:100%;min-height:48px;padding:11px 14px;border:1px solid var(--border);border-radius:12px;background:color-mix(in srgb,var(--canvas) 65%,transparent);color:var(--text-primary);font:inherit; }
+.license-request-form input:focus-visible { outline:2px solid var(--accent);outline-offset:2px; }
+.license-request-consent { display:flex;align-items:flex-start;gap:10px;color:var(--text-muted);font-size:11px;line-height:1.65; }
+.license-request-consent input { margin:3px 0 0;accent-color:var(--accent); }
+.license-request-consent a { color:var(--accent);text-decoration:underline;text-underline-offset:3px; }
+.license-request-form .button { justify-self:start; }
+.license-request-form .button:disabled { opacity:.58;cursor:wait; }
+.license-request-message { min-height:1.5em;margin:0;color:var(--text-secondary);font-size:12px;line-height:1.6; }
+.license-request-message[role=alert] { color:#ff936e; }
+.license-page .editorial-note { margin-top:36px; }
+@media(max-width:800px) { .license-request-panel { grid-template-columns:1fr;gap:20px; } }
+@media(max-width:480px) { .license-request-panel { padding:22px;border-radius:22px; }.license-request-form .button { width:100%;justify-content:space-between; } }
+@media(prefers-reduced-transparency:reduce) { .license-request-form input:not([type=checkbox]) { background:var(--surface); } }
+@media(forced-colors:active) { .license-request-form input:not([type=checkbox]) { background:Canvas;color:CanvasText;border-color:CanvasText; } }

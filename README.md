@@ -55,9 +55,11 @@ deploy step requests a missing standalone server manifest, follow the
 
 `next.config.ts` uses `output: "export"` and `trailingSlash: true`. Images use
 `unoptimized: true`; resize/compress future product images ahead of time because
-Pages cannot run Next.js's default image-optimization server. There are no
-server actions, dynamic SSR, runtime API routes or backend dependencies. The
-generated cache-components/partial-prefetch flags were removed for static export.
+Pages cannot run Next.js's default image-optimization server. Public pages are
+static and require no Node server. Organization license requests and activation
+are served separately by Pages Functions from the repository-root `functions/`
+directory with a D1 binding. The generated cache-components/partial-prefetch
+flags were removed for static export.
 
 The site self-hosts Latin Manrope and DM Sans fonts with their OFL licences. No browser request goes to Google. It remains noindex until public release review. The Windows download action leads to an honest release-status section; no installer URL is invented.
 
