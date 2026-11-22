@@ -23,7 +23,18 @@ export function LicenseRequestForm() {
         headers: { 'content-type': 'application/json', accept: 'application/json' },
         body: JSON.stringify({ organization, email, consent }),
       });
-      const result = await response.json() as { received?: boolean; error?: string };
+      const responseBody = await response.text();
+      let result: { received?: boolean; error?: string } | null = null;
+      try {
+        const parsed: unknown = responseBody ? JSON.parse(responseBody) : null;
+        if (parsed && typeof parsed === 'object') result = parsed as { received?: boolean; error?: string };
+      } catch { /* A static-only deployment or proxy error may return HTML or an empty body. */ }
+      if (!result) {
+        if (response.status === 404 || response.status === 405) {
+          throw new Error('Organization requests are unavailable on this deployment. Please contact Lymora directly.');
+        }
+        throw new Error('The request service returned an invalid response. Please try again later.');
+      }
       if (!response.ok || !result.received) throw new Error(result.error || 'Your request could not be submitted. Please try again.');
       setMessage('Request received. Lymora will review it and send an organization code to your email.');
       setOrganization('');
