@@ -32,6 +32,7 @@ export function sameSecret(actual, expected) {
   for (let i = 0; i < length; i++) diff |= (actual.charCodeAt(i % actual.length) || 0) ^ (expected.charCodeAt(i % expected.length) || 0);
   return diff === 0;
 }
+export const hasAdminAuthorization = (request, token) => sameSecret(request.headers.get('authorization')?.replace(/^Bearer\s+/i, '') || '', token);
 export function newCode() {
   const bytes = crypto.getRandomValues(new Uint8Array(16));
   return `LYM-${Array.from(bytes, value => value.toString(16).padStart(2, '0')).join('').toUpperCase()}`;

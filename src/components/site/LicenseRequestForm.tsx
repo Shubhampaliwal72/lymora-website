@@ -36,7 +36,7 @@ export function LicenseRequestForm() {
         throw new Error('The request service returned an invalid response. Please try again later.');
       }
       if (!response.ok || !result.received) throw new Error(result.error || 'Your request could not be submitted. Please try again.');
-      setMessage('Request received. Lymora will review it and send an organization code to your email.');
+      setMessage('Request received. An administrator will review it manually. If approved, Lymora will contact you using the email you provided and share an organization code.');
       setOrganization('');
       setEmail('');
       setConsent(false);

@@ -1,5 +1,4 @@
-﻿import { safeText, readJson, response } from '../../_shared/license.mjs';
-import { sha256 } from '../../_shared/license.mjs';
+﻿import { safeText, readJson, response, sha256 } from '../../_shared/license.mjs';
 interface Env { LICENSE_DB: D1Database }
 interface Context { request: Request; env: Env }
 interface RequestBody { organization?: unknown; email?: unknown; consent?: unknown }

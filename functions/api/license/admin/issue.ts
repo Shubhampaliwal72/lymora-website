@@ -1,4 +1,4 @@
-import { safeText, sameSecret, createLicense, readJson, response } from '../../../_shared/license.mjs';
+﻿import { safeText, hasAdminAuthorization, createLicense, readJson, response } from '../../../_shared/license.mjs';
 
 interface Env { LICENSE_DB: D1Database; LICENSE_ADMIN_TOKEN: string }
 interface Context { request: Request; env: Env }
@@ -6,7 +6,7 @@ interface IssueBody { organizationName?: unknown; maxDevices?: unknown; expiresA
 
 export async function onRequestPost({ request, env }: Context) {
   if (!env.LICENSE_DB || !env.LICENSE_ADMIN_TOKEN) return response({ error: 'Admin issuance is not configured.' }, 503);
-  if (!sameSecret(request.headers.get('authorization')?.replace(/^Bearer\s+/i, '') || '', env.LICENSE_ADMIN_TOKEN)) return response({ error: 'Unauthorized.' }, 401);
+  if (!hasAdminAuthorization(request, env.LICENSE_ADMIN_TOKEN)) return response({ error: 'Unauthorized.' }, 401);
   let input: IssueBody;
   try { input = await readJson<IssueBody>(request); } catch (error) { return response({ error: (error as Error).message }, 400); }
   const organizationName = typeof input?.organizationName === 'string' ? input.organizationName.trim() : '';
