@@ -1,8 +1,12 @@
 # Windows release distribution
 
-## Current release
+## Website availability
 
-Lymora LAN Messenger 1.0.1, Windows x64 build 014, was built and published on 2026-11-09 with explicit owner authorization. Windows is the only supported platform currently advertised.
+The Windows Downloads section is temporarily marked Coming soon. The last published installer remains archived on GitHub, but its version, checksum and download link are hidden from the website until the next verified release and update flow are ready. `available: false` in `src/lib/releases/windows.json` controls this state while preserving the previous release metadata as the minimum-version baseline for the release-sync workflow. A future verified release sync sets it back to `true` automatically.
+
+## Last published release
+
+Lymora LAN Messenger 1.0.1, Windows x64 build 014, was built and published on 2026-11-09 with explicit owner authorization. Windows remains the only desktop platform presented on Downloads.
 
 - Notes: https://github.com/Shubhampaliwal72/lymora-website/releases/tag/v1.0.1
 - Installer: https://github.com/Shubhampaliwal72/lymora-website/releases/download/v1.0.1/Lymora-LAN-Setup-1.0.1-build.014-x64.exe
@@ -18,11 +22,11 @@ The public installer was downloaded without authentication and verified in full 
 
 Windows releases now check the public update feed after startup and through Settings > About. Users choose to download, see progress and confirm restarting to install. LAN messaging does not need internet; update checks and downloads do. The installed executable's PE FileDescription is Lymora LAN, replacing the longer peer-to-peer description without changing appId or user-data paths.
 
-The current release includes the group-administration and uninstaller cache-cleanup work absent from the previously published build 013. Build 013 users must install 1.0.1 manually once, because their existing binary has no updater. Future releases require an increased app version and matching published updater metadata.
+That release included the group-administration and uninstaller cache-cleanup work absent from build 013. Build 013 users needed to install 1.0.1 manually once, because that older binary had no updater. Future releases require an increased app version and matching published updater metadata.
 
 ## Website integration
 
-src/lib/releases/windows.json is the single release manifest. Only /downloads/ exposes installer, compatibility, checksum and release-note details. Header, homepage and product CTAs navigate there. The old release-notes route remains a handoff to the central page. Support channels stay null until verified; macOS/Linux Coming soon panels are informational, as approved by the owner; they expose no downloads, dates or compatibility promises.
+src/lib/releases/windows.json is the single release manifest. Only /downloads/ exposes installer, compatibility, checksum and release-note details when `available` is true. When false, the Windows panel shows Coming soon, has no active download or release links, and keeps the previous release metadata available for monotonic update checks. Header, homepage and product CTAs navigate there. The old release-notes route remains a handoff to the central page. Support channels stay null until verified; macOS/Linux Coming soon panels are informational, as approved by the owner; they expose no downloads, dates or compatibility promises.
 
 The existing public website repository hosts release assets independently of website deployment. Its source archives contain website code, not the private desktop application. No installer is copied into public/, out/ or Git source history. Website source changes do not deploy themselves; commit/push/deployment still need separate authorization.
 

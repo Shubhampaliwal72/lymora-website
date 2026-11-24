@@ -27,6 +27,7 @@ test('only verified newer Windows release bytes update the central website manif
   const f=fixture(t); const result=updateManifest({manifestPath:f.manifest,bundlePath:f.bundle,tag:'v1.0.2',publishedAt:'2026-11-24T12:00:00Z'});
   const data=JSON.parse(fs.readFileSync(f.manifest,'utf8'));
   assert.equal(result.version,'1.0.2'); assert.equal(data.assetName,f.name); assert.equal(data.version,'1.0.2');
+  assert.equal(data.available,true,'a verified release becomes visible on Downloads');
   assert.equal(data.bytes,fs.statSync(path.join(f.bundle,f.name)).size); assert.equal(data.sha256,sha(path.join(f.bundle,f.name)));
   assert.equal(data.signed,true); assert.equal(data.downloadUrl,`https://github.com/Shubhampaliwal72/lymora-website/releases/download/v1.0.2/${f.name}`);
   assert.deepEqual(data.changes,["Faster discovery.","Signed Windows installer."]); assert.deepEqual(data.knownIssues,[]); assert.equal(data.publishedAt,"2026-11-24");

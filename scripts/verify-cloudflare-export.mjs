@@ -63,7 +63,8 @@ for(const file of htmlFiles){
 }
 assert.deepEqual(indexableUrls.sort(),[...locations].sort(),'Every indexable exported page appears in sitemap');
 // Validate the shipped JSON-LD, not an unrelated example object.
-const release=JSON.parse(await fs.readFile('src/lib/releases/windows.json','utf8'));
+const releaseManifest=JSON.parse(await fs.readFile('src/lib/releases/windows.json','utf8'));
+const release=releaseManifest.available===false?null:releaseManifest;
 for(const route of ['/','/downloads/','/products/lan-messenger/']){
   const html=await fs.readFile(path.join(root,route.slice(1),'index.html'),'utf8');
   const scripts=[...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)];
@@ -73,7 +74,11 @@ for(const route of ['/','/downloads/','/products/lan-messenger/']){
   assert.equal(schema['@type'],route==='/'?'WebSite':'SoftwareApplication');
   assert(!('offers' in schema)&&!('aggregateRating' in schema)&&!('review' in schema),'No invented commercial data');
   if(route==='/'){assert.equal(schema.name,'Lymora');assert.equal(schema.url,origin+'/');}
-  else{assert.equal(schema.softwareVersion,release.version);assert.equal(schema.downloadUrl,release.downloadUrl);assert.equal(schema.operatingSystem,release.windowsRequirement);assert.equal(schema.applicationCategory,'CommunicationApplication');}
+  else{
+    assert.equal(schema.applicationCategory,'CommunicationApplication');
+    if(release){assert.equal(schema.softwareVersion,release.version);assert.equal(schema.downloadUrl,release.downloadUrl);assert.equal(schema.operatingSystem,release.windowsRequirement);}
+    else{assert(!('softwareVersion' in schema)&&!('downloadUrl' in schema)&&!('datePublished' in schema),'Coming-soon pages do not advertise stale release metadata');assert.equal(schema.operatingSystem,'Windows','The supported platform remains accurately described');}
+  }
 }
 const preview=await fs.readFile(path.join(root,'media/particle-fallback.svg'),'utf8');
 for(let i=0;i<3;i++)assert(preview.includes('id="particles-'+i+'"'),'Original SVG fallback geometry present');

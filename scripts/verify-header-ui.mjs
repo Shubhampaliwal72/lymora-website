@@ -47,7 +47,7 @@ export async function verifyHeaderUi({cdp,evaluate,viewport,media,waitFor,pause,
     await open('/products/lan-messenger/docs/');
     assert.equal(await evaluate('document.querySelector(".nav-disclosure[data-active=true]>summary").textContent'),'Resources','Documentation activates its actual parent navigation');
     await evaluate('document.querySelector(".header-download").click()');
-    await waitFor('location.pathname==="/downloads/"&&!!document.querySelector(".download-windows")','Get Lymora navigates to real Downloads');
+    await waitFor('location.pathname==="/downloads/"&&!!document.querySelector(".download-windows,.download-coming-soon")','Get Lymora navigates to Downloads and shows its availability state');
   }
   checks.push('Both themes: automatic symbol-only animation; stationary wordmark/tagline; compact header without content shift; keyboard dropdowns; correct active routes; working theme toggle and Get Lymora');
   for(const width of [320,375,768,1024,1100,1101,1440,1920]) {

@@ -74,6 +74,7 @@ function updateManifest({ manifestPath, bundlePath, tag, publishedAt }) {
   const baseUrl = `https://github.com/Shubhampaliwal72/lymora-website/releases/download/${tag}`;
   const next = {
     ...current,
+    available: true,
     version,
     build: info.buildLabel,
     publishedAt: published.toISOString().slice(0, 10),

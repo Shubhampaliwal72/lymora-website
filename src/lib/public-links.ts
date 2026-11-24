@@ -3,6 +3,7 @@ import windowsRelease from "./releases/windows.json";
 // Owner-approved public information only. Empty values intentionally publish no external links.
 // Installers are distributed through owner-approved GitHub Releases, not website assets.
 export type Release = {
+  available?: boolean;
   build: string;
   channel: string;
   builtAt: string;
@@ -25,6 +26,6 @@ export const publicLinks: {
   release: Release | null;
   support: { email: string | null; issuesUrl: string | null };
 } = {
-  release: windowsRelease,
+  release: windowsRelease.available === false ? null : windowsRelease,
   support: { email: null, issuesUrl: null },
 };
