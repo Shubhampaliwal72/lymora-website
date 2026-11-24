@@ -17,7 +17,8 @@
     "postinstall": "node scripts/r3f-timer-compat.mjs",
     "verify:seo": "node scripts/verify-network-motion.mjs --seo-only",
     "verify:particles": "node scripts/verify-network-motion.mjs --particles-only",
-    "test:licenses": "node --test scripts/license-functions.test.mjs"
+    "test:licenses": "node --test scripts/license-functions.test.mjs",
+    "test:release-sync": "node --test scripts/sync-windows-release.test.mjs"
   },
   "dependencies": {
     "@gsap/react": "2.1.2",

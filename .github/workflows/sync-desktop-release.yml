@@ -1,0 +1,70 @@
+name: Verify desktop release and propose website update
+
+on:
+  repository_dispatch:
+    types: [desktop-release-published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Published Windows release tag (for example v1.0.2)
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: website-windows-release-${{ github.event.client_payload.tag || inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  verify-and-propose:
+    if: github.repository == 'Shubhampaliwal72/lymora-website'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Download and verify the published GitHub release
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_TAG: ${{ github.event.client_payload.tag || inputs.tag }}
+        run: |
+          set -euo pipefail
+          tag="$INPUT_TAG"
+          test -n "$tag"
+          release_json=$(gh release view "$tag" --repo Shubhampaliwal72/lymora-website --json isDraft,isPrerelease,publishedAt)
+          echo "$release_json" | jq -e '(.isDraft == false) and (.isPrerelease == false)' >/dev/null
+          published_at=$(echo "$release_json" | jq -r .publishedAt)
+          mkdir release-assets
+          gh release download "$tag" --repo Shubhampaliwal72/lymora-website --dir release-assets
+          node scripts/sync-windows-release.mjs src/lib/releases/windows.json release-assets "$tag" "$published_at" | tee release-summary.json
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "summary=$(cat release-summary.json)" >> "$GITHUB_OUTPUT"
+      - name: Run website checks against the new metadata
+        run: |
+          npm ci
+          npm run typecheck
+          npm run lint
+          npm run verify:export
+          npm run build
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ github.token }}
+          branch: automated/desktop-release-${{ steps.release.outputs.tag }}
+          delete-branch: true
+          add-paths: src/lib/releases/windows.json
+          commit-message: "chore(downloads): add verified desktop ${{ steps.release.outputs.tag }}"
+          title: "chore(downloads): publish verified desktop ${{ steps.release.outputs.tag }} metadata"
+          body: |
+            This PR updates only the Windows download manifest after the matching GitHub Release was published and its EXE, updater feed, blockmap, release notes, and SHA-256 entries were verified.
+
+            Verified release: ${{ steps.release.outputs.tag }}
+            Summary: `${{ steps.release.outputs.summary }}`
+
+            Merge this PR to let the existing Cloudflare Pages Git integration deploy the updated download page. This workflow does not deploy the site.
+          labels: release, downloads
