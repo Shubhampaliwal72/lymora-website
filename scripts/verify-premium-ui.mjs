@@ -22,36 +22,18 @@ export async function verifyPremiumUi({cdp,evaluate,load,viewport,media,waitFor,
     report.push({file:path.relative(process.cwd(),file)});
   };
   const verifyConnection = async theme => {
-    const bounds = await evaluate('(()=>{const e=document.querySelector(".connection-diagram"),r=e.getBoundingClientRect();return {start:r.top+scrollY-innerHeight*.82,end:r.top+scrollY-innerHeight*.42}})()');
-    assert(['static','relative'].includes(await evaluate('getComputedStyle(document.querySelector(".connection-route")).position')),'Connection bar stays in normal document flow');
-    await evaluate('window.scrollTo({top:'+bounds.start+',behavior:"instant"})');await pause(100);
-    const beforeScroll=await evaluate('({y:document.querySelector(".connection-route").getBoundingClientRect().top,scroll:scrollY})');
-    await evaluate('window.scrollBy({top:160,behavior:"instant"})');await pause(150);
-    const afterScroll=await evaluate('({y:document.querySelector(".connection-route").getBoundingClientRect().top,scroll:scrollY})');
-    assert(Math.abs((beforeScroll.y-afterScroll.y)-(afterScroll.scroll-beforeScroll.scroll))<1,'Connection bar scrolls naturally before the lines finish filling');
-    for(const progress of [0,.25,.75,1,0]) {
-      const position=bounds.start+(bounds.end-bounds.start)*progress;
-      await evaluate('window.scrollTo({top:'+position+',behavior:"instant"})');
-      const expectedLeft=Math.min(1,progress*2),expectedRight=Math.max(0,progress*2-1);
-      await waitFor('(()=>{const s=getComputedStyle(document.querySelector(".connection-diagram"));return Math.abs(parseFloat(s.getPropertyValue("--connection-left"))-'+expectedLeft+')<.025&&Math.abs(parseFloat(s.getPropertyValue("--connection-right"))-'+expectedRight+')<.025})()','Dashed route fills and reverses at '+progress);
-    }
-    await evaluate('window.scrollTo({top:'+bounds.end+',behavior:"instant"})');
-    await waitFor('(()=>{const d=document.querySelector(".connection-diagram"),s=getComputedStyle(d);return parseFloat(s.getPropertyValue("--connection-left"))>.995&&parseFloat(s.getPropertyValue("--connection-right"))>.995})()','Both wires complete in their own visible scroll range');
-    assert(await evaluate('(()=>{const d=document.querySelector(".connection-diagram").getBoundingClientRect(),h=document.querySelector(".header-inner").getBoundingClientRect();return d.top>h.bottom+24&&d.bottom<innerHeight-24})()'),'Complete connection stays fully visible below the header');
-    assert(await evaluate('(()=>{const d=document.querySelector(".connection-diagram").getBoundingClientRect(),w=document.querySelector(".connection-walkthrough"),r=w.getBoundingClientRect(),s=getComputedStyle(w),l=w.querySelector("ol").getBoundingClientRect();return r.top-d.bottom>=39&&parseFloat(s.borderTopWidth)>=1&&l.top-r.top>=31})()'),'Diagram and setup steps have a distinct divider and breathing room');
-    await capture('connection-complete-'+theme);
-    assert((await evaluate('getComputedStyle(document.querySelector(".route-wire")).backgroundImage')).includes('repeating-linear-gradient'),'Unfilled route retains a dashed base');
+    assert.equal(await evaluate('document.querySelectorAll(".connection-step").length'),3,'Three setup steps remain in the document');
+    assert.equal(await evaluate('document.querySelectorAll(".pc-monitor").length'),2,'The scene contains both PC screens');
+    assert.equal(await evaluate('document.querySelectorAll(".pin-spacer").length'),0,'The setup story uses native scrolling without a pinned spacer');
+    await capture('connection-scene-'+theme);
     for(const index of [0,1,2,1,0]) {
-      if(await evaluate('document.querySelector(".setup-connection-story").dataset.storyMode==="cinematic"')) {
-        await evaluate('document.querySelectorAll("[data-story-go]")['+index+'].click()');
-      } else {
       await evaluate('(()=>{const e=document.querySelectorAll(".connection-step")['+index+'],r=e.getBoundingClientRect();window.scrollTo({top:scrollY+r.top+r.height/2-innerHeight*.6,behavior:"instant"})})()');
-      }
       await waitFor('document.querySelector(".setup-connection-story").dataset.activeStep==="'+index+'"','Current setup step follows reading position');
       assert.equal(await evaluate('document.querySelectorAll(".connection-step[aria-current=step]").length'),1,'Exactly one accessible current step');
       assert.equal(await evaluate('document.querySelectorAll(".connection-step[data-state=active]").length'),1,'Exactly one visual highlight');
+      assert.equal(await evaluate('document.querySelector(".connection-device-scene").dataset.activeStep'),String(index),'PC scene follows the active step');
       await pause(600);
-      if(index===1)await capture('setup-connection-story-'+theme);
+      if(index===2)await capture('setup-connection-story-'+theme);
     }
   };
   const statementAt = async (index, name) => {

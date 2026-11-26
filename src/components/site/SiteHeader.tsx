@@ -12,7 +12,7 @@ import { DownloadLink } from "./DownloadLink";
 import { messenger } from "@/lib/products";
 
 export function SiteHeader() {
-  return <HeaderFrame><div className="container header-inner glass-panel">
+  return <HeaderFrame><div className="container header-inner glass-panel" data-edge-surface="" data-edge-visible="true">
     <Link href="/" className="brand brand-lockup" aria-label="Lymora home"><BrandSymbol><Image className="brand-dark" src="/brand/mark-dark.png" width={512} height={512} alt=""/><Image className="brand-light" src="/brand/mark-light.png" width={512} height={512} alt=""/></BrandSymbol><span className="brand-copy">Lymora<span className="brand-caption">Technology, closer.</span></span></Link>
     <nav className="desktop-nav" aria-label="Main navigation">
       <ActiveLink href="/">Home</ActiveLink>

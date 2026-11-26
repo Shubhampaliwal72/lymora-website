@@ -30,7 +30,7 @@ function ParticleCloud({runtime,theme,intensity}:ParticleRendererProps){
    return new ShaderMaterial({vertexShader:particleVertex,fragmentShader:particleFragment,transparent:true,depthWrite:false,depthTest:false,
      blending:theme==="dark"?AdditiveBlending:NormalBlending,
      uniforms:{uRouting:{value:new Vector4()},uHalo:{value:1},uLogoReady:{value:0},uPointer:{value:new Vector2()},uInteraction:{value:0},uQuiet:{value:1},uTime:{value:0},uMorph:{value:0},uDpr:{value:1},
-       uWarm:{value:new Color(css.getPropertyValue("--accent").trim())},uCool:{value:new Color(css.getPropertyValue("--particle-cool").trim())},uIntensity:{value:intensity*(theme==="dark"?1:.72)}}});
+       uWarm:{value:new Color(css.getPropertyValue("--accent").trim())},uCool:{value:new Color(css.getPropertyValue("--particle-cool").trim())},uIntensity:{value:intensity*(theme==="dark"?1:1.12)}}});
  },[theme,intensity]);
  const routes=useMemo(()=>new ShaderMaterial({defines:{ROUTE_PASS:1},uniforms:material.uniforms,vertexShader:particleVertex,fragmentShader:particleRouteFragment,
    transparent:true,depthWrite:false,depthTest:false,blending:material.blending}),[material]);

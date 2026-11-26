@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { Component, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { MotionConfig, motion } from "motion/react";
+import { MotionConfig } from "motion/react";
 import { useParticleRenderer } from "@/components/animations/ParticleRenderContext";
 import { Icon } from "@/components/site/Icons";
 import { NetworkFallback } from "./NetworkFallback";
@@ -38,7 +38,6 @@ export function LivingNetwork() {
   const [phase, setPhase] = useState(0);
   const preferences = useScenePreferences();
   const renderer = useParticleRenderer();
-  const reduce = !preferences.motion;
   const onReady = useCallback(() => setReady(preferences.theme), [preferences.theme]);
   const onUnavailable = useCallback(() => { setUnavailable(true); setReady(null); }, []);
   const canvas = preferences.motion && preferences.capable && load && !unavailable && Boolean(renderer?.enabled);
@@ -79,7 +78,7 @@ export function LivingNetwork() {
     </div>
     <div className="network-demo-strip">
       <div className="network-demo-status"><span className="demo-kicker"><span className="signal-dot"/>Live LAN preview</span><p aria-live="off"><span>{endpoints.find(peer=>peer.id===source)!.name}</span><span className="demo-direction" aria-hidden="true">&rarr;</span><span>{destination}</span><small>{["Discovering", "Connecting", "Sending", "Arriving", "Delivered"][phase]}</small></p><span className="sr-only">{status}</span></div>
-      <div className="network-demo-actions"><div className="demo-transfer" role="group" aria-label="Preview content">{(["message","file"] as const).map(kind=><motion.button key={kind} type="button" aria-label={kind==="message"?"Send a message in the preview":"Send a file in the preview"} aria-pressed={transfer===kind} onClick={()=>{setTransfer(kind);replay();}} whileTap={reduce?undefined:{scale:.97}}><Icon name={kind}/><span>{kind==="message"?"Message":"File"}</span></motion.button>)}</div>{preferences.motion && <button className="demo-pause" type="button" aria-label={playing?"Pause network preview":"Play network preview"} onClick={()=>setPlaying(value=>!value)}><Icon name={playing?"pause":"play"}/></button>}</div>
+      <div className="network-demo-actions"><div className="demo-transfer" role="group" aria-label="Preview content">{(["message","file"] as const).map(kind=><button key={kind} type="button" aria-label={kind==="message"?"Send a message in the preview":"Send a file in the preview"} aria-pressed={transfer===kind} onClick={()=>{setTransfer(kind);replay();}}><Icon name={kind}/><span>{kind==="message"?"Message":"File"}</span></button>)}</div>{preferences.motion && <button className="demo-pause" type="button" aria-label={playing?"Pause network preview":"Play network preview"} onClick={()=>setPlaying(value=>!value)}><Icon name={playing?"pause":"play"}/></button>}</div>
     </div>
     <figcaption className="network-caption" id="network-caption"><span>Illustrated LAN &middot; actual app, fictional demo data</span><span>Choose a PC to follow the connection.</span></figcaption>
   </figure></MotionConfig>;

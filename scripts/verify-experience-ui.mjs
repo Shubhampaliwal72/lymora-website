@@ -39,9 +39,9 @@ export async function verifyExperienceUi({cdp,evaluate,load,viewport,media,waitF
  assert(await evaluate("document.querySelector('.ambience-control').hasAttribute('data-edge-surface')"),'Floating motion control uses the same material');
  assert.equal(await evaluate("getComputedStyle(document.querySelector('.cinematic-caption')).borderTopWidth"),'0px','Hero caption has no long divider');
  assert.equal(await evaluate("getComputedStyle(document.querySelector('.network-preview')).borderTopWidth"),'0px','No full-width rule below the opening');
- assert(await evaluate("[...document.querySelectorAll('.product-tabs button')].every(e=>parseFloat(getComputedStyle(e).borderRadius)>100 && getComputedStyle(e).backdropFilter.includes('blur'))"),'Every product tab is rounded glass');
+ assert(await evaluate("(()=>{const t=getComputedStyle(document.querySelector('.product-tabs'));return t.backdropFilter==='none'&&t.backgroundColor.endsWith(', 0)')&&t.borderColor.endsWith(', 0)')&&[...document.querySelectorAll('.product-tabs button')].every(e=>getComputedStyle(e).backdropFilter==='none'&&getComputedStyle(e).backgroundColor.endsWith(', 0)'))})()"),'Light product tabs have no shared backdrop or individual button fills');
  assert(parseFloat(await evaluate("getComputedStyle(document.querySelector('.header-inner')).borderRadius"))>100,'Header uses a fully rounded glass capsule');
- checks.push('thicker anticlockwise header edge; steady hover; click ripple and cleanup; fixed-size glass tabs; working theme toggle; rounded header and divider-free hero');
+ checks.push('thicker anticlockwise header edge; steady hover; click ripple and cleanup; transparent light-mode product tabs; working theme toggle; rounded header and divider-free hero');
  const headingTop=await evaluate("document.querySelector('#connect-title').getBoundingClientRect().top+scrollY");
  const scroll=async top=>{await evaluate('window.scrollTo({top:'+top+',behavior:"instant"})');await pause(1000);};
  await scroll(headingTop-900);
