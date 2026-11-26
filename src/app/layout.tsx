@@ -11,8 +11,9 @@ import "../styles/particles.css";
 import "../styles/experience.css";
 import "../styles/immersive-hero.css";
 import "../styles/connection-story.css";
+import "../styles/unslop.css";
 import { site } from "@/lib/site";
-import { HeaderRipple } from "@/components/site/HeaderRipple";
+import { ButtonRipple } from "@/components/site/HeaderRipple";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { PageRevealMotion } from "@/components/animations/PageRevealMotion";
@@ -29,5 +30,5 @@ export const metadata: Metadata = {
 // Runs before paint; only this root attribute differs during hydration. No external requests.
 const themeScript = "(()=>{const r=document.documentElement;r.dataset.enhanced='';let m,t;try{m=localStorage.getItem('lymora-website-motion');t=localStorage.getItem('lymora-website-theme')}catch{}r.dataset.motionChoice=m==='full'||m==='reduced'?m:'system';r.dataset.motion=m==='full'?'full':m==='reduced'||matchMedia('(prefers-reduced-motion: reduce)').matches?'reduced':'full';r.dataset.theme=t==='dark'||t==='light'?t:matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'})()";
 export default function RootLayout({children}: {children: ReactNode}) {
-  return <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning className={manrope.variable + " " + dmSans.variable}><head><script dangerouslySetInnerHTML={{__html: themeScript}}/></head><body><Suspense fallback={null}><NavigationFeedback/></Suspense><a className="skip-link" href="#main">Skip to content</a><ParticleBackdrop><div className="site-shell"><SiteHeader/><HeaderRipple/><PageRevealMotion>{children}<SiteFooter/></PageRevealMotion></div></ParticleBackdrop></body></html>;
+  return <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning className={manrope.variable + " " + dmSans.variable}><head><script dangerouslySetInnerHTML={{__html: themeScript}}/></head><body><Suspense fallback={null}><NavigationFeedback/></Suspense><a className="skip-link" href="#main">Skip to content</a><ParticleBackdrop><div className="site-shell"><SiteHeader/><ButtonRipple/><PageRevealMotion>{children}<SiteFooter/></PageRevealMotion></div></ParticleBackdrop></body></html>;
 }

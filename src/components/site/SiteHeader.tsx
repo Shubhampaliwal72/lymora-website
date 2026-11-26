@@ -18,7 +18,7 @@ export function SiteHeader() {
       <ActiveLink href="/">Home</ActiveLink>
       <NavDisclosure label="Products" activePaths={["/products/", messenger.path]}>
         <div className="nav-product">
-          <div className="nav-menu-intro"><span className="eyebrow">Made for nearby</span><p>Good things connect.</p></div>
+          <div className="nav-menu-intro"><span className="eyebrow">On your local network</span><p>Messaging for nearby Windows PCs.</p></div>
           <NavigationItem href={messenger.path} title="LAN Messenger" description="Messages and files. Directly between Windows PCs." icon="message" className="nav-featured"/>
           <div className="nav-sublinks"><Link href="/products/">All products<Icon name="arrow"/></Link><Link href={messenger.path + "#features"}>Explore features<Icon name="arrow"/></Link></div>
           <div className="nav-menu-footnote"><Icon name="windows"/><span>Windows. Your local network.</span></div>

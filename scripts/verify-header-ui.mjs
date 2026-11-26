@@ -22,7 +22,7 @@ export async function verifyHeaderUi({cdp,evaluate,viewport,media,waitFor,pause,
   for(const theme of ['dark','light']) {
     await viewport(1440,1000);await media(theme);await open();
     assert.equal(await evaluate('document.documentElement.dataset.theme'),theme,'Requested theme applied');
-    assert.equal(await evaluate('getComputedStyle(document.querySelector(".site-header .brand-symbol")).animationName'),'brand-symbol-live','Logo starts automatically without hovering');
+    assert.equal(await evaluate('getComputedStyle(document.querySelector(".site-header .brand-symbol")).animationName'),'none','Brand mark stays still in the navigation');
     const normal=await rect('.header-inner');
     const documentTop=await evaluate('document.querySelector("main").getBoundingClientRect().top+scrollY');
     await evaluate('window.scrollTo({top:420,behavior:"instant"})');
@@ -42,14 +42,14 @@ export async function verifyHeaderUi({cdp,evaluate,viewport,media,waitFor,pause,
     assert.equal(await evaluate('document.documentElement.dataset.theme'),theme==='dark'?'light':'dark','Theme toggle changes theme');
     assert.equal(await evaluate('document.querySelector(".header-actions>button").getAttribute("aria-label")'),theme==='dark'?'Switch to dark mode':'Switch to light mode','Theme action label describes next choice');
     await open('/downloads/');
-    assert.equal(await evaluate('document.querySelector(".desktop-nav>a[aria-current=page]").textContent'),'Downloads','Downloads has active underline');
-    assert(await evaluate('getComputedStyle(document.querySelector(".desktop-nav>a[aria-current=page]"),"::after").transform.startsWith("matrix(1")'),'Active underline is expanded');
+    assert.equal(await evaluate('document.querySelector(".desktop-nav>a[aria-current=page]").textContent'),'Downloads','Downloads has active navigation marker');
+    assert(await evaluate('(()=>{const s=getComputedStyle(document.querySelector(".desktop-nav>a[aria-current=page]"),"::after");return s.transform.startsWith("matrix(1")&&s.width==="4px"&&s.borderRadius==="50%"})()'),'Active navigation marker is a small static dot');
     await open('/products/lan-messenger/docs/');
     assert.equal(await evaluate('document.querySelector(".nav-disclosure[data-active=true]>summary").textContent'),'Resources','Documentation activates its actual parent navigation');
     await evaluate('document.querySelector(".header-download").click()');
     await waitFor('location.pathname==="/downloads/"&&!!document.querySelector(".download-windows,.download-coming-soon")','Get Lymora navigates to Downloads and shows its availability state');
   }
-  checks.push('Both themes: automatic symbol-only animation; stationary wordmark/tagline; compact header without content shift; keyboard dropdowns; correct active routes; working theme toggle and Get Lymora');
+  checks.push('Both themes: static brand mark; stationary wordmark/tagline; compact header without content shift; keyboard dropdowns; correct active routes; working theme toggle and Get Lymora');
   for(const width of [320,375,768,1024,1100,1101,1440,1920]) {
     await viewport(width,850);await media(width%2?'light':'dark');await open();
     assert(await evaluate('document.documentElement.scrollWidth<=innerWidth'),'No horizontal overflow at '+width);
@@ -74,7 +74,7 @@ export async function verifyHeaderUi({cdp,evaluate,viewport,media,waitFor,pause,
   }
   checks.push('320/375/768/1024/1100/1101/1440/1920px responsive navigation, mobile keyboard/scroll/route cleanup, centered desktop links and collision-free controls');
   await viewport(1440,1000);await media('dark',true);await open();
-  assert.equal(await evaluate('getComputedStyle(document.querySelector(".site-header .brand-symbol")).animationName'),'brand-symbol-live','Owner-approved live logo is independent of the OS menu-motion preference');
+  assert.equal(await evaluate('getComputedStyle(document.querySelector(".site-header .brand-symbol")).animationName'),'none','Brand mark remains static when the OS requests reduced motion');
   await evaluate('document.querySelector(".nav-disclosure summary").click()');await pause(100);
   assert.equal(await evaluate('getComputedStyle(document.querySelector(".nav-disclosure[open] .nav-dropdown")).animationName'),'none','Reduced motion disables menu arrival movement');
   await viewport(375,850);await pause(200);
@@ -83,6 +83,6 @@ export async function verifyHeaderUi({cdp,evaluate,viewport,media,waitFor,pause,
   assert.equal(await evaluate('document.querySelector(".mobile-panel").getAnimations().filter(a=>a.playState==="running").length'),0,'Reduced-motion mobile panel does not run an entrance animation');
   await viewport(1440,1000);await pause(100);
   assert.equal(await evaluate('document.querySelector(".mobile-menu").open'),false,'Mobile menu closes on desktop breakpoint');
-  assert.equal(await evaluate('document.documentElement.dataset.motion'),'full','Header preferences do not disable existing site scenes');
-  checks.push('Owner-approved live logo; reduced-motion menus; responsive cleanup; existing brand/GSAP animation policy remains independent');
+  assert.equal(await evaluate('document.documentElement.dataset.motion'),'reduced','With no saved site override, native reduced-motion preference remains in effect');
+  checks.push('Static brand mark; reduced-motion menus and native scene preference; responsive cleanup');
 }

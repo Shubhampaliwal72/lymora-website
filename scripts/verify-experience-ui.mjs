@@ -15,14 +15,23 @@ export async function verifyExperienceUi({cdp,evaluate,load,viewport,media,waitF
  await cdp('Input.dispatchMouseEvent',{type:'mouseMoved',...button});await pause(450);
  assert.equal(await evaluate("getComputedStyle(document.querySelector('.theme-toggle')).rotate"),'none','Header controls stay still on hover');
  await evaluate("document.querySelector('.theme-toggle').click()");
- assert(await evaluate("!!document.querySelector('.theme-toggle .header-click-ripple')"),'Keyboard/programmatic activation produces a water ripple');
- await pause(800);assert.equal(await evaluate("document.querySelectorAll('.header-click-ripple').length"),0,'Ripple removes itself after playback');
+ assert(await evaluate("!!document.querySelector('.theme-toggle .button-click-ripple')"),'Keyboard/programmatic activation produces a water ripple');
+ await pause(800);assert.equal(await evaluate("document.querySelectorAll('.button-click-ripple').length"),0,'Ripple removes itself after playback');
  assert.equal(await evaluate('document.documentElement.dataset.theme'),'light','3D theme control still works');
  await shot('hero-light');await evaluate("document.querySelector('.theme-toggle').click()");await pause(400);await shot('hero-dark');
+ await evaluate("document.querySelector('.product-tabs').scrollIntoView({block:'center',behavior:'instant'})");await pause(700);
+ const tabWidths=await evaluate("[...document.querySelectorAll('.product-tabs button')].map(e=>e.getBoundingClientRect().width)");
+ await evaluate("document.querySelectorAll('.product-tabs button')[1].click()");
+ assert.equal(await evaluate("document.querySelector('.product-tabs button[aria-selected=true]').textContent"),'Groups','Product tab selection updates the real view');
+ assert.equal(await evaluate("getComputedStyle(document.querySelector('.product-tabs .button-click-ripple')).position"),'absolute','Tab ripple stays outside layout flow');
+ const tabWidthsAfter=await evaluate("[...document.querySelectorAll('.product-tabs button')].map(e=>e.getBoundingClientRect().width)");
+ assert(tabWidths.every((width,index)=>Math.abs(width-tabWidthsAfter[index])<.5),'Clicking a tab never expands or shifts the tab row');
+ await pause(560);await shot('tabs-dark');await evaluate("window.scrollTo({top:0,behavior:'instant'})");await pause(1000);
  const cta=await evaluate("(()=>{const r=document.querySelector('.header-download').getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2}})()");
  await cdp('Input.dispatchMouseEvent',{type:'mousePressed',button:'left',clickCount:1,...cta});
+ assert(await evaluate("!!document.querySelector('.header-download .button-click-ripple')"),'Pointer-down starts immediate feedback before navigation');
  await cdp('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,...cta});
- assert(await evaluate("!!document.querySelector('.header-download .header-click-ripple')"),'Real internal link clicks also produce ripples');
+ assert(await evaluate("!!document.querySelector('.header-download .button-click-ripple')"),'Real internal link clicks also produce ripples');
  await waitFor("location.pathname==='/downloads/'",'Ripple does not block Downloads navigation');
  await evaluate('history.back()');await waitFor("location.pathname==='/'&&!!document.querySelector('.cinematic-hero')",'Browser history restores homepage');await pause(1100);
  const heroX=await evaluate("parseFloat(document.querySelector('.particle-backdrop').style.getPropertyValue('--particle-x'))");
@@ -31,7 +40,8 @@ export async function verifyExperienceUi({cdp,evaluate,load,viewport,media,waitF
  assert.equal(await evaluate("getComputedStyle(document.querySelector('.cinematic-caption')).borderTopWidth"),'0px','Hero caption has no long divider');
  assert.equal(await evaluate("getComputedStyle(document.querySelector('.network-preview')).borderTopWidth"),'0px','No full-width rule below the opening');
  assert(await evaluate("[...document.querySelectorAll('.product-tabs button')].every(e=>parseFloat(getComputedStyle(e).borderRadius)>100 && getComputedStyle(e).backdropFilter.includes('blur'))"),'Every product tab is rounded glass');
- checks.push('thicker anticlockwise header edge; steady hover; click ripple and cleanup; working theme toggle; rounded glass tabs and divider-free hero');
+ assert(parseFloat(await evaluate("getComputedStyle(document.querySelector('.header-inner')).borderRadius"))>100,'Header uses a fully rounded glass capsule');
+ checks.push('thicker anticlockwise header edge; steady hover; click ripple and cleanup; fixed-size glass tabs; working theme toggle; rounded header and divider-free hero');
  const headingTop=await evaluate("document.querySelector('#connect-title').getBoundingClientRect().top+scrollY");
  const scroll=async top=>{await evaluate('window.scrollTo({top:'+top+',behavior:"instant"})');await pause(1000);};
  await scroll(headingTop-900);
@@ -70,6 +80,9 @@ export async function verifyExperienceUi({cdp,evaluate,load,viewport,media,waitF
  }
  await viewport(1440,1000);await evaluate("localStorage.setItem('lymora-website-motion','reduced')");await load();
  await waitFor("document.documentElement.dataset.motion==='reduced'",'Static preference is retained');
+ await evaluate("document.querySelector('.product-tabs button').click()");
+ assert(await evaluate("!!document.querySelector('.product-tabs button .button-click-ripple')"),'Keyboard activation gives content buttons the same feedback');
+ assert.equal(await evaluate("document.querySelector('.product-tabs button .button-click-ripple').getAnimations()[0].effect.getTiming().duration"),140,'Reduced-motion feedback stays brief and opacity-only');
  assert.equal(await evaluate("document.querySelectorAll('.reveal-word').length"),0,'Reduced motion leaves original text intact');
  assert.equal(await evaluate("getComputedStyle(document.querySelector('.header-inner'),'::after').animationName"),'none','Reduced motion stops edge beams');
  assert.equal(await evaluate("!!document.querySelector('canvas')"),false,'Reduced motion avoids WebGL');
